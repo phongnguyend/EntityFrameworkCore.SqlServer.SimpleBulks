@@ -1,12 +1,12 @@
 # SimpleBulkOperations
-This is a .net library that inserts and updates a large number of records into database using the SqlBulkCopy class.
+This is a .netcore library that inserts and updates a large number of records into database using the SqlBulkCopy class.
  
 ## SimpleBulkOperations supports:
 * Bulk insert
 * Bulk update
 
 ## Overview
-This project provide 2 extension methods so that you can use it with your EntityFramework DbContext class. 
+This project provide 2 extension methods so that you can use it with your EntityFrameworkCore DbContext class. 
 
 ## License
 Free to copy, modify and use for whatever you want in your applications.  
