@@ -1,0 +1,4 @@
+src/SimpleBulkOperations/.vs/
+src/SimpleBulkOperations/*/bin/
+src/SimpleBulkOperations/*/obj/
+src/SimpleBulkOperations/SimpleBulkOperations.Demo/Migrations/
