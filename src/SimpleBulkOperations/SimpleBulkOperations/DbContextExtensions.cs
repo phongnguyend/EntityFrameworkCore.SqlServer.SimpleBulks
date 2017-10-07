@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SimpleBulkOperations.SqlTypeConverters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -96,44 +97,9 @@ namespace SimpleBulkOperations
             {
                 sql.AppendFormat("\n\t[{0}]", table.Columns[i].ColumnName);
 
-                switch (table.Columns[i].DataType.ToString().ToUpper())
-                {
-                    case "SYSTEM.GUID":
-                        sql.Append(" uniqueidentifier");
-                        break;
-                    case "SYSTEM.BOOLEAN":
-                        sql.Append(" bit");
-                        break;
-                    case "SYSTEM.INT16":
-                        sql.Append(" smallint");
-                        break;
-                    case "SYSTEM.INT32":
-                        sql.Append(" int");
-                        break;
-                    case "SYSTEM.INT64":
-                        sql.Append(" bigint");
-                        break;
-                    case "SYSTEM.DATETIME":
-                        sql.Append(" datetime");
-                        break;
-                    case "SYSTEM.STRING":
-                        sql.Append(" nvarchar(max)");
-                        break;
-                    case "SYSTEM.SINGLE":
-                        sql.Append(" single");
-                        break;
-                    case "SYSTEM.DOUBLE":
-                        sql.Append(" double");
-                        break;
-                    case "SYSTEM.DECIMAL":
-                        sql.Append(" decimal(38, 20)");
-                        break;
-                    default:
-                        sql.Append(" nvarchar(max)");
-                        break;
-                }
+                var sqlType = SqlTypeConverterFactory.GetConverter(table.Columns[i].DataType).Convert(table.Columns[i].DataType);
+                sql.Append($" {sqlType}");
                 sql.Append(table.Columns[i].ColumnName == idColumn ? " NOT NULL" : " NULL");
-
                 sql.Append(",");
             }
             sql.AppendFormat("PRIMARY KEY ({0})", idColumn);
