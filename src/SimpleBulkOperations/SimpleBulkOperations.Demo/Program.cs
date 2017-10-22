@@ -14,6 +14,7 @@ namespace SimpleBulkOperations.Demo
             //UpdateUsingEF();
             InsertUsingBulkInsert();
             UpdateUsingBulkUpdate();
+            DeleteUsingBulkDelete();
             Console.WriteLine("Finished!");
             Console.ReadLine();
         }
@@ -106,6 +107,21 @@ namespace SimpleBulkOperations.Demo
                 }
 
                 dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+            }
+            watch.Stop();
+
+            var elapsedTime = watch.Elapsed;
+            Console.WriteLine(elapsedTime);
+        }
+
+        private static void DeleteUsingBulkDelete()
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (var dbct = new DemoDbContext())
+            {
+                var rows = dbct.Rows.AsNoTracking().ToList();
+                dbct.BulkDelete(rows, "Rows", "Id");
             }
             watch.Stop();
 

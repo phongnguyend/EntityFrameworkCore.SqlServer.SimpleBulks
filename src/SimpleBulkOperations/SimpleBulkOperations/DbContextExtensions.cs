@@ -52,6 +52,28 @@ namespace SimpleBulkOperations
             connection.Close();
         }
 
+        public static void BulkDelete<T>(this DbContext dbContext, IList<T> data, string tableName, string idColumn)
+        {
+            var temptableName = "#" + Guid.NewGuid();
+            var dataTable = ToDataTable(data, new List<string> { idColumn });
+            string sqlCreateTemptable = GetCreateTableSql(dataTable, temptableName, idColumn);
+
+            string deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on a.[{idColumn}] = b.[{idColumn}]";
+
+            var connection = dbContext.Database.GetDbConnection();
+            connection.Open();
+
+            using (SqlCommand createTemptableCommand = new SqlCommand(sqlCreateTemptable, connection as SqlConnection))
+            {
+                createTemptableCommand.ExecuteNonQuery();
+            }
+
+            SqlBulkCopy(temptableName, dataTable, connection as SqlConnection);
+
+            var affectedRows = dbContext.Database.ExecuteSqlCommand(deleteStatement);
+            connection.Close();
+        }
+
         private static string CreateSetStatement(string prop)
         {
             string sqlOperator = "=";
