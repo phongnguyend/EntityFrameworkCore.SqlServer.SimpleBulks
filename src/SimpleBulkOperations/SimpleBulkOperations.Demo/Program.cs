@@ -130,20 +130,5 @@ namespace SimpleBulkOperations.Demo
             var elapsedTime = watch.Elapsed;
             Console.WriteLine(elapsedTime);
         }
-
-        private static void DeleteUsingBulkDelete()
-        {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
-            {
-                var rows = dbct.Rows.AsNoTracking().ToList();
-                dbct.BulkDelete(rows, "Rows", "Id");
-            }
-            watch.Stop();
-
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
-        }
     }
 }
