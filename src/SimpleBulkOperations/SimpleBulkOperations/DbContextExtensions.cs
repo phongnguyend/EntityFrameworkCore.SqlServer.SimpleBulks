@@ -6,12 +6,32 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace SimpleBulkOperations
 {
     public static class DbContextExtensions
     {
+        public static void BulkInsert<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
+        {
+            var columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
+            BulkInsert(dbContext, data, tableName, columnNames);
+        }
+
+        public static void BulkUpdate<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        {
+            string idColumn = idSelector.Body.GetMemberName();
+            var columnNames = columnNamesSelector.Body.GetMemberNames();
+            BulkUpdate(dbContext, data, tableName, idColumn, columnNames.ToArray());
+        }
+
+        public static void BulkDelete<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> idSelector)
+        {
+            string idColumn = idSelector.Body.GetMemberName();
+            BulkDelete(dbContext, data, tableName, idColumn);
+        }
+
         public static void BulkInsert<T>(this DbContext dbContext, IList<T> data, string tableName, params string[] columnNames)
         {
             var dataTable = ToDataTable(data, columnNames.ToList());

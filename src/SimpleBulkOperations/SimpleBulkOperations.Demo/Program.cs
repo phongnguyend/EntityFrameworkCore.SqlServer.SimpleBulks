@@ -83,8 +83,8 @@ namespace SimpleBulkOperations.Demo
                         Column3 = DateTime.Now
                     });
                 }
-
-                dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
+                //dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
+                dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
             }
             watch.Stop();
 
@@ -106,7 +106,24 @@ namespace SimpleBulkOperations.Demo
                     row.Column3 = DateTime.Now;
                 }
 
-                dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+                //dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+                dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
+            }
+            watch.Stop();
+
+            var elapsedTime = watch.Elapsed;
+            Console.WriteLine(elapsedTime);
+        }
+
+        private static void DeleteUsingBulkDelete()
+        {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            using (var dbct = new DemoDbContext())
+            {
+                var rows = dbct.Rows.AsNoTracking().ToList();
+                //dbct.BulkDelete(rows, "Rows", "Id");
+                dbct.BulkDelete(rows, "Rows", row => row.Id);
             }
             watch.Stop();
 

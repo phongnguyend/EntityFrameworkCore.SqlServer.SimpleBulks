@@ -4,6 +4,7 @@ This is a very simple .netcore library that inserts and updates a large number o
 ## SimpleBulkOperations supports:
 * Bulk insert
 * Bulk update
+* Bulk delete
 
 ## Overview
 This project provide 2 extension methods so that you can use it with your EntityFrameworkCore DbContext class. 
@@ -22,6 +23,7 @@ class Program
         //UpdateUsingEF();
         InsertUsingBulkInsert();
         UpdateUsingBulkUpdate();
+        DeleteUsingBulkDelete();
         Console.WriteLine("Finished!");
         Console.ReadLine();
     }
@@ -90,8 +92,8 @@ class Program
                     Column3 = DateTime.Now
                 });
             }
-
-            dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
+            //dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
+            dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
         }
         watch.Stop();
 
@@ -113,7 +115,24 @@ class Program
                 row.Column3 = DateTime.Now;
             }
 
-            dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+            //dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+            dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
+        }
+        watch.Stop();
+
+        var elapsedTime = watch.Elapsed;
+        Console.WriteLine(elapsedTime);
+    }
+
+    private static void DeleteUsingBulkDelete()
+    {
+        Stopwatch watch = new Stopwatch();
+        watch.Start();
+        using (var dbct = new DemoDbContext())
+        {
+            var rows = dbct.Rows.AsNoTracking().ToList();
+            //dbct.BulkDelete(rows, "Rows", "Id");
+            dbct.BulkDelete(rows, "Rows", row => row.Id);
         }
         watch.Stop();
 
