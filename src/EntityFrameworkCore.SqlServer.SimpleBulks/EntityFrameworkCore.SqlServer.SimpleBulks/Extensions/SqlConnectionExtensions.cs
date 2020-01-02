@@ -1,8 +1,6 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
@@ -33,10 +31,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         public static void BulkInsert<T>(this IDbConnection connection, IList<T> data, string tableName, params string[] columnNames)
         {
-            var dataTable = ToDataTable(data, columnNames.ToList());
+            var dataTable = data.ToDataTable(columnNames.ToList());
 
             connection.Open();
-            SqlBulkCopy(tableName, dataTable, connection as SqlConnection);
+            dataTable.SqlBulkCopy(tableName, connection as SqlConnection);
             connection.Close();
         }
 
@@ -47,8 +45,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             var propertyNamesIncludeId = columnNames.Select(RemoveOperator).ToList();
             propertyNamesIncludeId.Add(idColumn);
 
-            var dataTable = ToDataTable(data, propertyNamesIncludeId);
-            string sqlCreateTemptable = GetCreateTableSql(dataTable, temptableName, idColumn);
+            var dataTable = data.ToDataTable(propertyNamesIncludeId);
+            string sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumn);
 
             StringBuilder updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine("update a set");
@@ -63,7 +61,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            SqlBulkCopy(temptableName, dataTable, connection as SqlConnection);
+            dataTable.SqlBulkCopy(temptableName, connection as SqlConnection);
 
             using (var updateCommand = connection.CreateCommand())
             {
@@ -77,8 +75,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, string idColumn)
         {
             var temptableName = "#" + Guid.NewGuid();
-            var dataTable = ToDataTable(data, new List<string> { idColumn });
-            string sqlCreateTemptable = GetCreateTableSql(dataTable, temptableName, idColumn);
+            var dataTable = data.ToDataTable(new List<string> { idColumn });
+            string sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumn);
 
             string deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on a.[{idColumn}] = b.[{idColumn}]";
 
@@ -90,7 +88,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            SqlBulkCopy(temptableName, dataTable, connection as SqlConnection);
+            dataTable.SqlBulkCopy(temptableName, connection as SqlConnection);
 
             using (var deleteCommand = connection.CreateCommand())
             {
@@ -120,72 +118,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         {
             var rs = prop.Replace("+=", "");
             return rs;
-        }
-        private static void SqlBulkCopy(string tableName, DataTable dataTable, SqlConnection connection)
-        {
-            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
-            {
-                bulkCopy.BulkCopyTimeout = 0;
-                bulkCopy.DestinationTableName = "[" + tableName + "]";
-                foreach (DataColumn dtColum in dataTable.Columns)
-                {
-                    bulkCopy.ColumnMappings.Add(dtColum.ColumnName, dtColum.ColumnName);
-                }
-                bulkCopy.WriteToServer(dataTable);
-            }
-        }
-
-        private static string GetCreateTableSql(DataTable table, string tableName, string idColumn)
-        {
-            StringBuilder sql = new StringBuilder();
-
-            sql.AppendFormat("CREATE TABLE [{0}] (", tableName);
-
-            for (int i = 0; i < table.Columns.Count; i++)
-            {
-                sql.AppendFormat("\n\t[{0}]", table.Columns[i].ColumnName);
-
-                var sqlType = SqlTypeConverterFactory.GetConverter(table.Columns[i].DataType).Convert(table.Columns[i].DataType);
-                sql.Append($" {sqlType}");
-                sql.Append(table.Columns[i].ColumnName == idColumn ? " NOT NULL" : " NULL");
-                sql.Append(",");
-            }
-            sql.AppendFormat("PRIMARY KEY ({0})", idColumn);
-
-            sql.Append("\n);");
-
-            return sql.ToString();
-        }
-
-        private static DataTable ToDataTable<T>(IList<T> data, List<string> propertyNames)
-        {
-            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(typeof(T));
-
-            var updatablePros = new List<PropertyDescriptor>();
-            foreach (PropertyDescriptor prop in properties)
-            {
-                if (propertyNames.Contains(prop.Name))
-                {
-                    updatablePros.Add(prop);
-                }
-            }
-
-            DataTable table = new DataTable();
-            foreach (PropertyDescriptor prop in updatablePros)
-            {
-                table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
-            }
-            foreach (T item in data)
-            {
-                DataRow row = table.NewRow();
-                foreach (PropertyDescriptor prop in updatablePros)
-                {
-                    var value = prop.GetValue(item) ?? DBNull.Value;
-                    row[prop.Name] = value;
-                }
-                table.Rows.Add(row);
-            }
-            return table;
         }
     }
 }
