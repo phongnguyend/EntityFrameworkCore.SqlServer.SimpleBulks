@@ -1,7 +1,7 @@
-# SimpleBulkOperations
-This is a very simple .netcore library that inserts and updates a large number of records into database using the SqlBulkCopy class.
+# EntityFrameworkCore.SqlServer.SimpleBulks
+This is a very simple .netcore library that can help to work with large number of records using the SqlBulkCopy class.
  
-## SimpleBulkOperations supports:
+## EntityFrameworkCore.SqlServer.SimpleBulks supports:
 * Bulk insert
 * Bulk update
 * Bulk delete
@@ -19,6 +19,11 @@ class Program
 {
     static void Main(string[] args)
     {
+        using (var dbct = new DemoDbContext())
+        {
+            dbct.Database.Migrate();
+        }
+
         //InsertUsingEF();
         //UpdateUsingEF();
         InsertUsingBulkInsert();
