@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace SimpleBulkOperations
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class ExpressionExtensions
     {

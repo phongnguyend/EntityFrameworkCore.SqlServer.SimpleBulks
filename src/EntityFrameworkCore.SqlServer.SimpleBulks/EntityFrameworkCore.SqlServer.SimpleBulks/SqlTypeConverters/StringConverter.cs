@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace SimpleBulkOperations.SqlTypeConverters
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters
 {
-    public class DefaultConverter : ISqlTypeConvertible
+    public class StringConverter : ISqlTypeConvertible
     {
         public bool CanConvert(Type type)
         {
-            return true;
+            return type == typeof(string);
         }
 
         public string Convert(Type type)

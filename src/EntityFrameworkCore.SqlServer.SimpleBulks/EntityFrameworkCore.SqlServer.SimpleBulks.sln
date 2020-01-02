@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks", "EntityFrameworkCore.SqlServer.SimpleBulks\EntityFrameworkCore.SqlServer.SimpleBulks.csproj", "{4442AC01-14B1-47DC-A574-7C112C7F06EE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Demo", "EntityFrameworkCore.SqlServer.SimpleBulks.Demo\EntityFrameworkCore.SqlServer.SimpleBulks.Demo.csproj", "{D02A8071-0568-4976-A8F5-A13280BD0E2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4442AC01-14B1-47DC-A574-7C112C7F06EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4442AC01-14B1-47DC-A574-7C112C7F06EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4442AC01-14B1-47DC-A574-7C112C7F06EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4442AC01-14B1-47DC-A574-7C112C7F06EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {24F10989-2D0E-4B2C-9660-059CDED4B2E7}
+	EndGlobalSection
+EndGlobal

@@ -1,49 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SimpleBulkOperations.SqlTypeConverters;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace SimpleBulkOperations
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
-    public static class DbContextExtensions
+    public static class SqlConnectionExtensions
     {
-        public static void BulkInsert<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
         {
             var columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
-            BulkInsert(dbContext, data, tableName, columnNames);
+            BulkInsert(connection, data, tableName, columnNames);
         }
 
-        public static void BulkUpdate<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkUpdate<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
         {
             string idColumn = idSelector.Body.GetMemberName();
             var columnNames = columnNamesSelector.Body.GetMemberNames();
-            BulkUpdate(dbContext, data, tableName, idColumn, columnNames.ToArray());
+            BulkUpdate(connection, data, tableName, idColumn, columnNames.ToArray());
         }
 
-        public static void BulkDelete<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> idSelector)
+        public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
             string idColumn = idSelector.Body.GetMemberName();
-            BulkDelete(dbContext, data, tableName, idColumn);
+            BulkDelete(connection, data, tableName, idColumn);
         }
 
-        public static void BulkInsert<T>(this DbContext dbContext, IList<T> data, string tableName, params string[] columnNames)
+        public static void BulkInsert<T>(this IDbConnection connection, IList<T> data, string tableName, params string[] columnNames)
         {
             var dataTable = ToDataTable(data, columnNames.ToList());
-            var connection = dbContext.Database.GetDbConnection();
+
             connection.Open();
-
             SqlBulkCopy(tableName, dataTable, connection as SqlConnection);
-
             connection.Close();
         }
 
-        public static void BulkUpdate<T>(this DbContext dbContext, IList<T> data, string tableName, string idColumn, params string[] columnNames)
+        public static void BulkUpdate<T>(this IDbConnection connection, IList<T> data, string tableName, string idColumn, params string[] columnNames)
         {
             var temptableName = "#" + Guid.NewGuid();
 
@@ -58,21 +55,26 @@ namespace SimpleBulkOperations
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, columnNames.Select(CreateSetStatement)));
             updateStatementBuilder.AppendLine("from " + tableName + " a join [" + temptableName + "] b on a.[" + idColumn + "] = b.[" + idColumn + "]");
 
-            var connection = dbContext.Database.GetDbConnection();
             connection.Open();
 
-            using (SqlCommand createTemptableCommand = new SqlCommand(sqlCreateTemptable, connection as SqlConnection))
+            using (var createTemptableCommand = connection.CreateCommand())
             {
+                createTemptableCommand.CommandText = sqlCreateTemptable;
                 createTemptableCommand.ExecuteNonQuery();
             }
 
             SqlBulkCopy(temptableName, dataTable, connection as SqlConnection);
 
-            var affectedRows = dbContext.Database.ExecuteSqlCommand(updateStatementBuilder.ToString());
+            using (var updateCommand = connection.CreateCommand())
+            {
+                updateCommand.CommandText = updateStatementBuilder.ToString();
+                var affectedRows = updateCommand.ExecuteNonQuery();
+            }
+
             connection.Close();
         }
 
-        public static void BulkDelete<T>(this DbContext dbContext, IList<T> data, string tableName, string idColumn)
+        public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, string idColumn)
         {
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = ToDataTable(data, new List<string> { idColumn });
@@ -80,17 +82,22 @@ namespace SimpleBulkOperations
 
             string deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on a.[{idColumn}] = b.[{idColumn}]";
 
-            var connection = dbContext.Database.GetDbConnection();
             connection.Open();
 
-            using (SqlCommand createTemptableCommand = new SqlCommand(sqlCreateTemptable, connection as SqlConnection))
+            using (var createTemptableCommand = connection.CreateCommand())
             {
+                createTemptableCommand.CommandText = sqlCreateTemptable;
                 createTemptableCommand.ExecuteNonQuery();
             }
 
             SqlBulkCopy(temptableName, dataTable, connection as SqlConnection);
 
-            var affectedRows = dbContext.Database.ExecuteSqlCommand(deleteStatement);
+            using (var deleteCommand = connection.CreateCommand())
+            {
+                deleteCommand.CommandText = deleteStatement.ToString();
+                var affectedRows = deleteCommand.ExecuteNonQuery();
+            }
+
             connection.Close();
         }
 
@@ -114,7 +121,6 @@ namespace SimpleBulkOperations
             var rs = prop.Replace("+=", "");
             return rs;
         }
-
         private static void SqlBulkCopy(string tableName, DataTable dataTable, SqlConnection connection)
         {
             using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))

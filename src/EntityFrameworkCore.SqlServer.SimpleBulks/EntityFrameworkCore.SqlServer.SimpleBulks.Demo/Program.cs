@@ -1,15 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace SimpleBulkOperations.Demo
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     class Program
     {
         static void Main(string[] args)
         {
+            using (var dbct = new DemoDbContext())
+            {
+                dbct.Database.Migrate();
+            }
+
             //InsertUsingEF();
             //UpdateUsingEF();
             InsertUsingBulkInsert();

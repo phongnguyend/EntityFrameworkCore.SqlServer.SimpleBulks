@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SimpleBulkOperations.SqlTypeConverters
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters
 {
     public static class SqlTypeConverterFactory
     {
