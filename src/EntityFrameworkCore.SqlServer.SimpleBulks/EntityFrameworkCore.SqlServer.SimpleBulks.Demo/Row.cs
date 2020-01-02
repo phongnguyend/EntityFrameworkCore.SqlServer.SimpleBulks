@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SimpleBulkOperations.Demo
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     public class Row
     {

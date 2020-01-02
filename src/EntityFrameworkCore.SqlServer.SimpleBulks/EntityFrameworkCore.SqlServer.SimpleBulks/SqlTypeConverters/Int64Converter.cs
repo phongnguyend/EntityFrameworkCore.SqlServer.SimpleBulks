@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleBulkOperations.SqlTypeConverters
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters
 {
     public class Int64Converter : ISqlTypeConvertible
     {

@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SimpleBulkOperations.Demo
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     public class DemoDbContext : DbContext
     {
@@ -11,7 +8,7 @@ namespace SimpleBulkOperations.Demo
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=SimpleBulkOperations;User Id=sa;Password=sqladmin123!@#;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#;MultipleActiveResultSets=true");
             base.OnConfiguring(optionsBuilder);
         }
     }
