@@ -7,7 +7,9 @@ This is a very simple .netcore library that can help to work with large number o
 * Bulk delete
 
 ## Overview
-This project provide 2 extension methods so that you can use it with your EntityFrameworkCore DbContext class. 
+This project provides extension methods so that you can use with your EntityFrameworkCore DbContext instance:
+[DbContextExtensions.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks/Extensions/DbContextExtensions.cs)
+or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks/Extensions/SqlConnectionExtensions.cs) to work directly with a SqlConnection instance. 
 
 ## License
 Free to copy, modify and use for whatever you want in your applications.  
