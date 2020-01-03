@@ -18,9 +18,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
             //InsertUsingEF();
             //UpdateUsingEF();
-            InsertUsingBulkInsert();
-            UpdateUsingBulkUpdate();
-            DeleteUsingBulkDelete();
+            InsertUsingBulkInsert(useLinq: true);
+            UpdateUsingBulkUpdate(useLinq: true);
+            DeleteUsingBulkDelete(useLinq: true);
+            InsertUsingBulkInsert(useLinq: false);
+            UpdateUsingBulkUpdate(useLinq: false);
+            DeleteUsingBulkDelete(useLinq: false);
             Console.WriteLine("Finished!");
             Console.ReadLine();
         }
@@ -73,13 +76,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             Console.WriteLine(elapsedTime);
         }
 
-        private static void InsertUsingBulkInsert()
+        private static void InsertUsingBulkInsert(bool useLinq)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (var dbct = new DemoDbContext())
             {
                 var rows = new List<Row>();
+                var compositeKeyRows = new List<CompositeKeyRow>();
                 for (int i = 0; i < 500000; i++)
                 {
                     rows.Add(new Row
@@ -88,9 +92,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                         Column2 = "" + i,
                         Column3 = DateTime.Now
                     });
+
+                    compositeKeyRows.Add(new CompositeKeyRow
+                    {
+                        Id1 = i,
+                        Id2 = i,
+                        Column1 = i,
+                        Column2 = "" + i,
+                        Column3 = DateTime.Now
+                    });
                 }
-                //dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
-                dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
+
+                if (useLinq)
+                {
+                    dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
+                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                }
+                else
+                {
+                    dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
+                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", "Id1", "Id2", "Column1", "Column2", "Column3");
+                }
             }
             watch.Stop();
 
@@ -98,13 +120,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             Console.WriteLine(elapsedTime);
         }
 
-        private static void UpdateUsingBulkUpdate()
+        private static void UpdateUsingBulkUpdate(bool useLinq)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (var dbct = new DemoDbContext())
             {
                 var rows = dbct.Rows.AsNoTracking().ToList();
+                var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
 
                 foreach (var row in rows)
                 {
@@ -112,8 +135,22 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     row.Column3 = DateTime.Now;
                 }
 
-                //dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
-                dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
+                foreach (var row in compositeKeyRows)
+                {
+                    row.Column2 = "abc";
+                    row.Column3 = DateTime.Now;
+                }
+
+                if (useLinq)
+                {
+                    dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
+                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column3, row.Column2 });
+                }
+                else
+                {
+                    dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
+                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
+                }
             }
             watch.Stop();
 
@@ -121,15 +158,25 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             Console.WriteLine(elapsedTime);
         }
 
-        private static void DeleteUsingBulkDelete()
+        private static void DeleteUsingBulkDelete(bool useLinq)
         {
             Stopwatch watch = new Stopwatch();
             watch.Start();
             using (var dbct = new DemoDbContext())
             {
                 var rows = dbct.Rows.AsNoTracking().ToList();
-                //dbct.BulkDelete(rows, "Rows", "Id");
-                dbct.BulkDelete(rows, "Rows", row => row.Id);
+                var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
+
+                if (useLinq)
+                {
+                    dbct.BulkDelete(rows, "Rows", row => row.Id);
+                    dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 });
+                }
+                else
+                {
+                    dbct.BulkDelete(rows, "Rows", "Id");
+                    dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList());
+                }
             }
             watch.Stop();
 

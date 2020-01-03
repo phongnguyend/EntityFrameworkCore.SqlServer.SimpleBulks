@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 return GetMemberName(unaryExpression);
             }
 
-            throw new ArgumentException("Invalid expression.");
+            return null;
         }
 
         public static List<string> GetMemberNames(this Expression expression)
@@ -32,7 +32,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 return newExpression.Arguments.Select(x => GetMemberName(x)).ToList();
             }
 
-            throw new ArgumentException("Invalid expression.");
+            return new List<string>();
         }
 
         private static string GetMemberName(UnaryExpression unaryExpression)

@@ -1,13 +1,20 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters;
 using Microsoft.Data.SqlClient;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
         public static string GenerateTableDefinition(this DataTable table, string tableName, string idColumn)
+        {
+            return table.GenerateTableDefinition(tableName, new List<string> { idColumn });
+        }
+
+        public static string GenerateTableDefinition(this DataTable table, string tableName, List<string> idColumns)
         {
             StringBuilder sql = new StringBuilder();
 
@@ -19,10 +26,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
                 var sqlType = SqlTypeConverterFactory.GetConverter(table.Columns[i].DataType).Convert(table.Columns[i].DataType);
                 sql.Append($" {sqlType}");
-                sql.Append(table.Columns[i].ColumnName == idColumn ? " NOT NULL" : " NULL");
+                sql.Append(idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
                 sql.Append(",");
             }
-            sql.AppendFormat("PRIMARY KEY ({0})", idColumn);
+            sql.AppendFormat("\n\tPRIMARY KEY ({0})", string.Join(", ", idColumns.Select(x => $"[{x}]")));
 
             sql.Append("\n);");
 
