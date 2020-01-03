@@ -10,22 +10,22 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class SqlConnectionExtensions
     {
-        public static void BulkInsert<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this SqlConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
         {
             var columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
             connection.BulkInsert(data, tableName, columnNames);
         }
 
-        public static void BulkInsert<T>(this IDbConnection connection, IList<T> data, string tableName, params string[] columnNames)
+        public static void BulkInsert<T>(this SqlConnection connection, IList<T> data, string tableName, params string[] columnNames)
         {
             var dataTable = data.ToDataTable(columnNames.ToList());
 
             connection.Open();
-            dataTable.SqlBulkCopy(tableName, connection as SqlConnection);
+            dataTable.SqlBulkCopy(tableName, connection);
             connection.Close();
         }
 
-        public static void BulkUpdate<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkUpdate<T>(this SqlConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
         {
             var idColumn = idSelector.Body.GetMemberName();
             var idColumns = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
@@ -34,12 +34,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.BulkUpdate(data, tableName, idColumns, columnNames);
         }
 
-        public static void BulkUpdate<T>(this IDbConnection connection, IList<T> data, string tableName, string idColumn, params string[] columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IList<T> data, string tableName, string idColumn, params string[] columnNames)
         {
             connection.BulkUpdate(data, tableName, new List<string> { idColumn }, columnNames);
         }
 
-        public static void BulkUpdate<T>(this IDbConnection connection, IList<T> data, string tableName, List<string> idColumns, params string[] columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IList<T> data, string tableName, List<string> idColumns, params string[] columnNames)
         {
             var temptableName = "#" + Guid.NewGuid();
 
@@ -47,9 +47,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             propertyNamesIncludeId.AddRange(idColumns);
 
             var dataTable = data.ToDataTable(propertyNamesIncludeId);
-            string sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
+            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
 
-            StringBuilder updateStatementBuilder = new StringBuilder();
+            var updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine("update a set");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, columnNames.Select(CreateSetStatement)));
             updateStatementBuilder.AppendLine("from " + tableName + " a join [" + temptableName + "] b on " + string.Join(" and ", idColumns.Select(x => $"a.[{x}] = b.[{x}]")));
@@ -62,7 +62,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, connection as SqlConnection);
+            dataTable.SqlBulkCopy(temptableName, connection);
 
             using (var updateCommand = connection.CreateCommand())
             {
@@ -73,7 +73,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.Close();
         }
 
-        public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector)
+        public static void BulkDelete<T>(this SqlConnection connection, IList<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
             var idColumn = idSelector.Body.GetMemberName();
             var idColumns = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
@@ -81,18 +81,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.BulkDelete(data, tableName, idColumns);
         }
 
-        public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, string idColumn)
+        public static void BulkDelete<T>(this SqlConnection connection, IList<T> data, string tableName, string idColumn)
         {
             connection.BulkDelete(data, tableName, new List<string> { idColumn });
         }
 
-        public static void BulkDelete<T>(this IDbConnection connection, IList<T> data, string tableName, List<string> idColumns)
+        public static void BulkDelete<T>(this SqlConnection connection, IList<T> data, string tableName, List<string> idColumns)
         {
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = data.ToDataTable(idColumns);
-            string sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
-
-            string deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on " + string.Join(" and ", idColumns.Select(x => $"a.[{x}] = b.[{x}]"));
+            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
+            var deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on " + string.Join(" and ", idColumns.Select(x => $"a.[{x}] = b.[{x}]"));
 
             connection.Open();
 
@@ -102,7 +101,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, connection as SqlConnection);
+            dataTable.SqlBulkCopy(temptableName, connection);
 
             using (var deleteCommand = connection.CreateCommand())
             {

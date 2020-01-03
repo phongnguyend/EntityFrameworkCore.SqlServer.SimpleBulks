@@ -36,11 +36,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             return sql.ToString();
         }
 
-        public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection)
+        public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection, int timeout = 30)
         {
-            using (SqlBulkCopy bulkCopy = new SqlBulkCopy(connection))
+            using (var bulkCopy = new SqlBulkCopy(connection))
             {
-                bulkCopy.BulkCopyTimeout = 0;
+                bulkCopy.BulkCopyTimeout = timeout;
                 bulkCopy.DestinationTableName = "[" + tableName + "]";
                 foreach (DataColumn dtColum in dataTable.Columns)
                 {
