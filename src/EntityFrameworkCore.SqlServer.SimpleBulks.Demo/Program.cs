@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,26 +19,26 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 dbct.Database.Migrate();
             }
 
-            //InsertUsingEF();
+            //InsertUsingEF(numberOfRows: 500000);
             //UpdateUsingEF();
-            InsertUsingBulkInsert(useLinq: true);
+            InsertUsingBulkInsert(numberOfRows: 500000, useLinq: true);
             UpdateUsingBulkUpdate(useLinq: true);
             DeleteUsingBulkDelete(useLinq: true);
-            InsertUsingBulkInsert(useLinq: false);
+            InsertUsingBulkInsert(numberOfRows: 500000, useLinq: false);
             UpdateUsingBulkUpdate(useLinq: false);
             DeleteUsingBulkDelete(useLinq: false);
             Console.WriteLine("Finished!");
             Console.ReadLine();
         }
 
-        private static void InsertUsingEF()
+        private static void InsertUsingEF(int numberOfRows)
         {
             var watch = Stopwatch.StartNew();
 
             using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = new List<Row>();
-                for (int i = 0; i < 500000; i++)
+                for (int i = 0; i < numberOfRows; i++)
                 {
                     rows.Add(new Row
                     {
@@ -76,7 +77,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             Console.WriteLine(watch.Elapsed);
         }
 
-        private static void InsertUsingBulkInsert(bool useLinq)
+        private static void InsertUsingBulkInsert(int numberOfRows, bool useLinq)
         {
             var watch = Stopwatch.StartNew();
 
@@ -84,7 +85,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             {
                 var rows = new List<Row>();
                 var compositeKeyRows = new List<CompositeKeyRow>();
-                for (int i = 0; i < 500000; i++)
+                for (int i = 0; i < numberOfRows; i++)
                 {
                     rows.Add(new Row
                     {

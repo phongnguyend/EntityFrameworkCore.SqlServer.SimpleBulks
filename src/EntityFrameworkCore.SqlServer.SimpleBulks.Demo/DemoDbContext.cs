@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
@@ -25,6 +26,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CompositeKeyRow>().HasKey(x => new { x.Id1, x.Id2 });
+
             base.OnModelCreating(modelBuilder);
         }
     }
