@@ -9,9 +9,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     class Program
     {
+        private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#;MultipleActiveResultSets=true";
+
         static void Main(string[] args)
         {
-            using (var dbct = new DemoDbContext())
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 dbct.Database.Migrate();
             }
@@ -30,9 +32,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
         private static void InsertUsingEF()
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
+            var watch = Stopwatch.StartNew();
+
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = new List<Row>();
                 for (int i = 0; i < 500000; i++)
@@ -48,17 +50,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 dbct.Rows.AddRange(rows);
                 dbct.SaveChanges();
             }
-            watch.Stop();
 
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
         }
 
         private static void UpdateUsingEF()
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
+            var watch = Stopwatch.StartNew();
+
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = dbct.Rows.ToList();
 
@@ -70,17 +71,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
                 dbct.SaveChanges();
             }
-            watch.Stop();
 
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
         }
 
         private static void InsertUsingBulkInsert(bool useLinq)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
+            var watch = Stopwatch.StartNew();
+
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = new List<Row>();
                 var compositeKeyRows = new List<CompositeKeyRow>();
@@ -114,17 +114,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", "Id1", "Id2", "Column1", "Column2", "Column3");
                 }
             }
-            watch.Stop();
 
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
         }
 
         private static void UpdateUsingBulkUpdate(bool useLinq)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
+            var watch = Stopwatch.StartNew();
+
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = dbct.Rows.AsNoTracking().ToList();
                 var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
@@ -152,17 +151,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
                 }
             }
-            watch.Stop();
 
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
         }
 
         private static void DeleteUsingBulkDelete(bool useLinq)
         {
-            Stopwatch watch = new Stopwatch();
-            watch.Start();
-            using (var dbct = new DemoDbContext())
+            var watch = Stopwatch.StartNew();
+
+            using (var dbct = new DemoDbContext(_connectionString))
             {
                 var rows = dbct.Rows.AsNoTracking().ToList();
                 var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
@@ -178,10 +176,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList());
                 }
             }
-            watch.Stop();
 
-            var elapsedTime = watch.Elapsed;
-            Console.WriteLine(elapsedTime);
+            watch.Stop();
+            Console.WriteLine(watch.Elapsed);
         }
     }
 }

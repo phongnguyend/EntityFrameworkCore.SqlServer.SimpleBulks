@@ -4,13 +4,20 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     public class DemoDbContext : DbContext
     {
+        private readonly string _connectionString;
+
+        public DemoDbContext(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         public DbSet<Row> Rows { get; set; }
 
         public DbSet<CompositeKeyRow> CompositeKeyRows { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer(_connectionString);
 
             base.OnConfiguring(optionsBuilder);
         }

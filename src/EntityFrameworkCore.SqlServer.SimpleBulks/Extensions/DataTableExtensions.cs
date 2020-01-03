@@ -9,14 +9,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
-        public static string GenerateTableDefinition(this DataTable table, string tableName, string idColumn)
-        {
-            return table.GenerateTableDefinition(tableName, new List<string> { idColumn });
-        }
-
         public static string GenerateTableDefinition(this DataTable table, string tableName, List<string> idColumns)
         {
-            StringBuilder sql = new StringBuilder();
+            var sql = new StringBuilder();
 
             sql.AppendFormat("CREATE TABLE [{0}] (", tableName);
 
@@ -38,17 +33,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection, int timeout = 30)
         {
-            using (var bulkCopy = new SqlBulkCopy(connection))
+            using var bulkCopy = new SqlBulkCopy(connection)
             {
-                bulkCopy.BulkCopyTimeout = timeout;
-                bulkCopy.DestinationTableName = "[" + tableName + "]";
-                foreach (DataColumn dtColum in dataTable.Columns)
-                {
-                    bulkCopy.ColumnMappings.Add(dtColum.ColumnName, dtColum.ColumnName);
-                }
+                BulkCopyTimeout = timeout,
+                DestinationTableName = "[" + tableName + "]"
+            };
 
-                bulkCopy.WriteToServer(dataTable);
+            foreach (DataColumn dtColum in dataTable.Columns)
+            {
+                bulkCopy.ColumnMappings.Add(dtColum.ColumnName, dtColum.ColumnName);
             }
+
+            bulkCopy.WriteToServer(dataTable);
         }
     }
 }

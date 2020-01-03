@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -9,15 +8,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
     {
         public static string GetMemberName(this Expression expression)
         {
-            if (expression is MemberExpression)
+            if (expression is MemberExpression memberExpression)
             {
-                var memberExpression = (MemberExpression)expression;
                 return memberExpression.Member.Name;
             }
 
-            if (expression is UnaryExpression)
+            if (expression is UnaryExpression unaryExpression)
             {
-                var unaryExpression = (UnaryExpression)expression;
                 return GetMemberName(unaryExpression);
             }
 
@@ -26,9 +23,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         public static List<string> GetMemberNames(this Expression expression)
         {
-            if (expression is NewExpression)
+            if (expression is NewExpression newExpression)
             {
-                var newExpression = expression as NewExpression;
                 return newExpression.Arguments.Select(x => GetMemberName(x)).ToList();
             }
 
@@ -37,9 +33,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         private static string GetMemberName(UnaryExpression unaryExpression)
         {
-            if (unaryExpression.Operand is MethodCallExpression)
+            if (unaryExpression.Operand is MethodCallExpression methodExpression)
             {
-                var methodExpression = (MethodCallExpression)unaryExpression.Operand;
                 return methodExpression.Method.Name;
             }
 
