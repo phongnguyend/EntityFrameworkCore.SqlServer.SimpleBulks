@@ -1,4 +1,4 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.SqlTypeConverters;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.SqlConverters;
 using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data;
@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             {
                 sql.AppendFormat("\n\t[{0}]", table.Columns[i].ColumnName);
 
-                var sqlType = SqlTypeConverterFactory.GetConverter(table.Columns[i].DataType).Convert(table.Columns[i].DataType);
+                var sqlType = SqlTypeConverter.Convert(table.Columns[i].DataType);
                 sql.Append($" {sqlType}");
                 sql.Append(idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
                 sql.Append(",");
