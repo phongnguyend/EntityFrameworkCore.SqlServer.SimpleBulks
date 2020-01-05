@@ -45,4 +45,4 @@ dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.
 ```
 
 ## License
-[MIT ](/LICENSE)
+**EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.
