@@ -10,6 +10,7 @@ or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.S
 - Bulk Insert
 - Bulk Update
 - Bulk Delete
+- Bulk Merge
 
 ## Examples
 - Refer [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
@@ -28,6 +29,15 @@ dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", "Id1", "Id2", "Column1", "
 dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
 dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
 
+dbct.BulkMerge(rows, "Rows",
+    "Id",
+    new string[] { "Column1", "Column2" },
+    new string[] { "Column1", "Column2", "Column3" });
+dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+    new List<string> { "Id1", "Id2" },
+    new string[] { "Column1", "Column2", "Column3" },
+    new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+
 dbct.BulkDelete(rows, "Rows", "Id");
 dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList());
 ```
@@ -40,6 +50,15 @@ dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.
 dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
 dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column3, row.Column2 });
 
+dbct.BulkMerge(rows, "Rows",
+    row => row.Id,
+    row => new { row.Column1, row.Column2 },
+    row => new { row.Column1, row.Column2, row.Column3 });
+dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+    row => new { row.Id1, row.Id2 },
+    row => new { row.Column1, row.Column2, row.Column3 },
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                        
 dbct.BulkDelete(rows, "Rows", row => row.Id);
 dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 });
 ```
