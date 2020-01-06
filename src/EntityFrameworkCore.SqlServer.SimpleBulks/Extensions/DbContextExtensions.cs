@@ -48,6 +48,21 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             dbContext.GetSqlConnection().BulkDelete(data, tableName, idColumns);
         }
 
+        public static void BulkMerge<T>(this DbContext dbContext, IList<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
+        {
+            dbContext.GetSqlConnection().BulkMerge(data, tableName, idSelector, updateColumnNamesSelector, insertColumnNamesSelector);
+        }
+
+        public static void BulkMerge<T>(this DbContext dbContext, IList<T> data, string tableName, string idColumn, string[] updateColumnNames, string[] insertColumnNames)
+        {
+            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumn, updateColumnNames, insertColumnNames);
+        }
+
+        public static void BulkMerge<T>(this DbContext dbContext, IList<T> data, string tableName, List<string> idColumns, string[] updateColumnNames, string[] insertColumnNames)
+        {
+            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumns, updateColumnNames, insertColumnNames);
+        }
+
         private static SqlConnection GetSqlConnection(this DbContext dbContext)
         {
             return dbContext.Database.GetDbConnection().AsSqlConnection();

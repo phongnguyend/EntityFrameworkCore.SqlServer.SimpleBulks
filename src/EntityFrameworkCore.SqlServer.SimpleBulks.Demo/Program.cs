@@ -145,11 +145,61 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 {
                     dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
                     dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column3, row.Column2 });
+
+                    var newId = rows.Max(x => x.Id) + 1;
+
+                    rows.Add(new Row
+                    {
+                        Id = newId,
+                        Column1 = newId,
+                        Column2 = "Inserted using Merge" + newId,
+                        Column3 = DateTime.Now,
+                    });
+
+                    var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
+                    var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
+
+                    compositeKeyRows.Add(new CompositeKeyRow
+                    {
+                        Id1 = newId1,
+                        Id2 = newId2,
+                        Column1 = newId2,
+                        Column2 = "Inserted using Merge" + newId2,
+                        Column3 = DateTime.Now,
+                    });
+
+                    dbct.BulkMerge(rows, "Rows", row => row.Id, row => new { row.Column1, row.Column2 }, row => new { row.Column1, row.Column2, row.Column3 });
+                    dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column1, row.Column2, row.Column3 }, row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                 }
                 else
                 {
                     dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
                     dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
+
+                    var newId = rows.Max(x => x.Id) + 1;
+
+                    rows.Add(new Row
+                    {
+                        Id = newId,
+                        Column1 = newId,
+                        Column2 = "Inserted using Merge" + newId,
+                        Column3 = DateTime.Now,
+                    });
+
+                    var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
+                    var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
+
+                    compositeKeyRows.Add(new CompositeKeyRow
+                    {
+                        Id1 = newId1,
+                        Id2 = newId2,
+                        Column1 = newId2,
+                        Column2 = "Inserted using Merge" + newId2,
+                        Column3 = DateTime.Now,
+                    });
+
+                    dbct.BulkMerge(rows, "Rows", "Id", new string[] { "Column1", "Column2" }, new string[] { "Column1", "Column2", "Column3" });
+                    dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" }, new string[] { "Column1", "Column2", "Column3" }, new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                 }
             }
 

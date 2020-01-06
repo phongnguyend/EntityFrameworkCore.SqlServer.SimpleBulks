@@ -17,15 +17,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
             for (int i = 0; i < table.Columns.Count; i++)
             {
-                sql.AppendFormat("\n\t[{0}]", table.Columns[i].ColumnName);
+                sql.Append($"\n\t[{table.Columns[i].ColumnName}]");
 
                 var sqlType = SqlTypeConverter.Convert(table.Columns[i].DataType);
                 sql.Append($" {sqlType}");
                 sql.Append(idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
                 sql.Append(",");
             }
-            sql.AppendFormat("\n\tPRIMARY KEY ({0})", string.Join(", ", idColumns.Select(x => $"[{x}]")));
 
+            var key = string.Join(", ", idColumns.Select(x => $"[{x}]"));
+            sql.Append($"\n\tPRIMARY KEY ({key})");
             sql.Append("\n);");
 
             return sql.ToString();
@@ -36,7 +37,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             using var bulkCopy = new SqlBulkCopy(connection)
             {
                 BulkCopyTimeout = timeout,
-                DestinationTableName = "[" + tableName + "]"
+                DestinationTableName = $"[{ tableName }]"
             };
 
             foreach (DataColumn dtColum in dataTable.Columns)
