@@ -23,11 +23,17 @@ private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=
 
 ### Using Dynamic String:
 ```c#
-dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
-dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", "Id1", "Id2", "Column1", "Column2", "Column3");
+dbct.BulkInsert(rows, "Rows",
+    "Column1", "Column2", "Column3");
+dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+    "Id1", "Id2", "Column1", "Column2", "Column3");
 
-dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
-dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
+dbct.BulkUpdate(rows, "Rows",
+    "Id",
+    "Column3", "Column2");
+dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+    new List<string> { "Id1", "Id2" },
+    "Column3", "Column2");
 
 dbct.BulkMerge(rows, "Rows",
     "Id",
@@ -39,16 +45,22 @@ dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
     new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 
 dbct.BulkDelete(rows, "Rows", "Id");
-dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList());
+dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
 ```
 
 ### Using Lambda Expression:
 ```c#
-dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
-dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+dbct.BulkInsert(rows, "Rows",
+    row => new { row.Column1, row.Column2, row.Column3 });
+dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
-dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
-dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column3, row.Column2 });
+dbct.BulkUpdate(rows, "Rows",
+    row => row.Id,
+    row => new { row.Column3, row.Column2 });
+dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+    row => new { row.Id1, row.Id2 },
+    row => new { row.Column3, row.Column2 });
 
 dbct.BulkMerge(rows, "Rows",
     row => row.Id,

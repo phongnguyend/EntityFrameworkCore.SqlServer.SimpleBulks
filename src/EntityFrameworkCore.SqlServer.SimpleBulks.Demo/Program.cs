@@ -106,13 +106,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
                 if (useLinq)
                 {
-                    dbct.BulkInsert(rows, "Rows", row => new { row.Column1, row.Column2, row.Column3 });
-                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                    dbct.BulkInsert(rows, "Rows",
+                        row => new { row.Column1, row.Column2, row.Column3 });
+                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+                        row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                 }
                 else
                 {
-                    dbct.BulkInsert(rows, "Rows", "Column1", "Column2", "Column3");
-                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows", "Id1", "Id2", "Column1", "Column2", "Column3");
+                    dbct.BulkInsert(rows, "Rows",
+                        "Column1", "Column2", "Column3");
+                    dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+                        "Id1", "Id2", "Column1", "Column2", "Column3");
                 }
             }
 
@@ -143,8 +147,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
                 if (useLinq)
                 {
-                    dbct.BulkUpdate(rows, "Rows", row => row.Id, row => new { row.Column3, row.Column2 });
-                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 }, row => new { row.Column3, row.Column2 });
+                    dbct.BulkUpdate(rows, "Rows",
+                        row => row.Id,
+                        row => new { row.Column3, row.Column2 });
+                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+                        row => new { row.Id1, row.Id2 },
+                        row => new { row.Column3, row.Column2 });
 
                     var newId = rows.Max(x => x.Id) + 1;
 
@@ -179,8 +187,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 }
                 else
                 {
-                    dbct.BulkUpdate(rows, "Rows", "Id", "Column3", "Column2");
-                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList(), "Column3", "Column2");
+                    dbct.BulkUpdate(rows, "Rows",
+                        "Id",
+                        "Column3", "Column2");
+                    dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+                        new List<string> { "Id1", "Id2" },
+                        "Column3", "Column2");
 
                     var newId = rows.Max(x => x.Id) + 1;
 
@@ -236,7 +248,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 else
                 {
                     dbct.BulkDelete(rows, "Rows", "Id");
-                    dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", "Id1,Id2".Split(',').ToList());
+                    dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
                 }
             }
 
