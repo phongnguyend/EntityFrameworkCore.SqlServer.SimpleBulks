@@ -17,7 +17,7 @@ or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.S
 
 - Update the connection string:
 ```c#
-private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx;MultipleActiveResultSets=true";
+private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx";
 ```
 - Build and run.
 

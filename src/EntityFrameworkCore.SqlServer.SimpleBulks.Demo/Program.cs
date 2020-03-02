@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     class Program
     {
-        private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#;MultipleActiveResultSets=true";
+        private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#";
 
         static void Main(string[] args)
         {
