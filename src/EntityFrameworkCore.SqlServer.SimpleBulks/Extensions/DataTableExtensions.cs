@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
-        public static string GenerateTableDefinition(this DataTable table, string tableName, List<string> idColumns)
+        public static string GenerateTableDefinition(this DataTable table, string tableName, IEnumerable<string> idColumns)
         {
             var sql = new StringBuilder();
 

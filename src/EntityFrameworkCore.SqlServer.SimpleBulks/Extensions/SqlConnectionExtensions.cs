@@ -10,19 +10,49 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class SqlConnectionExtensions
     {
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkInsert(data, tableName, columnNamesSelector);
+        }
+
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkInsert(data, tableName, columnNames);
+        }
+
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
         {
             var columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
             connection.BulkInsert(data, tableName, columnNames);
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, params string[] columnNames)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames)
         {
             var dataTable = data.ToDataTable(columnNames.ToList());
 
             connection.Open();
             dataTable.SqlBulkCopy(tableName, connection);
             connection.Close();
+        }
+
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkUpdate(data, tableName, idSelector, columnNamesSelector);
+        }
+
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkUpdate(data, tableName, idColumn, columnNames);
+        }
+
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkUpdate(data, tableName, idColumns, columnNames);
         }
 
         public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
@@ -34,12 +64,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.BulkUpdate(data, tableName, idColumns, columnNames);
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, params string[] columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames)
         {
             connection.BulkUpdate(data, tableName, new List<string> { idColumn }, columnNames);
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, List<string> idColumns, params string[] columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
         {
             var temptableName = "#" + Guid.NewGuid();
 
@@ -86,7 +116,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.BulkDelete(data, tableName, new List<string> { idColumn });
         }
 
-        public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, List<string> idColumns)
+        public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns)
         {
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = data.ToDataTable(idColumns);
@@ -123,12 +153,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             connection.BulkMerge(data, tableName, idColumns, updateColumnNames, insertColumnNames);
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, string[] updateColumnNames, string[] insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             connection.BulkMerge(data, tableName, new List<string> { idColumn }, updateColumnNames, insertColumnNames);
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, List<string> idColumns, string[] updateColumnNames, string[] insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             var temptableName = "#" + Guid.NewGuid();
 
