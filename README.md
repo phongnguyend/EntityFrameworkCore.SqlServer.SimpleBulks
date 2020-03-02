@@ -25,6 +25,8 @@ private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=
 ```c#
 dbct.BulkInsert(rows, "Rows",
     "Column1", "Column2", "Column3");
+dbct.BulkInsert(rows, "Rows",
+	typeof(Row).GetDbColumnNames("Id"));
 dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
     "Id1", "Id2", "Column1", "Column2", "Column3");
 

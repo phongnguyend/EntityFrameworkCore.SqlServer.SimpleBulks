@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class IListExtensions
     {
-        public static DataTable ToDataTable<T>(this IList<T> data, List<string> propertyNames)
+        public static DataTable ToDataTable<T>(this IEnumerable<T> data, List<string> propertyNames)
         {
             var properties = TypeDescriptor.GetProperties(typeof(T));
 

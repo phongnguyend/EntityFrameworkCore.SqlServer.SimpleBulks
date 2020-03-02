@@ -21,12 +21,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
             //InsertUsingEF(numberOfRows: 500000);
             //UpdateUsingEF();
+
+            DeleteUsingBulkDelete(useLinq: true);
             InsertUsingBulkInsert(numberOfRows: 500000, useLinq: true);
             UpdateUsingBulkUpdate(useLinq: true);
             DeleteUsingBulkDelete(useLinq: true);
+
             InsertUsingBulkInsert(numberOfRows: 500000, useLinq: false);
             UpdateUsingBulkUpdate(useLinq: false);
             DeleteUsingBulkDelete(useLinq: false);
+
             Console.WriteLine("Finished!");
             Console.ReadLine();
         }
@@ -115,6 +119,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 {
                     dbct.BulkInsert(rows, "Rows",
                         "Column1", "Column2", "Column3");
+                    dbct.BulkInsert(rows.Take(1000), "Rows",
+                        typeof(Row).GetDbColumnNames("Id"));
                     dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
                         "Id1", "Id2", "Column1", "Column2", "Column3");
                 }
