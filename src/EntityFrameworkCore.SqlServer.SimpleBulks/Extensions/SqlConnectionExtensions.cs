@@ -140,25 +140,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             var dataTable = data.ToDataTable(propertyNames);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
 
-            string mergeStatement = string.Empty;
-            mergeStatement += $"MERGE {tableName} t";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"    USING [{temptableName}] s";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"ON ({string.Join(" and ", idColumns.Select(x => $"s.[{x}] = t.[{x}]"))})";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"WHEN MATCHED";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"    THEN UPDATE SET";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += string.Join("," + Environment.NewLine, updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s")));
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"WHEN NOT MATCHED BY TARGET";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"    THEN INSERT ({string.Join(", ", insertColumnNames)})";
-            mergeStatement += Environment.NewLine;
-            mergeStatement += $"         VALUES ({string.Join(", ", insertColumnNames.Select(x => $"s.{x}"))})";
-            mergeStatement += ";";
+            var mergeStatementBuilder = new StringBuilder();
+            mergeStatementBuilder.AppendLine($"MERGE {tableName} t");
+            mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
+            mergeStatementBuilder.AppendLine($"ON ({string.Join(" and ", idColumns.Select(x => $"s.[{x}] = t.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"WHEN MATCHED");
+            mergeStatementBuilder.AppendLine($"    THEN UPDATE SET");
+            mergeStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s"))));
+            mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", insertColumnNames)})");
+            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", insertColumnNames.Select(x => $"s.{x}"))})");
+            mergeStatementBuilder.AppendLine(";");
 
             connection.Open();
 
@@ -172,7 +164,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
             using (var updateCommand = connection.CreateCommand())
             {
-                updateCommand.CommandText = mergeStatement;
+                updateCommand.CommandText = mergeStatementBuilder.ToString();
                 var affectedRows = updateCommand.ExecuteNonQuery();
             }
 

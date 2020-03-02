@@ -28,16 +28,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static string[] GetDbColumnNames(this Type type, params string[] ignoredColumns)
         {
             var names = type.GetProperties()
-                .Where(x => _mappings.Keys.Contains(x.PropertyType))
+                .Where(x => _mappings.Keys.Contains(Nullable.GetUnderlyingType(x.PropertyType) ?? x.PropertyType))
                 .Where(x => ignoredColumns == null || !ignoredColumns.Contains(x.Name))
                 .Select(x => x.Name);
             return names.ToArray();
         }
 
-        public static string[] GetUnSupportedDbColumnNames(this Type type)
+        public static string[] GetUnSupportedPropertyNames(this Type type)
         {
             var names = type.GetProperties()
-                .Where(x => !_mappings.Keys.Contains(x.PropertyType))
+                .Where(x => !_mappings.Keys.Contains(Nullable.GetUnderlyingType(x.PropertyType) ?? x.PropertyType))
                 .Select(x => x.Name);
             return names.ToArray();
         }
