@@ -24,25 +24,25 @@ or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.S
 ### Using Dynamic String:
 ```c#
 dbct.BulkInsert(rows, "Rows",
-    "Column1", "Column2", "Column3");
-dbct.BulkInsert(rows, "Rows",
-	typeof(Row).GetDbColumnNames("Id"));
+    new string[] { "Column1", "Column2", "Column3" });
+dbct.BulkInsert(rows.Take(1000), "Rows",
+    typeof(Row).GetDbColumnNames("Id"));
 dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
-    "Id1", "Id2", "Column1", "Column2", "Column3");
+    new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 
 dbct.BulkUpdate(rows, "Rows",
     "Id",
-    "Column3", "Column2");
+    new string[] { "Column3", "Column2" });
 dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-    new List<string> { "Id1", "Id2" },
-    "Column3", "Column2");
+    new string[] { "Id1", "Id2" },
+    new string[] { "Column3", "Column2" });
 
 dbct.BulkMerge(rows, "Rows",
     "Id",
     new string[] { "Column1", "Column2" },
     new string[] { "Column1", "Column2", "Column3" });
 dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
-    new List<string> { "Id1", "Id2" },
+    new string[] { "Id1", "Id2" },
     new string[] { "Column1", "Column2", "Column3" },
     new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 
