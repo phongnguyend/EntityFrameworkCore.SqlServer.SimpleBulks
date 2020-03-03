@@ -16,9 +16,9 @@ or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.S
 - Refer [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
 
 - Update the connection string:
-```c#
-private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx";
-```
+  ```c#
+  private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx";
+  ```
 - Build and run.
 
 ### Using Dynamic String:
@@ -52,29 +52,33 @@ dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", 
 
 ### Using Lambda Expression:
 ```c#
-dbct.BulkInsert(rows, "Rows",
+// Register Type - Table Name globaly
+TableMapper.Register(typeof(Row), "Rows");
+TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
+
+dbct.BulkInsert(rows,
     row => new { row.Column1, row.Column2, row.Column3 });
-dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+dbct.BulkInsert(compositeKeyRows,
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
-dbct.BulkUpdate(rows, "Rows",
+dbct.BulkUpdate(rows,
     row => row.Id,
     row => new { row.Column3, row.Column2 });
-dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+dbct.BulkUpdate(compositeKeyRows,
     row => new { row.Id1, row.Id2 },
     row => new { row.Column3, row.Column2 });
 
-dbct.BulkMerge(rows, "Rows",
+dbct.BulkMerge(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
     row => new { row.Column1, row.Column2, row.Column3 });
-dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+dbct.BulkMerge(compositeKeyRows,
     row => new { row.Id1, row.Id2 },
     row => new { row.Column1, row.Column2, row.Column3 },
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
-dbct.BulkDelete(rows, "Rows", row => row.Id);
-dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", row => new { row.Id1, row.Id2 });
+dbct.BulkDelete(rows, row => row.Id);
+dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
 
 ## License
