@@ -1,4 +1,8 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
