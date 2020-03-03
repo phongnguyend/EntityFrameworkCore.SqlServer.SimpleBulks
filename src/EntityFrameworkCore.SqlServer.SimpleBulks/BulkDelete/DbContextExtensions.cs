@@ -9,6 +9,21 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class DbContextExtensions
     {
+        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector)
+        {
+            dbContext.GetSqlConnection().BulkDelete(data, idSelector);
+        }
+
+        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn)
+        {
+            dbContext.GetSqlConnection().BulkDelete(data, idColumn);
+        }
+
+        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns)
+        {
+            dbContext.GetSqlConnection().BulkDelete(data, idColumns);
+        }
+
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
             dbContext.GetSqlConnection().BulkDelete(data, tableName, idSelector);

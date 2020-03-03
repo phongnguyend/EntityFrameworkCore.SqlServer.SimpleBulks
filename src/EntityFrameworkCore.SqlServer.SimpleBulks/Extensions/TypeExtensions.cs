@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
@@ -28,7 +29,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static string[] GetDbColumnNames(this Type type, params string[] ignoredColumns)
         {
             var names = type.GetProperties()
-                .Where(x => _mappings.Keys.Contains(Nullable.GetUnderlyingType(x.PropertyType) ?? x.PropertyType))
+                .Where(x => IsSupportedType(x))
                 .Where(x => ignoredColumns == null || !ignoredColumns.Contains(x.Name))
                 .Select(x => x.Name);
             return names.ToArray();
@@ -37,9 +38,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static string[] GetUnSupportedPropertyNames(this Type type)
         {
             var names = type.GetProperties()
-                .Where(x => !_mappings.Keys.Contains(Nullable.GetUnderlyingType(x.PropertyType) ?? x.PropertyType))
+                .Where(x => !IsSupportedType(x))
                 .Select(x => x.Name);
             return names.ToArray();
+        }
+
+        private static bool IsSupportedType(PropertyInfo property)
+        {
+            return _mappings.Keys.Contains(Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType) || property.PropertyType.IsValueType;
         }
     }
 }

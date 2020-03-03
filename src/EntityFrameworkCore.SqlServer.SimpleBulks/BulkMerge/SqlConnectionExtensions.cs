@@ -11,6 +11,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 {
     public static class SqlConnectionExtensions
     {
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkMerge(data, tableName, idSelector, updateColumnNamesSelector, insertColumnNamesSelector);
+        }
+
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkMerge(data, tableName, idColumn, updateColumnNames, insertColumnNames);
+        }
+
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkMerge(data, tableName, idColumns, updateColumnNames, insertColumnNames);
+        }
+
         public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
         {
             var idColumn = idSelector.Body.GetMemberName();

@@ -10,6 +10,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class SqlConnectionExtensions
     {
+        public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkDelete(data, tableName, idSelector);
+        }
+
+        public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkDelete(data, tableName, idColumn);
+        }
+
+        public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns)
+        {
+            string tableName = TableMapper.Resolve(typeof(T));
+            connection.BulkDelete(data, tableName, idColumns);
+        }
+
         public static void BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
             var idColumn = idSelector.Body.GetMemberName();
