@@ -6,11 +6,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks
 {
     public static class TableMapper
     {
+        private static readonly object _lock = new object();
         private static Dictionary<Type, string> _mappings = new Dictionary<Type, string>();
 
         public static void Register(Type type, string tableName)
         {
-            _mappings[type] = tableName;
+            lock (_lock)
+            {
+                _mappings[type] = tableName;
+            }
         }
 
         public static string Resolve(Type type)
