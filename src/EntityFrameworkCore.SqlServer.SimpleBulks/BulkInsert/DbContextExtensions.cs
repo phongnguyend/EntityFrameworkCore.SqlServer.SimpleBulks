@@ -29,6 +29,26 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             dbContext.GetSqlConnection().BulkInsert(data, tableName, columnNames);
         }
 
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        {
+            dbContext.GetSqlConnection().BulkInsert(data, columnNamesSelector, idSelector);
+        }
+
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumn)
+        {
+            dbContext.GetSqlConnection().BulkInsert(data, columnNames, idColumn);
+        }
+
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        {
+            dbContext.GetSqlConnection().BulkInsert(data, tableName, columnNamesSelector, idSelector);
+        }
+
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumn)
+        {
+            dbContext.GetSqlConnection().BulkInsert(data, tableName, columnNames, idColumn);
+        }
+
         private static SqlConnection GetSqlConnection(this DbContext dbContext)
         {
             return dbContext.Database.GetDbConnection().AsSqlConnection();

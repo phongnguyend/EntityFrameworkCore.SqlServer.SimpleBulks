@@ -129,14 +129,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     if (omitTableName)
                     {
                         dbct.BulkInsert(rows,
-                            row => new { row.Column1, row.Column2, row.Column3 });
+                            row => new { row.Column1, row.Column2, row.Column3 },
+                            row => row.Id);
                         dbct.BulkInsert(compositeKeyRows,
                             row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                     }
                     else
                     {
                         dbct.BulkInsert(rows, "Rows",
-                            row => new { row.Column1, row.Column2, row.Column3 });
+                            row => new { row.Column1, row.Column2, row.Column3 },
+                            row => row.Id);
                         dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
                             row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                     }

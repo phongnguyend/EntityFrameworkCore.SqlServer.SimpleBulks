@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
-        public static string GenerateTableDefinition(this DataTable table, string tableName, IEnumerable<string> idColumns)
+        public static string GenerateTableDefinition(this DataTable table, string tableName, IEnumerable<string> idColumns = null)
         {
             var sql = new StringBuilder();
 
@@ -20,12 +20,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
                 var sqlType = table.Columns[i].DataType.ToSqlType();
                 sql.Append($" {sqlType}");
-                sql.Append(idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
+                sql.Append(idColumns != null && idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
                 sql.Append(",");
             }
 
-            var key = string.Join(", ", idColumns.Select(x => $"[{x}]"));
-            sql.Append($"\n\tPRIMARY KEY ({key})");
+            if (idColumns != null && idColumns.Any())
+            {
+                var key = string.Join(", ", idColumns.Select(x => $"[{x}]"));
+                sql.Append($"\n\tPRIMARY KEY ({key})");
+            }
+
             sql.Append("\n);");
 
             return sql.ToString();
