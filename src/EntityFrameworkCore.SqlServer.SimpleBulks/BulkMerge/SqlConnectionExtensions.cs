@@ -58,9 +58,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
 
             var mergeStatementBuilder = new StringBuilder();
+
+            var joinCondition = string.Join(" and ", idColumns.Select(x =>
+            {
+                string collation = dataTable.Columns[x].DataType == typeof(string) ?
+                " collate SQL_Latin1_General_CP1_CI_AS" : string.Empty;
+                return $"s.[{x}]{collation} = t.[{x}]{collation}";
+            }));
+
             mergeStatementBuilder.AppendLine($"MERGE {tableName} t");
             mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
-            mergeStatementBuilder.AppendLine($"ON ({string.Join(" and ", idColumns.Select(x => $"s.[{x}] = t.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
             mergeStatementBuilder.AppendLine($"WHEN MATCHED");
             mergeStatementBuilder.AppendLine($"    THEN UPDATE SET");
             mergeStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s"))));

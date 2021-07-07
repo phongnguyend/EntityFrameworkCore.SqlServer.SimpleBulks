@@ -21,9 +21,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 {typeof(string), "nvarchar(max)"},
             };
 
-        public static string ToSqlType(this Type type)
+        public static string ToSqlType(this Type type, bool isIdColumn)
         {
-            return _mappings.ContainsKey(type) ? _mappings[type] : "nvarchar(max)";
+            var sqlType = _mappings.ContainsKey(type) ? _mappings[type] : "nvarchar(max)";
+            if (isIdColumn && sqlType == "nvarchar(max)")
+            {
+                sqlType = "nvarchar(50)";
+            }
+            return sqlType;
         }
 
         public static string[] GetDbColumnNames(this Type type, params string[] ignoredColumns)

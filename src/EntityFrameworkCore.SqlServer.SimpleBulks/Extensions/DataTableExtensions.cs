@@ -17,10 +17,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             for (int i = 0; i < table.Columns.Count; i++)
             {
                 sql.Append($"\n\t[{table.Columns[i].ColumnName}]");
-
-                var sqlType = table.Columns[i].DataType.ToSqlType();
+                var isId = idColumns != null && idColumns.Contains(table.Columns[i].ColumnName);
+                var sqlType = table.Columns[i].DataType.ToSqlType(isId);
                 sql.Append($" {sqlType}");
-                sql.Append(idColumns != null && idColumns.Contains(table.Columns[i].ColumnName) ? " NOT NULL" : " NULL");
+                sql.Append(isId ? " NOT NULL" : " NULL");
                 sql.Append(",");
             }
 
