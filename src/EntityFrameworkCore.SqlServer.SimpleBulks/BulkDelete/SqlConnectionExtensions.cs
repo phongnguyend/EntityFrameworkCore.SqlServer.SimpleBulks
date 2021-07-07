@@ -46,7 +46,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = data.ToDataTable(idColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
-            var deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on " + string.Join(" and ", idColumns.Select(x => $"a.[{x}] = b.[{x}]"));
+
+            var joinCondition = string.Join(" and ", idColumns.Select(x =>
+            {
+                string collation = dataTable.Columns[x].DataType == typeof(string) ?
+                $" collate {Constants.Collation}" : string.Empty;
+                return $"a.[{x}]{collation} = b.[{x}]{collation}";
+            }));
+
+            var deleteStatement = $"delete a from {tableName} a join [{temptableName}] b on " + joinCondition;
 
             connection.Open();
 
@@ -60,7 +68,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
             using (var deleteCommand = connection.CreateCommand())
             {
-                deleteCommand.CommandText = deleteStatement.ToString();
+                deleteCommand.CommandText = deleteStatement;
                 var affectedRows = deleteCommand.ExecuteNonQuery();
             }
 

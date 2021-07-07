@@ -53,10 +53,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var dataTable = data.ToDataTable(propertyNamesIncludeId);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, idColumns);
 
+            var joinCondition = string.Join(" and ", idColumns.Select(x =>
+            {
+                string collation = dataTable.Columns[x].DataType == typeof(string) ?
+                $" collate {Constants.Collation}" : string.Empty;
+                return $"a.[{x}]{collation} = b.[{x}]{collation}";
+            }));
+
             var updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine("update a set");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
-            updateStatementBuilder.AppendLine($"from {tableName } a join [{ temptableName}] b on " + string.Join(" and ", idColumns.Select(x => $"a.[{x}] = b.[{x}]")));
+            updateStatementBuilder.AppendLine($"from {tableName } a join [{ temptableName}] b on " + joinCondition);
 
             connection.Open();
 
