@@ -3,8 +3,8 @@ This is a very simple .net core library that can help to work with large number 
  
 ## Overview
 This library provides extension methods so that you can use with your EntityFrameworkCore **DbContext** instance:
-[DbContextExtensions.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks/Extensions/DbContextExtensions.cs)
-or you can use [SqlConnectionExtensions.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks/Extensions/SqlConnectionExtensions.cs) to work directly with a **SqlConnection** instance.
+**DbContextExtensions.cs**
+or you can use **SqlConnectionExtensions.cs** to work directly with a **SqlConnection** instance.
 
 ## Nuget
 https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
