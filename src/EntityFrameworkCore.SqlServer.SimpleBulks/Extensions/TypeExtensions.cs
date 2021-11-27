@@ -11,6 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             {
                 {typeof(bool), "bit"},
                 {typeof(DateTime), "datetime"},
+                {typeof(DateTimeOffset), "datetimeoffset"},
                 {typeof(decimal), "decimal(38, 20)"},
                 {typeof(double), "double"},
                 {typeof(Guid), "uniqueidentifier"},
