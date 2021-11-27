@@ -81,6 +81,19 @@ dbct.BulkDelete(rows, row => row.Id);
 dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
 
+### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
+```c#
+new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
+	.WithData(rows)
+	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
+	// or .WithColumns(new string[] { "Column1", "Column2", "Column3" })
+	.WithOuputId(row => row.Id)
+	// or .WithOuputId("Id")
+	.ToTable(dbct.GetTableName(typeof(Row)))
+	// or .ToTable("Rows")
+	.Execute();
+```
+
 ## SqlConnectionExtensions:
 ### Using Dynamic String:
 ```c#
@@ -140,6 +153,18 @@ connection.BulkMerge(compositeKeyRows,
                         
 connection.BulkDelete(rows, row => row.Id);
 connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
+```
+
+### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
+```c#
+new BulkInsertBuilder<Row>(connection)
+	.WithData(rows)
+	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
+	// or .WithColumns(new string[] { "Column1", "Column2", "Column3" })
+	.WithOuputId(row => row.Id)
+	// or .WithOuputId("Id")
+	.ToTable("Rows")
+	.Execute();
 ```
 
 ## License
