@@ -11,34 +11,82 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idSelector, updateColumnNamesSelector, insertColumnNamesSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .WithUpdateColumns(updateColumnNamesSelector)
+                .WithInsertColumns(insertColumnNamesSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumn, updateColumnNames, insertColumnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .WithUpdateColumns(updateColumnNames)
+                .WithInsertColumns(insertColumnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumns, updateColumnNames, insertColumnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .WithUpdateColumns(updateColumnNames)
+                .WithInsertColumns(insertColumnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
         {
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idSelector, updateColumnNamesSelector, insertColumnNamesSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .WithUpdateColumns(updateColumnNamesSelector)
+                .WithInsertColumns(insertColumnNamesSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumn, updateColumnNames, insertColumnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .WithUpdateColumns(updateColumnNames)
+                .WithInsertColumns(insertColumnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
-            dbContext.GetSqlConnection().BulkMerge(data, tableName, idColumns, updateColumnNames, insertColumnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkMergeBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .WithUpdateColumns(updateColumnNames)
+                .WithInsertColumns(insertColumnNames)
+                .ToTable(tableName)
+                .Execute();
         }
     }
 }

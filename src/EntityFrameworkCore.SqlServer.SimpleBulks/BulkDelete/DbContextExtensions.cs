@@ -11,34 +11,70 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idColumn);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idColumns);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn)
         {
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idColumn);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns)
         {
-            dbContext.GetSqlConnection().BulkDelete(data, tableName, idColumns);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkDeleteBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .ToTable(tableName)
+                .Execute();
         }
     }
 }

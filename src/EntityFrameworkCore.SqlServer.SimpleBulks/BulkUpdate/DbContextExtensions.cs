@@ -11,34 +11,76 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idSelector, columnNamesSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .WithColumns(columnNamesSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idColumn, columnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .WithColumns(columnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
         {
             string tableName = dbContext.GetTableName(typeof(T));
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idColumns, columnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .WithColumns(columnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
         {
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idSelector, columnNamesSelector);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idSelector)
+                .WithColumns(columnNamesSelector)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames)
         {
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idColumn, columnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumn)
+                .WithColumns(columnNames)
+                .ToTable(tableName)
+                .Execute();
         }
 
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
         {
-            dbContext.GetSqlConnection().BulkUpdate(data, tableName, idColumns, columnNames);
+            var connection = dbContext.GetSqlConnection();
+
+            new BulkUpdateBuilder<T>(connection)
+                .WithData(data)
+                .WithId(idColumns)
+                .WithColumns(columnNames)
+                .ToTable(tableName)
+                .Execute();
         }
     }
 }
