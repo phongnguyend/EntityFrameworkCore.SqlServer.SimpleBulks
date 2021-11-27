@@ -87,7 +87,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
             updateStatementBuilder.AppendLine($"from {_tableName } a join [{ temptableName}] b on " + joinCondition);
 
-            _connection.Open();
+            _connection.EnsureOpen();
 
             using (var createTemptableCommand = _connection.CreateCommand())
             {
@@ -103,7 +103,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 var affectedRows = updateCommand.ExecuteNonQuery();
             }
 
-            _connection.Close();
+            _connection.EnsureClosed();
         }
 
         private static string CreateSetStatement(string prop, string leftTable, string rightTable)

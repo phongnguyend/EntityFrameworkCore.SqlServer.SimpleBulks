@@ -109,7 +109,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.{x}"))})");
             mergeStatementBuilder.AppendLine(";");
 
-            _connection.Open();
+            _connection.EnsureOpen();
 
             using (var createTemptableCommand = _connection.CreateCommand())
             {
@@ -125,7 +125,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 var affectedRows = updateCommand.ExecuteNonQuery();
             }
 
-            _connection.Close();
+            _connection.EnsureClosed();
         }
 
         private static string CreateSetStatement(string prop, string leftTable, string rightTable)

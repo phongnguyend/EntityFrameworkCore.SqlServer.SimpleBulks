@@ -65,7 +65,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
             var deleteStatement = $"delete a from {_tableName} a join [{temptableName}] b on " + joinCondition;
 
-            _connection.Open();
+            _connection.EnsureOpen();
 
             using (var createTemptableCommand = _connection.CreateCommand())
             {
@@ -81,7 +81,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 var affectedRows = deleteCommand.ExecuteNonQuery();
             }
 
-            _connection.Close();
+            _connection.EnsureClosed();
         }
 
     }
