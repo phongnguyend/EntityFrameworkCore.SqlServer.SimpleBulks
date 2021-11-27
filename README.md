@@ -24,6 +24,7 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
   ```
 - Build and run.
 
+## DbContextExtensions:
 ### Using Dynamic String:
 ```c#
 dbct.BulkInsert(rows, "Rows",
@@ -55,10 +56,6 @@ dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", 
 
 ### Using Lambda Expression:
 ```c#
-// Register Type - Table Name globaly
-TableMapper.Register(typeof(Row), "Rows");
-TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
-
 dbct.BulkInsert(rows,
     row => new { row.Column1, row.Column2, row.Column3 });
 dbct.BulkInsert(compositeKeyRows,
@@ -82,6 +79,67 @@ dbct.BulkMerge(compositeKeyRows,
                         
 dbct.BulkDelete(rows, row => row.Id);
 dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
+```
+
+## SqlConnectionExtensions:
+### Using Dynamic String:
+```c#
+connection.BulkInsert(rows, "Rows",
+           new string[] { "Column1", "Column2", "Column3" });
+connection.BulkInsert(rows.Take(1000), "Rows",
+           typeof(Row).GetDbColumnNames("Id"));
+connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+
+connection.BulkUpdate(rows, "Rows",
+           "Id",
+           new string[] { "Column3", "Column2" });
+connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2" },
+           new string[] { "Column3", "Column2" });
+
+connection.BulkMerge(rows, "Rows",
+           "Id",
+           new string[] { "Column1", "Column2" },
+           new string[] { "Column1", "Column2", "Column3" });
+connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2" },
+           new string[] { "Column1", "Column2", "Column3" },
+           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+
+connection.BulkDelete(rows, "Rows", "Id");
+connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
+```
+
+### Using Lambda Expression:
+```c#
+// Register Type - Table Name globaly
+TableMapper.Register(typeof(Row), "Rows");
+TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
+
+connection.BulkInsert(rows,
+           row => new { row.Column1, row.Column2, row.Column3 });
+connection.BulkInsert(compositeKeyRows,
+           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+
+connection.BulkUpdate(rows,
+           row => row.Id,
+           row => new { row.Column3, row.Column2 });
+connection.BulkUpdate(compositeKeyRows,
+           row => new { row.Id1, row.Id2 },
+           row => new { row.Column3, row.Column2 });
+
+connection.BulkMerge(rows,
+           row => row.Id,
+           row => new { row.Column1, row.Column2 },
+           row => new { row.Column1, row.Column2, row.Column3 });
+connection.BulkMerge(compositeKeyRows,
+           row => new { row.Id1, row.Id2 },
+           row => new { row.Column1, row.Column2, row.Column3 },
+           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                        
+connection.BulkDelete(rows, row => row.Id);
+connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
 
 ## License
