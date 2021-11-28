@@ -1,6 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
@@ -15,6 +17,30 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static SqlConnection GetSqlConnection(this DbContext dbContext)
         {
             return dbContext.Database.GetDbConnection().AsSqlConnection();
+        }
+
+        public static IList<(string PropertyName, Type PropertyType, string ColumnName, string ColumnType)> GetProperties(this DbContext dbContext, Type type)
+        {
+            var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
+            var entityProperties = dbContext.Model.FindEntityType(type)
+                           .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() })
+                           .ToList();
+
+            var data = typeProperties.Join(entityProperties, prop => prop.Name, entityProp => entityProp.Name, (prop, entityProp) => (PropertyName: prop.Name, prop.PropertyType, entityProp.ColumnName, entityProp.ColumnType));
+
+            return data.ToList();
+        }
+
+        public static Dictionary<string, string> GetMappedColumns(this DbContext dbContext, Type type)
+        {
+            var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
+            var entityProperties = dbContext.Model.FindEntityType(type)
+                           .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() })
+                           .ToList();
+
+            var data = typeProperties.Join(entityProperties, prop => prop.Name, entityProp => entityProp.Name, (prop, entityProp) => new { prop.Name, prop.PropertyType, entityProp.ColumnName, entityProp.ColumnType });
+
+            return data.ToDictionary(x => x.Name, x => x.ColumnName);
         }
     }
 }
