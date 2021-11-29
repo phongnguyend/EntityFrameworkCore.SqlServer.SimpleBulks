@@ -16,10 +16,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         private IEnumerable<string> _updateColumnNames;
         private IEnumerable<string> _insertColumnNames;
         private readonly SqlConnection _connection;
+        private readonly SqlTransaction _transaction;
 
         public BulkMergeBuilder(SqlConnection connection)
         {
             _connection = connection;
+        }
+
+        public BulkMergeBuilder(SqlTransaction transaction)
+        {
+            _transaction = transaction;
+            _connection = transaction.Connection;
+        }
+
+        public BulkMergeBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        {
+            _connection = connection;
+            _transaction = transaction;
         }
 
         public BulkMergeBuilder<T> WithData(IEnumerable<T> data)
@@ -111,21 +124,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             _connection.EnsureOpen();
 
-            using (var createTemptableCommand = _connection.CreateCommand())
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
-                createTemptableCommand.CommandText = sqlCreateTemptable;
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
 
-            using (var updateCommand = _connection.CreateCommand())
+            using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
             {
-                updateCommand.CommandText = mergeStatementBuilder.ToString();
                 var affectedRows = updateCommand.ExecuteNonQuery();
             }
-
-            _connection.EnsureClosed();
         }
 
         private static string CreateSetStatement(string prop, string leftTable, string rightTable)

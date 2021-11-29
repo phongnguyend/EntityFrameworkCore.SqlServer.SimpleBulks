@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         public static SqlConnection GetSqlConnection(this DbContext dbContext)
         {
             return dbContext.Database.GetDbConnection().AsSqlConnection();
+        }
+
+        public static SqlTransaction GetCurrentSqlTransaction(this DbContext dbContext)
+        {
+            var transaction = dbContext.Database.CurrentTransaction;
+            return transaction == null ? null : transaction.GetDbTransaction() as SqlTransaction;
         }
 
         public static IList<(string PropertyName, Type PropertyType, string ColumnName, string ColumnType)> GetProperties(this DbContext dbContext, Type type)

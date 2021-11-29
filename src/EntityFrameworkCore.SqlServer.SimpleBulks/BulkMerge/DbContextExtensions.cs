@@ -12,8 +12,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithUpdateColumns(updateColumnNamesSelector)
@@ -26,8 +27,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithUpdateColumns(updateColumnNames)
@@ -40,8 +42,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithUpdateColumns(updateColumnNames)
@@ -53,8 +56,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithUpdateColumns(updateColumnNamesSelector)
@@ -66,8 +70,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithUpdateColumns(updateColumnNames)
@@ -79,8 +84,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkMergeBuilder<T>(connection)
+            new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithUpdateColumns(updateColumnNames)

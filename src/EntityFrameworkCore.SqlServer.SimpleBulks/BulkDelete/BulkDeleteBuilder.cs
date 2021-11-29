@@ -13,10 +13,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private readonly SqlConnection _connection;
+        private readonly SqlTransaction _transaction;
 
         public BulkDeleteBuilder(SqlConnection connection)
         {
             _connection = connection;
+        }
+
+        public BulkDeleteBuilder(SqlTransaction transaction)
+        {
+            _transaction = transaction;
+            _connection = transaction.Connection;
+        }
+
+        public BulkDeleteBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        {
+            _connection = connection;
+            _transaction = transaction;
         }
 
         public BulkDeleteBuilder<T> WithData(IEnumerable<T> data)
@@ -67,21 +80,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
             _connection.EnsureOpen();
 
-            using (var createTemptableCommand = _connection.CreateCommand())
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
-                createTemptableCommand.CommandText = sqlCreateTemptable;
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
 
-            using (var deleteCommand = _connection.CreateCommand())
+            using (var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement))
             {
-                deleteCommand.CommandText = deleteStatement;
                 var affectedRows = deleteCommand.ExecuteNonQuery();
             }
-
-            _connection.EnsureClosed();
         }
 
     }

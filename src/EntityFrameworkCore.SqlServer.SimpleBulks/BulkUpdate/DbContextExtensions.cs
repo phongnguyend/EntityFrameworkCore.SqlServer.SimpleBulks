@@ -12,8 +12,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
@@ -25,8 +26,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithColumns(columnNames)
@@ -38,8 +40,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithColumns(columnNames)
@@ -50,8 +53,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
@@ -62,8 +66,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithColumns(columnNames)
@@ -74,8 +79,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkUpdateBuilder<T>(connection)
+            new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithColumns(columnNames)

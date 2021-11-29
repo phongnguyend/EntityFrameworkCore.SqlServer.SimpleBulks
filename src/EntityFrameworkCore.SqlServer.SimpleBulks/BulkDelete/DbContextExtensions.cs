@@ -12,8 +12,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
@@ -24,8 +25,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
@@ -36,8 +38,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
@@ -47,8 +50,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
@@ -58,8 +62,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
@@ -69,8 +74,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns)
         {
             var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
 
-            new BulkDeleteBuilder<T>(connection)
+            new BulkDeleteBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)

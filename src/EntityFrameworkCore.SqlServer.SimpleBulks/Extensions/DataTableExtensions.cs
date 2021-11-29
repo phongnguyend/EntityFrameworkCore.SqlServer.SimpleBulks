@@ -35,9 +35,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             return sql.ToString();
         }
 
-        public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection, int timeout = 30)
+        public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection, SqlTransaction transaction, int timeout = 30)
         {
-            using var bulkCopy = new SqlBulkCopy(connection)
+            using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
             {
                 BulkCopyTimeout = timeout,
                 DestinationTableName = $"[{ tableName }]"

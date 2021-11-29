@@ -16,10 +16,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         private string _ouputIdColumn;
         private IEnumerable<string> _columnNames;
         private readonly SqlConnection _connection;
+        private readonly SqlTransaction _transaction;
 
         public BulkInsertBuilder(SqlConnection connection)
         {
             _connection = connection;
+        }
+
+        public BulkInsertBuilder(SqlTransaction transaction)
+        {
+            _transaction = transaction;
+            _connection = transaction.Connection;
+        }
+
+        public BulkInsertBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        {
+            _connection = connection;
+            _transaction = transaction;
         }
 
         public BulkInsertBuilder<T> WithData(IEnumerable<T> data)
@@ -66,8 +79,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 dataTable = _data.ToDataTable(_columnNames.ToList());
 
                 _connection.EnsureOpen();
-                dataTable.SqlBulkCopy(_tableName, _connection);
-                _connection.EnsureClosed();
+                dataTable.SqlBulkCopy(_tableName, _connection, _transaction);
                 return;
             }
 
@@ -90,19 +102,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 
             _connection.EnsureOpen();
 
-            using (var createTemptableCommand = _connection.CreateCommand())
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
-                createTemptableCommand.CommandText = sqlCreateTemptable;
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
 
             var returnedIds = new Dictionary<long, object>();
 
-            using (var updateCommand = _connection.CreateCommand())
+            using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
             {
-                updateCommand.CommandText = mergeStatementBuilder.ToString();
                 using (var reader = updateCommand.ExecuteReader())
                 {
                     while (reader.Read())
@@ -120,8 +130,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 idProperty.SetValue(row, returnedIds[idx]);
                 idx++;
             }
-
-            _connection.EnsureClosed();
         }
 
     }

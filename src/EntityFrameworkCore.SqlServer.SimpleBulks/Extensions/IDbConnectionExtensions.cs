@@ -29,5 +29,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 connection.Close();
             }
         }
+
+        public static IDbCommand CreateTextCommand(this IDbConnection connection, IDbTransaction transaction, string commandText)
+        {
+            var command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = commandText;
+            return command;
+        }
     }
 }
