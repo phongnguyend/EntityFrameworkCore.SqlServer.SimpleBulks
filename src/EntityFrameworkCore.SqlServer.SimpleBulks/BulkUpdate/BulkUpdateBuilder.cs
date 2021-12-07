@@ -79,7 +79,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             return this;
         }
 
-        public BulkUpdateBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);

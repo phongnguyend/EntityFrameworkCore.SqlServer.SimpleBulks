@@ -20,7 +20,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNamesSelector)
                 .WithInsertColumns(insertColumnNamesSelector)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -67,7 +67,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNamesSelector)
                 .WithInsertColumns(insertColumnNamesSelector)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -82,7 +82,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -97,7 +97,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigreBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
     }

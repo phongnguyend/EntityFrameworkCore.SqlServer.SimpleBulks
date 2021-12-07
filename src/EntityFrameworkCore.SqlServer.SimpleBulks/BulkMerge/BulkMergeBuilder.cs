@@ -91,7 +91,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return this;
         }
 
-        public BulkMergeBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);

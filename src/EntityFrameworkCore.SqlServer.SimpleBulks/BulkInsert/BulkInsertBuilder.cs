@@ -72,7 +72,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             return this;
         }
 
-        public BulkInsertBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkInsertBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);
