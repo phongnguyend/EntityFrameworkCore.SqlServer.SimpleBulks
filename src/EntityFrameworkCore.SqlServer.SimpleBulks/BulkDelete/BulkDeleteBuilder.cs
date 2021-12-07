@@ -12,6 +12,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         private IEnumerable<T> _data;
         private string _tableName;
         private IEnumerable<string> _idColumns;
+        private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -63,6 +64,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             return this;
         }
 
+        public BulkDeleteBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        {
+            _options = new BulkOptions();
+            configureOptions(_options);
+            return this;
+        }
+
         public void Execute()
         {
             var temptableName = "#" + Guid.NewGuid();
@@ -85,7 +93,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
 
             using (var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement))
             {

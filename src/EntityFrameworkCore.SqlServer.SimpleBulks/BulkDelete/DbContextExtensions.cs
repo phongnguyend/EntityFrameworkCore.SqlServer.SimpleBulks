@@ -18,6 +18,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -31,6 +32,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -44,6 +46,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -56,6 +59,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -68,6 +72,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -80,6 +85,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
     }

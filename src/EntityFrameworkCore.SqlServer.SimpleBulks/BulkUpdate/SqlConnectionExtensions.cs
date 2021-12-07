@@ -16,6 +16,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -28,6 +29,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumn)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -40,6 +42,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumns)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -50,6 +53,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -60,6 +64,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumn)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -70,6 +75,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumns)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
     }

@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         private string _tableName;
         private string _ouputIdColumn;
         private IEnumerable<string> _columnNames;
+        private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -71,6 +72,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             return this;
         }
 
+        public BulkInsertBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        {
+            _options = new BulkOptions();
+            configureOptions(_options);
+            return this;
+        }
+
         public void Execute()
         {
             DataTable dataTable;
@@ -79,7 +87,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 dataTable = _data.ToDataTable(_columnNames.ToList());
 
                 _connection.EnsureOpen();
-                dataTable.SqlBulkCopy(_tableName, _connection, _transaction);
+                dataTable.SqlBulkCopy(_tableName, _connection, _transaction, _options);
                 return;
             }
 
@@ -107,7 +115,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
 
             var returnedIds = new Dictionary<long, object>();
 

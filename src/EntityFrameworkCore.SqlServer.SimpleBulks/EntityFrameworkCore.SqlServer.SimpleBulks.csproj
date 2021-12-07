@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>5.1.0</Version>
+    <Version>5.2.0</Version>
     <PackageProjectUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</PackageProjectUrl>
     <RepositoryUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>

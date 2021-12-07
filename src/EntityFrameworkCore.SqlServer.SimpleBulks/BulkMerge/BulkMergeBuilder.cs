@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _updateColumnNames;
         private IEnumerable<string> _insertColumnNames;
+        private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -90,6 +91,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return this;
         }
 
+        public BulkMergeBuilder<T> ConfigreBulkOptions(Action<BulkOptions> configureOptions)
+        {
+            _options = new BulkOptions();
+            configureOptions(_options);
+            return this;
+        }
+
         public void Execute()
         {
             var temptableName = "#" + Guid.NewGuid();
@@ -129,7 +137,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction);
+            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
 
             using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
             {

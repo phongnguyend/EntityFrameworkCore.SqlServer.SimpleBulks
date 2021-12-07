@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -26,6 +27,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -35,6 +37,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -44,6 +47,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -56,6 +60,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -68,6 +73,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOuputId(idColumnName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -78,6 +84,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
 
@@ -88,6 +95,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOuputId(idColumnName)
+                .ConfigreBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
     }
