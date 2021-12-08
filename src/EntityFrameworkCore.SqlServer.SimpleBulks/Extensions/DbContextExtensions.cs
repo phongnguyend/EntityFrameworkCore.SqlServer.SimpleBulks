@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -26,14 +27,30 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             return transaction == null ? null : transaction.GetDbTransaction() as SqlTransaction;
         }
 
-        public static IList<(string PropertyName, Type PropertyType, string ColumnName, string ColumnType)> GetProperties(this DbContext dbContext, Type type)
+        public static IList<(string PropertyName, Type PropertyType, string ColumnName, string ColumnType, ValueGenerated ValueGenerated, bool IsPrimaryKey)> GetProperties(this DbContext dbContext, Type type)
         {
             var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
             var entityProperties = dbContext.Model.FindEntityType(type)
-                           .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() })
-                           .ToList();
+                           .GetProperties().Select(x => new
+                           {
+                               x.Name,
+                               ColumnName = x.GetColumnBaseName(),
+                               ColumnType = x.GetColumnType(),
+                               x.ValueGenerated,
+                               IsPrimaryKey = x.IsPrimaryKey()
+                           });
 
-            var data = typeProperties.Join(entityProperties, prop => prop.Name, entityProp => entityProp.Name, (prop, entityProp) => (PropertyName: prop.Name, prop.PropertyType, entityProp.ColumnName, entityProp.ColumnType));
+            var data = typeProperties.Join(entityProperties,
+                prop => prop.Name,
+                entityProp => entityProp.Name,
+                (prop, entityProp) => (
+                    PropertyName: prop.Name,
+                    prop.PropertyType,
+                    entityProp.ColumnName,
+                    entityProp.ColumnType,
+                    entityProp.ValueGenerated,
+                    entityProp.IsPrimaryKey
+                ));
 
             return data.ToList();
         }
@@ -42,8 +59,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         {
             var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
             var entityProperties = dbContext.Model.FindEntityType(type)
-                           .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() })
-                           .ToList();
+                           .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() });
 
             var data = typeProperties.Join(entityProperties, prop => prop.Name, entityProp => entityProp.Name, (prop, entityProp) => new { prop.Name, prop.PropertyType, entityProp.ColumnName, entityProp.ColumnType });
 

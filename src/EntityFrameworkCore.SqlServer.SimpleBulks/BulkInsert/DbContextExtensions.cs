@@ -1,13 +1,39 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 {
     public static class DbContextExtensions
     {
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data)
+        {
+            string tableName = dbContext.GetTableName(typeof(T));
+            var connection = dbContext.GetSqlConnection();
+            var transaction = dbContext.GetCurrentSqlTransaction();
+            
+            var columns = dbContext.GetProperties(typeof(T))
+                .Where(x => x.ValueGenerated == ValueGenerated.Never)
+                .Select(x => x.PropertyName);
+            
+            var idColumn = dbContext.GetProperties(typeof(T))
+                .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
+                .Select(x => x.PropertyName)
+                .FirstOrDefault();
+
+            new BulkInsertBuilder<T>(connection, transaction)
+                .WithData(data)
+                .WithColumns(columns)
+                .ToTable(tableName)
+                .WithOuputId(idColumn)
+                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .Execute();
+        }
+
         public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
         {
             string tableName = dbContext.GetTableName(typeof(T));
