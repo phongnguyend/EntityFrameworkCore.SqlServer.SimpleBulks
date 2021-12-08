@@ -5,13 +5,13 @@ using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 {
-    public static class SqlConnectionExtensions
+    public static class SqlTransactionExtensions
     {
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
@@ -19,11 +19,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
@@ -32,11 +32,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> columnNames)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
@@ -44,11 +44,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumnName)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumnName)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
@@ -57,9 +57,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
         {
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
@@ -67,9 +67,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
         {
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
@@ -78,9 +78,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames)
         {
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
@@ -88,9 +88,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumnName)
+        public static void BulkInsert<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumnName)
         {
-            new BulkInsertBuilder<T>(connection)
+            new BulkInsertBuilder<T>(transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
