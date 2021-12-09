@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         private static Dictionary<Type, string> _mappings = new Dictionary<Type, string>
             {
                 {typeof(bool), "bit"},
-                {typeof(DateTime), "datetime"},
+                {typeof(DateTime), "datetime2"},
                 {typeof(DateTimeOffset), "datetimeoffset"},
                 {typeof(decimal), "decimal(38, 20)"},
                 {typeof(double), "double"},
