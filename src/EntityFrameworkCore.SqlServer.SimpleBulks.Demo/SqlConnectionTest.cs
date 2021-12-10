@@ -93,22 +93,22 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     if (omitTableName)
                     {
                         connection.BulkInsert(rows,
-                            new string[] { "Column1", "Column2", "Column3" });
+                            new [] { "Column1", "Column2", "Column3" });
                         connection.BulkInsert(rows.Take(1000),
                             typeof(Row).GetDbColumnNames("Id"));
 
                         connection.BulkInsert(compositeKeyRows,
-                            new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                            new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                     }
                     else
                     {
                         connection.BulkInsert(rows, "Rows",
-                            new string[] { "Column1", "Column2", "Column3" });
+                            new [] { "Column1", "Column2", "Column3" });
                         connection.BulkInsert(rows.Take(1000), "Rows",
                             typeof(Row).GetDbColumnNames("Id"));
 
                         connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
-                            new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                            new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                     }
 
                 }
@@ -214,19 +214,19 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     {
                         connection.BulkUpdate(rows,
                             "Id",
-                            new string[] { "Column3", "Column2" });
+                            new [] { "Column3", "Column2" });
                         connection.BulkUpdate(compositeKeyRows,
-                            new string[] { "Id1", "Id2" },
-                            new string[] { "Column3", "Column2" });
+                            new [] { "Id1", "Id2" },
+                            new [] { "Column3", "Column2" });
                     }
                     else
                     {
                         connection.BulkUpdate(rows, "Rows",
                             "Id",
-                            new string[] { "Column3", "Column2" });
+                            new [] { "Column3", "Column2" });
                         connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-                            new string[] { "Id1", "Id2" },
-                            new string[] { "Column3", "Column2" });
+                            new [] { "Id1", "Id2" },
+                            new [] { "Column3", "Column2" });
                     }
 
                     var newId = rows.Max(x => x.Id) + 1;
@@ -255,23 +255,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     {
                         connection.BulkMerge(rows,
                             "Id",
-                            new string[] { "Column1", "Column2" },
-                            new string[] { "Column1", "Column2", "Column3" });
+                            new[] { "Column1", "Column2" },
+                            new [] { "Column1", "Column2", "Column3" });
                         connection.BulkMerge(compositeKeyRows,
-                            new string[] { "Id1", "Id2" },
-                            new string[] { "Column1", "Column2", "Column3" },
-                            new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                            new [] { "Id1", "Id2" },
+                            new [] { "Column1", "Column2", "Column3" },
+                            new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                     }
                     else
                     {
                         connection.BulkMerge(rows, "Rows",
                             "Id",
-                            new string[] { "Column1", "Column2" },
-                            new string[] { "Column1", "Column2", "Column3" });
+                            new [] { "Column1", "Column2" },
+                            new [] { "Column1", "Column2", "Column3" });
                         connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
-                            new string[] { "Id1", "Id2" },
-                            new string[] { "Column1", "Column2", "Column3" },
-                            new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                            new [] { "Id1", "Id2" },
+                            new [] { "Column1", "Column2", "Column3" },
+                            new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                     }
                 }
             }
@@ -309,12 +309,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     if (omitTableName)
                     {
                         connection.BulkDelete(rows, "Id");
-                        connection.BulkDelete(compositeKeyRows, new List<string> { "Id1", "Id2" });
+                        connection.BulkDelete(compositeKeyRows, new[] { "Id1", "Id2" });
                     }
                     else
                     {
                         connection.BulkDelete(rows, "Rows", "Id");
-                        connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
+                        connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new[] { "Id1", "Id2" });
                     }
                 }
             }

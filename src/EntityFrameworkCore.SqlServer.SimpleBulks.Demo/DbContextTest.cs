@@ -184,10 +184,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 {
                     dbct.BulkUpdate(rows,
                         "Id",
-                        new string[] { "Column3", "Column2" });
+                        new [] { "Column3", "Column2" });
                     dbct.BulkUpdate(compositeKeyRows,
-                        new string[] { "Id1", "Id2" },
-                        new string[] { "Column3", "Column2" });
+                        new [] { "Id1", "Id2" },
+                        new [] { "Column3", "Column2" });
 
                     var newId = rows.Max(x => x.Id) + 1;
 
@@ -213,12 +213,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
                     dbct.BulkMerge(rows,
                         "Id",
-                        new string[] { "Column1", "Column2" },
-                        new string[] { "Column1", "Column2", "Column3" });
+                        new [] { "Column1", "Column2" },
+                        new [] { "Column1", "Column2", "Column3" });
                     dbct.BulkMerge(compositeKeyRows,
-                        new string[] { "Id1", "Id2" },
-                        new string[] { "Column1", "Column2", "Column3" },
-                        new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                        new [] { "Id1", "Id2" },
+                        new [] { "Column1", "Column2", "Column3" },
+                        new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                 }
 
                 tran.Commit();
