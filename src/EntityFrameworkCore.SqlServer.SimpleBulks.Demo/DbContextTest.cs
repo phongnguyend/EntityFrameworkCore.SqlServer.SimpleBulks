@@ -105,8 +105,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 }
 
                 dbct.BulkInsert(rows,
-                    row => new { row.Column1, row.Column2, row.Column3 },
-                    row => row.Id);
+                    row => new { row.Column1, row.Column2, row.Column3 });
                 dbct.BulkInsert(compositeKeyRows,
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
@@ -143,10 +142,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 if (useLinq)
                 {
                     dbct.BulkUpdate(rows,
-                        row => row.Id,
                         row => new { row.Column3, row.Column2 });
                     dbct.BulkUpdate(compositeKeyRows,
-                        row => new { row.Id1, row.Id2 },
                         row => new { row.Column3, row.Column2 });
 
                     var newId = rows.Max(x => x.Id) + 1;
@@ -183,10 +180,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 else
                 {
                     dbct.BulkUpdate(rows,
-                        "Id",
                         new [] { "Column3", "Column2" });
                     dbct.BulkUpdate(compositeKeyRows,
-                        new [] { "Id1", "Id2" },
                         new [] { "Column3", "Column2" });
 
                     var newId = rows.Max(x => x.Id) + 1;
@@ -239,8 +234,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 var rows = dbct.Rows.AsNoTracking().ToList();
                 var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
 
-                dbct.BulkDelete(rows, row => row.Id);
-                dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
+                dbct.BulkDelete(rows);
+                dbct.BulkDelete(compositeKeyRows);
 
                 tran.Commit();
             }

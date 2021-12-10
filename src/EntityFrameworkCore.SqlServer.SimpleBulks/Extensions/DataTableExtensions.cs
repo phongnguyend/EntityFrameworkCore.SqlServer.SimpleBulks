@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
-        public static string GenerateTableDefinition(this DataTable table, string tableName, IEnumerable<string> idColumns = null)
+        public static string GenerateTableDefinition(this DataTable table, string tableName)
         {
             var sql = new StringBuilder();
 
@@ -17,17 +16,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             for (int i = 0; i < table.Columns.Count; i++)
             {
                 sql.Append($"\n\t[{table.Columns[i].ColumnName}]");
-                var isId = idColumns != null && idColumns.Contains(table.Columns[i].ColumnName);
-                var sqlType = table.Columns[i].DataType.ToSqlType(isId);
-                sql.Append($" {sqlType}");
-                sql.Append(isId ? " NOT NULL" : " NULL");
+                var sqlType = table.Columns[i].DataType.ToSqlType();
+                sql.Append($" {sqlType} NULL");
                 sql.Append(",");
-            }
-
-            if (idColumns != null && idColumns.Any())
-            {
-                var key = string.Join(", ", idColumns.Select(x => $"[{x}]"));
-                sql.Append($"\n\tPRIMARY KEY ({key})");
             }
 
             sql.Append("\n);");

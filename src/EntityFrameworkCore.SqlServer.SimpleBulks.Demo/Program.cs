@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             {
                 dbct.Database.Migrate();
 
-                dbct.BulkDelete(dbct.Set<ConfigurationEntry>().AsNoTracking(), x => x.Id);
+                dbct.BulkDelete(dbct.Set<ConfigurationEntry>().AsNoTracking());
 
                 var configurationEntries = new List<ConfigurationEntry>();
 
@@ -42,7 +42,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 }
 
                 dbct.BulkUpdate(configurationEntries,
-                    x => x.Id,
                     x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description });
 
                 configurationEntries.Add(new ConfigurationEntry

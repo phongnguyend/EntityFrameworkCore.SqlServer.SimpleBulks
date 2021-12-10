@@ -43,10 +43,8 @@ dbct.BulkInsert(compositeKeyRows,
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
 dbct.BulkUpdate(rows,
-    row => row.Id,
     row => new { row.Column3, row.Column2 });
 dbct.BulkUpdate(compositeKeyRows,
-    row => new { row.Id1, row.Id2 },
     row => new { row.Column3, row.Column2 });
 
 dbct.BulkMerge(rows,
@@ -58,8 +56,8 @@ dbct.BulkMerge(compositeKeyRows,
     row => new { row.Column1, row.Column2, row.Column3 },
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
-dbct.BulkDelete(rows, row => row.Id);
-dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
+dbct.BulkDelete(rows);
+dbct.BulkDelete(compositeKeyRows);
 ```
 ### Using Dynamic String:
 ```c#
@@ -68,18 +66,16 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
-dbct.BulkUpdate(rows, "Rows",
-    "Id",
+dbct.BulkUpdate(rows,
     new [] { "Column3", "Column2" });
-dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-    new [] { "Id1", "Id2" },
+dbct.BulkUpdate(compositeKeyRows,
     new [] { "Column3", "Column2" });
 
-dbct.BulkMerge(rows, "Rows",
+dbct.BulkMerge(rows,
     "Id",
     new [] { "Column1", "Column2" },
     new [] { "Column1", "Column2", "Column3" });
-dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+dbct.BulkMerge(compositeKeyRows,
     new [] { "Id1", "Id2" },
     new [] { "Column1", "Column2", "Column3" },
     new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });

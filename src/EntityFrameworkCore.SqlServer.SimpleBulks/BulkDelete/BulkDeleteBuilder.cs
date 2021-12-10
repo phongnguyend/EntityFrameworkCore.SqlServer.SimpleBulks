@@ -92,7 +92,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         {
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = _data.ToDataTable(_idColumns);
-            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, _idColumns);
+            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var joinCondition = string.Join(" and ", _idColumns.Select(x =>
             {

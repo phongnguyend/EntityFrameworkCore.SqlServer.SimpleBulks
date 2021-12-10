@@ -111,7 +111,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             propertyNamesIncludeId.AddRange(_idColumns);
 
             var dataTable = _data.ToDataTable(propertyNamesIncludeId);
-            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, _idColumns);
+            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var joinCondition = string.Join(" and ", _idColumns.Select(x =>
             {

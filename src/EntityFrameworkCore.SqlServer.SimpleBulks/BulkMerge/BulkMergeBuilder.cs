@@ -125,7 +125,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             propertyNames = propertyNames.Distinct().ToList();
 
             var dataTable = _data.ToDataTable(propertyNames);
-            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, _idColumns);
+            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var mergeStatementBuilder = new StringBuilder();
 
