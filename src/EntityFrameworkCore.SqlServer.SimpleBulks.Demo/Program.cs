@@ -55,7 +55,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 dbct.BulkMerge(configurationEntries,
                     x => x.Id,
                     x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
-                    x => new { x.Key, x.Value, x.CreatedDateTime });
+                    x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime });
             }
 
             DbContextTest.Run();
