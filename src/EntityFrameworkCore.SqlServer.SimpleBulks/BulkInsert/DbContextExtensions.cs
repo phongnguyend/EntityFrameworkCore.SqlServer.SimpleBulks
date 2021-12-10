@@ -15,19 +15,20 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
-            
-            var columns = dbContext.GetProperties(typeof(T))
+            var properties = dbContext.GetProperties(typeof(T));
+            var columns = properties
                 .Where(x => x.ValueGenerated == ValueGenerated.Never)
                 .Select(x => x.PropertyName);
-            
-            var idColumn = dbContext.GetProperties(typeof(T))
+            var idColumn = properties
                 .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
                 .Select(x => x.PropertyName)
                 .FirstOrDefault();
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columns)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idColumn)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
@@ -39,10 +40,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
@@ -53,10 +57,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
@@ -68,10 +75,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
@@ -82,10 +92,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idColumn)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
@@ -96,10 +109,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         {
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
@@ -109,10 +125,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         {
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
@@ -123,10 +142,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         {
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
@@ -136,10 +158,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         {
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
+            var properties = dbContext.GetProperties(typeof(T));
+            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithColumns(columnNames)
+                .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idColumn)
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)

@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _columnNames;
+        private IDictionary<string, string> _dbColumnMappings;
         private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
@@ -79,11 +80,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             return this;
         }
 
+        public BulkUpdateBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+        {
+            _dbColumnMappings = dbColumnMappings;
+            return this;
+        }
+
         public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);
             return this;
+        }
+
+        private string GetDbColumnName(string columnName)
+        {
+            if (_dbColumnMappings == null)
+            {
+                return columnName;
+            }
+
+            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
         public void Execute()
@@ -100,7 +117,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
                 $" collate {Constants.Collation}" : string.Empty;
-                return $"a.[{x}]{collation} = b.[{x}]{collation}";
+                return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
             var updateStatementBuilder = new StringBuilder();
@@ -115,7 +132,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
             using (var updateCommand = _connection.CreateTextCommand(_transaction, updateStatementBuilder.ToString()))
             {
@@ -123,7 +140,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             }
         }
 
-        private static string CreateSetStatement(string prop, string leftTable, string rightTable)
+        private string CreateSetStatement(string prop, string leftTable, string rightTable)
         {
             string sqlOperator = "=";
             string sqlProp = RemoveOperator(prop);
@@ -133,7 +150,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 sqlOperator = "+=";
             }
 
-            return $"{leftTable}.[{sqlProp}] {sqlOperator} {rightTable}.[{sqlProp}]";
+            return $"{leftTable}.[{GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
         }
 
         private static string RemoveOperator(string prop)

@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             return sql.ToString();
         }
 
-        public static void SqlBulkCopy(this DataTable dataTable, string tableName, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null)
+        public static void SqlBulkCopy(this DataTable dataTable, string tableName, IDictionary<string, string> dbColumnMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null)
         {
             options ??= new BulkOptions()
             {
@@ -52,10 +52,20 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
             foreach (DataColumn dtColum in dataTable.Columns)
             {
-                bulkCopy.ColumnMappings.Add(dtColum.ColumnName, dtColum.ColumnName);
+                bulkCopy.ColumnMappings.Add(dtColum.ColumnName, GetDbColumnName(dtColum.ColumnName, dbColumnMappings));
             }
 
             bulkCopy.WriteToServer(dataTable);
+        }
+
+        private static string GetDbColumnName(string columName, IDictionary<string, string> dbColumnMappings)
+        {
+            if (dbColumnMappings == null)
+            {
+                return columName;
+            }
+
+            return dbColumnMappings.ContainsKey(columName) ? dbColumnMappings[columName] : columName;
         }
     }
 }

@@ -12,6 +12,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         private IEnumerable<T> _data;
         private string _tableName;
         private IEnumerable<string> _idColumns;
+        private IDictionary<string, string> _dbColumnMappings;
         private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
@@ -64,11 +65,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             return this;
         }
 
+        public BulkDeleteBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+        {
+            _dbColumnMappings = dbColumnMappings;
+            return this;
+        }
+
         public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);
             return this;
+        }
+
+        private string GetDbColumnName(string columnName)
+        {
+            if (_dbColumnMappings == null)
+            {
+                return columnName;
+            }
+
+            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
         public void Execute()
@@ -81,7 +98,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
                 $" collate {Constants.Collation}" : string.Empty;
-                return $"a.[{x}]{collation} = b.[{x}]{collation}";
+                return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
             var deleteStatement = $"delete a from {_tableName} a join [{temptableName}] b on " + joinCondition;
@@ -93,7 +110,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
             using (var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement))
             {

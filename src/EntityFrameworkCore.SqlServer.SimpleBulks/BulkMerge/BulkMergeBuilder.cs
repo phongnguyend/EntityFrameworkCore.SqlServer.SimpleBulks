@@ -15,6 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _updateColumnNames;
         private IEnumerable<string> _insertColumnNames;
+        private IDictionary<string, string> _dbColumnMappings;
         private BulkOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
@@ -91,11 +92,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return this;
         }
 
+        public BulkMergeBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+        {
+            _dbColumnMappings = dbColumnMappings;
+            return this;
+        }
+
         public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
             _options = new BulkOptions();
             configureOptions(_options);
             return this;
+        }
+
+        private string GetDbColumnName(string columnName)
+        {
+            if (_dbColumnMappings == null)
+            {
+                return columnName;
+            }
+
+            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
         public void Execute()
@@ -116,7 +133,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
                 $" collate {Constants.Collation}" : string.Empty;
-                return $"s.[{x}]{collation} = t.[{x}]{collation}";
+                return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
             }));
 
             mergeStatementBuilder.AppendLine($"MERGE {_tableName} t");
@@ -126,7 +143,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             mergeStatementBuilder.AppendLine($"    THEN UPDATE SET");
             mergeStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s"))));
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames)})");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => GetDbColumnName(x)))})");
             mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.{x}"))})");
             mergeStatementBuilder.AppendLine(";");
 
@@ -137,7 +154,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
             using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
             {
@@ -145,7 +162,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             }
         }
 
-        private static string CreateSetStatement(string prop, string leftTable, string rightTable)
+        private string CreateSetStatement(string prop, string leftTable, string rightTable)
         {
             string sqlOperator = "=";
             string sqlProp = RemoveOperator(prop);
@@ -155,7 +172,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 sqlOperator = "+=";
             }
 
-            return $"{leftTable}.[{sqlProp}] {sqlOperator} {rightTable}.[{sqlProp}]";
+            return $"{leftTable}.[{GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
         }
 
         private static string RemoveOperator(string prop)
