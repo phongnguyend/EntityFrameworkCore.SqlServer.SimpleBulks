@@ -15,11 +15,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.CompositeKeyRow", b =>
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.CompositeKeyRow", b =>
                 {
                     b.Property<int>("Id1")
                         .HasColumnType("int");
@@ -41,7 +41,44 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Migrations
                     b.ToTable("CompositeKeyRows");
                 });
 
-            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Row", b =>
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.ConfigurationEntry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id1")
+                        .HasDefaultValueSql("newsequentialid()");
+
+                    b.Property<DateTimeOffset>("CreatedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsSensitive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Key1");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTimeOffset?>("UpdatedDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ConfigurationEntries");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.Row", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

@@ -22,11 +22,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             TableMapper.Register(typeof(Row), "Rows");
             TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
 
-            using (var dbct = new DemoDbContext(_connectionString))
-            {
-                dbct.Database.Migrate();
-            }
-
             DeleteUsingBulkDelete(useLinq: true, omitTableName: true);
 
             InsertUsingBulkInsert(numberOfRows: 50000, useLinq: true, omitTableName: true);
@@ -127,7 +122,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
                 var connection = dbct.GetSqlConnection();
 
@@ -289,7 +284,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
                 var connection = dbct.GetSqlConnection();
 

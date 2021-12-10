@@ -18,11 +18,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 
         public static void Run()
         {
-            using (var dbct = new DemoDbContext(_connectionString))
-            {
-                dbct.Database.Migrate();
-            }
-
             //InsertUsingEF(numberOfRows: 500000);
             //UpdateUsingEF();
 
@@ -49,7 +44,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
                 var rows = new List<Row>();
                 for (int i = 0; i < numberOfRows; i++)
@@ -74,7 +69,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
                 var rows = dbct.Rows.ToList();
 
@@ -95,8 +90,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
+                var tran = dbct.Database.BeginTransaction();
+
                 var rows = new List<Row>();
                 var compositeKeyRows = new List<CompositeKeyRow>();
                 for (int i = 0; i < numberOfRows; i++)
@@ -162,6 +159,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     }
 
                 }
+
+                tran.Commit();
             }
 
             watch.Stop();
@@ -172,8 +171,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
+                var tran = dbct.Database.BeginTransaction();
+
                 var rows = dbct.Rows.AsNoTracking().ToList();
                 var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
 
@@ -322,6 +323,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                             new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
                     }
                 }
+
+                tran.Commit();
             }
 
             watch.Stop();
@@ -332,8 +335,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
         {
             var watch = Stopwatch.StartNew();
 
-            using (var dbct = new DemoDbContext(_connectionString))
+            using (var dbct = new DemoDbContext())
             {
+                var tran = dbct.Database.BeginTransaction();
+
                 var rows = dbct.Rows.AsNoTracking().ToList();
                 var compositeKeyRows = dbct.CompositeKeyRows.AsNoTracking().ToList();
 
@@ -363,6 +368,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                         dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
                     }
                 }
+
+                tran.Commit();
             }
 
             watch.Stop();
