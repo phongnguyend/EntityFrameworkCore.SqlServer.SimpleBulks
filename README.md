@@ -25,37 +25,18 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 - Build and run.
 
 ## DbContextExtensions:
-### Using Dynamic String:
-```c#
-dbct.BulkInsert(rows, "Rows",
-    new string[] { "Column1", "Column2", "Column3" });
-dbct.BulkInsert(rows.Take(1000), "Rows",
-    typeof(Row).GetDbColumnNames("Id"));
-dbct.BulkInsert(compositeKeyRows, "CompositeKeyRows",
-    new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
-
-dbct.BulkUpdate(rows, "Rows",
-    "Id",
-    new string[] { "Column3", "Column2" });
-dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-    new string[] { "Id1", "Id2" },
-    new string[] { "Column3", "Column2" });
-
-dbct.BulkMerge(rows, "Rows",
-    "Id",
-    new string[] { "Column1", "Column2" },
-    new string[] { "Column1", "Column2", "Column3" });
-dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
-    new string[] { "Id1", "Id2" },
-    new string[] { "Column1", "Column2", "Column3" },
-    new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
-
-dbct.BulkDelete(rows, "Rows", "Id");
-dbct.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
-```
-
 ### Using Lambda Expression:
 ```c#
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
+
+// Insert all columns
+dbct.BulkInsert(rows);
+dbct.BulkInsert(compositeKeyRows);
+
+// Insert selected columns only
 dbct.BulkInsert(rows,
     row => new { row.Column1, row.Column2, row.Column3 });
 dbct.BulkInsert(compositeKeyRows,
@@ -80,7 +61,29 @@ dbct.BulkMerge(compositeKeyRows,
 dbct.BulkDelete(rows, row => row.Id);
 dbct.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
+### Using Dynamic String:
+```c#
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
+dbct.BulkUpdate(rows, "Rows",
+    "Id",
+    new string[] { "Column3", "Column2" });
+dbct.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+    new string[] { "Id1", "Id2" },
+    new string[] { "Column3", "Column2" });
+
+dbct.BulkMerge(rows, "Rows",
+    "Id",
+    new string[] { "Column1", "Column2" },
+    new string[] { "Column1", "Column2", "Column3" });
+dbct.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+    new string[] { "Id1", "Id2" },
+    new string[] { "Column1", "Column2", "Column3" },
+    new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
 ```c#
 new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
@@ -95,37 +98,13 @@ new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
 ```
 
 ## SqlConnectionExtensions:
-### Using Dynamic String:
-```c#
-connection.BulkInsert(rows, "Rows",
-           new string[] { "Column1", "Column2", "Column3" });
-connection.BulkInsert(rows.Take(1000), "Rows",
-           typeof(Row).GetDbColumnNames("Id"));
-connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
-           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
-
-connection.BulkUpdate(rows, "Rows",
-           "Id",
-           new string[] { "Column3", "Column2" });
-connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-           new string[] { "Id1", "Id2" },
-           new string[] { "Column3", "Column2" });
-
-connection.BulkMerge(rows, "Rows",
-           "Id",
-           new string[] { "Column1", "Column2" },
-           new string[] { "Column1", "Column2", "Column3" });
-connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
-           new string[] { "Id1", "Id2" },
-           new string[] { "Column1", "Column2", "Column3" },
-           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
-
-connection.BulkDelete(rows, "Rows", "Id");
-connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
-```
-
 ### Using Lambda Expression:
 ```c#
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
+
 // Register Type - Table Name globaly
 TableMapper.Register(typeof(Row), "Rows");
 TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
@@ -154,7 +133,39 @@ connection.BulkMerge(compositeKeyRows,
 connection.BulkDelete(rows, row => row.Id);
 connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
+### Using Dynamic String:
+```c#
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
+connection.BulkInsert(rows, "Rows",
+           new string[] { "Column1", "Column2", "Column3" });
+connection.BulkInsert(rows.Take(1000), "Rows",
+           typeof(Row).GetDbColumnNames("Id"));
+connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+
+connection.BulkUpdate(rows, "Rows",
+           "Id",
+           new string[] { "Column3", "Column2" });
+connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2" },
+           new string[] { "Column3", "Column2" });
+
+connection.BulkMerge(rows, "Rows",
+           "Id",
+           new string[] { "Column1", "Column2" },
+           new string[] { "Column1", "Column2", "Column3" });
+connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+           new string[] { "Id1", "Id2" },
+           new string[] { "Column1", "Column2", "Column3" },
+           new string[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+
+connection.BulkDelete(rows, "Rows", "Id");
+connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new List<string> { "Id1", "Id2" });
+```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
 ```c#
 new BulkInsertBuilder<Row>(connection)
