@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -40,8 +41,21 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     row.Description = row.Id.ToString();
                 }
 
-                dbct.BulkUpdate(configurationEntries, x => x.Id, x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description });
+                dbct.BulkUpdate(configurationEntries,
+                    x => x.Id,
+                    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description });
 
+                configurationEntries.Add(new ConfigurationEntry
+                {
+                    Key = $"Key{1001}",
+                    Value = $"Value{1001}",
+                    CreatedDateTime = DateTimeOffset.Now,
+                });
+
+                dbct.BulkMerge(configurationEntries,
+                    x => x.Id,
+                    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+                    x => new { x.Key, x.Value, x.CreatedDateTime });
             }
 
             DbContextTest.Run();
