@@ -65,59 +65,5 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
-
-        public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkMergeBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idSelector)
-                .WithUpdateColumns(updateColumnNamesSelector)
-                .WithInsertColumns(insertColumnNamesSelector)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
-
-        public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkMergeBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idColumn)
-                .WithUpdateColumns(updateColumnNames)
-                .WithInsertColumns(insertColumnNames)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
-
-        public static void BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkMergeBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idColumns)
-                .WithUpdateColumns(updateColumnNames)
-                .WithInsertColumns(insertColumnNames)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
     }
 }

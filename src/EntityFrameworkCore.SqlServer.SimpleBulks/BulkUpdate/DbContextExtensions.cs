@@ -62,56 +62,5 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .ConfigureBulkOptions(opt => opt.Timeout = 30)
                 .Execute();
         }
-
-        public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkUpdateBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idSelector)
-                .WithColumns(columnNamesSelector)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
-
-        public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkUpdateBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idColumn)
-                .WithColumns(columnNames)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
-
-        public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
-        {
-            var connection = dbContext.GetSqlConnection();
-            var transaction = dbContext.GetCurrentSqlTransaction();
-            var properties = dbContext.GetProperties(typeof(T));
-            var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-
-            new BulkUpdateBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(idColumns)
-                .WithColumns(columnNames)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
-                .Execute();
-        }
     }
 }
