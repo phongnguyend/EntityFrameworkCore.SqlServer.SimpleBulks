@@ -5,7 +5,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
 {
     public class DemoDbContext : DbContext
     {
-        private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=sa;Password=sqladmin123!@#";
+        private const string _connectionString = "Server=.;Database=EFCoreSimpleBulks;User Id=sa;Password=sqladmin123!@#";
 
         public DbSet<Row> Rows { get; set; }
 
