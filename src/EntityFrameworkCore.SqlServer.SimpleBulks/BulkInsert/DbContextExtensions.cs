@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 {
     public static class DbContextExtensions
     {
-        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data)
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -31,11 +31,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idColumn)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -53,7 +53,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOuputId(idColumn)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }

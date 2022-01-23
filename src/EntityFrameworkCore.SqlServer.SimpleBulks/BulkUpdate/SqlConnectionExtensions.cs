@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public static class SqlConnectionExtensions
     {
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -16,11 +16,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -29,11 +29,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumn)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -42,40 +42,40 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .WithId(idColumns)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             new BulkUpdateBuilder<T>(connection)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             new BulkUpdateBuilder<T>(connection)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames)
+        public static void BulkUpdate<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             new BulkUpdateBuilder<T>(connection)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }

@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 {
     public static class SqlConnectionExtensions
     {
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -15,11 +15,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -28,11 +28,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -40,11 +40,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumnName)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumnName, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -53,49 +53,49 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOuputId(idColumnName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOuputId(idSelector)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumnName)
+        public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumnName, Action<BulkOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOuputId(idColumnName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }

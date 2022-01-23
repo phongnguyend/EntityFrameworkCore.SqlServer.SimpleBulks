@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class SqlTransactionExtensions
     {
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -15,11 +15,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -27,11 +27,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -39,37 +39,37 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
             new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, Action<BulkOptions> configureOptions = null)
         {
             new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns)
+        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
         {
             new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }

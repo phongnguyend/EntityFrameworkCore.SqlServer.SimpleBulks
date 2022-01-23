@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 {
     public static class SqlConnectionExtensions
     {
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -17,11 +17,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNamesSelector)
                 .WithInsertColumns(insertColumnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -31,11 +31,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -45,11 +45,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             new BulkMergeBuilder<T>(connection)
                 .WithData(data)
@@ -57,11 +57,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNamesSelector)
                 .WithInsertColumns(insertColumnNamesSelector)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
         {
             new BulkMergeBuilder<T>(connection)
                 .WithData(data)
@@ -69,11 +69,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
 
-        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames)
+        public static void BulkMerge<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
         {
             new BulkMergeBuilder<T>(connection)
                 .WithData(data)
@@ -81,7 +81,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }

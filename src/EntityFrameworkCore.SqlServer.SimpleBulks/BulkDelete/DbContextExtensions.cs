@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class DbContextExtensions
     {
-        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data)
+        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -23,7 +24,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .WithId(primaryKeys)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
-                .ConfigureBulkOptions(opt => opt.Timeout = 30)
+                .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
     }
