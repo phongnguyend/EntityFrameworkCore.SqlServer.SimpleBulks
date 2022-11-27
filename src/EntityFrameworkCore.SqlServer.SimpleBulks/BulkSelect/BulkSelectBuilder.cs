@@ -17,10 +17,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
         private IDictionary<string, string> _dbColumnMappings;
         private BulkOptions _options;
         private readonly SqlConnection _connection;
+        private readonly SqlTransaction _transaction;
 
         public BulkSelectBuilder(SqlConnection connection)
         {
             _connection = connection;
+        }
+
+        public BulkSelectBuilder(SqlTransaction transaction)
+        {
+            _transaction = transaction;
+            _connection = transaction.Connection;
+        }
+
+        public BulkSelectBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        {
+            _connection = connection;
+            _transaction = transaction;
         }
 
         public BulkSelectBuilder<T> FromTable(string tableName)
@@ -100,24 +113,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
-            var updateStatementBuilder = new StringBuilder();
-            updateStatementBuilder.AppendLine($"select {string.Join(", ", _columnNames.Select(x => CreateSelectStatement(x)))} ");
-            updateStatementBuilder.AppendLine($"from {_tableName} a join [{temptableName}] b on " + joinCondition);
+            var selectQueryBuilder = new StringBuilder();
+            selectQueryBuilder.AppendLine($"select {string.Join(", ", _columnNames.Select(x => CreateSelectStatement(x)))} ");
+            selectQueryBuilder.AppendLine($"from {_tableName} a join [{temptableName}] b on " + joinCondition);
 
             _connection.EnsureOpen();
 
-            using (var createTemptableCommand = _connection.CreateTextCommand(null, sqlCreateTemptable))
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
 
-            dataTable.SqlBulkCopy(temptableName, null, _connection, null, _options);
+            dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
             var results = new List<T>();
 
             var properties = typeof(T).GetProperties().Where(prop => _columnNames.Contains(prop.Name)).ToList();
 
-            using var updateCommand = _connection.CreateTextCommand(null, updateStatementBuilder.ToString());
+            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQueryBuilder.ToString());
             using var reader = updateCommand.ExecuteReader();
             while (reader.Read())
             {
