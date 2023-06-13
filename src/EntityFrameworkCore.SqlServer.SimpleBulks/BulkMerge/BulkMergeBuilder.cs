@@ -142,12 +142,21 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             mergeStatementBuilder.AppendLine($"MERGE {_tableName} t");
             mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
             mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
-            mergeStatementBuilder.AppendLine($"WHEN MATCHED");
-            mergeStatementBuilder.AppendLine($"    THEN UPDATE SET");
-            mergeStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s"))));
-            mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{GetDbColumnName(x)}]"))})");
-            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+
+            if (_updateColumnNames.Any())
+            {
+                mergeStatementBuilder.AppendLine($"WHEN MATCHED");
+                mergeStatementBuilder.AppendLine($"    THEN UPDATE SET");
+                mergeStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _updateColumnNames.Select(x => "         " + CreateSetStatement(x, "t", "s"))));
+            }
+
+            if (_insertColumnNames.Any())
+            {
+                mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
+                mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{GetDbColumnName(x)}]"))})");
+                mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+            }
+
             mergeStatementBuilder.AppendLine(";");
 
             _connection.EnsureOpen();
