@@ -1,5 +1,5 @@
 # EntityFrameworkCore.SqlServer.SimpleBulks
-This is a very simple .net core library that can help to work with large number of records using the **SqlBulkCopy** class.
+A very simple .net core library that can help to sync a large number of records in-memory into the database using the **SqlBulkCopy** class.
  
 ## Overview
 This library provides extension methods so that you can use with your EntityFrameworkCore **DbContext** instance:
