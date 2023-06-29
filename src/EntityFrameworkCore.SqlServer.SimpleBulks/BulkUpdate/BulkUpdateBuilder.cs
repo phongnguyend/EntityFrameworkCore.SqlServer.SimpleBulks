@@ -106,7 +106,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public void Execute()
+        public BulkUpdateResult Execute()
         {
             var temptableName = "#" + Guid.NewGuid();
 
@@ -140,6 +140,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             using (var updateCommand = _connection.CreateTextCommand(_transaction, updateStatementBuilder.ToString()))
             {
                 var affectedRows = updateCommand.ExecuteNonQuery();
+
+                return new BulkUpdateResult
+                {
+                    AffectedRows = affectedRows
+                };
             }
         }
 

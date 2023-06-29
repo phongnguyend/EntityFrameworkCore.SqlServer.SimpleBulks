@@ -118,7 +118,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public void Execute()
+        public BulkMergeResult Execute()
         {
             var temptableName = "#" + Guid.NewGuid();
 
@@ -171,6 +171,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
             {
                 var affectedRows = updateCommand.ExecuteNonQuery();
+
+                return new BulkMergeResult
+                {
+                    AffectedRows = affectedRows
+                };
             }
         }
 

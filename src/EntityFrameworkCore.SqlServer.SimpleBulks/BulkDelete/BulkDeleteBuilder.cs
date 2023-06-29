@@ -91,7 +91,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public void Execute()
+        public BulkDeleteResult Execute()
         {
             var temptableName = "#" + Guid.NewGuid();
             var dataTable = _data.ToDataTable(_idColumns);
@@ -118,6 +118,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             using (var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement))
             {
                 var affectedRows = deleteCommand.ExecuteNonQuery();
+
+                return new BulkDeleteResult
+                {
+                    AffectedRows = affectedRows
+                };
             }
         }
 
