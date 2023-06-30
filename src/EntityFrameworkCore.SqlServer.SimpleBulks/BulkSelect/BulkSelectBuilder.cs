@@ -15,7 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
         private IEnumerable<string> _matchedColumns;
         private IEnumerable<string> _columnNames;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkOptions _options;
+        private BulkSelectOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -81,7 +81,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
         public BulkSelectBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
-            _options = new BulkOptions();
+            _options = new BulkSelectOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);

@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         private string _ouputIdColumn;
         private IEnumerable<string> _columnNames;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkOptions _options;
+        private BulkInsertOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -81,7 +81,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 
         public BulkInsertBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
-            _options = new BulkOptions();
+            _options = new BulkInsertOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);

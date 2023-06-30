@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         private IEnumerable<string> _updateColumnNames;
         private IEnumerable<string> _insertColumnNames;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkOptions _options;
+        private BulkMergeOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -100,7 +100,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
         public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
-            _options = new BulkOptions();
+            _options = new BulkMergeOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);

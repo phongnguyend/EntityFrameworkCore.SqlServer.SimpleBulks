@@ -16,7 +16,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _columnNames;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkOptions _options;
+        private BulkUpdateOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -88,7 +88,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 
         public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
-            _options = new BulkOptions();
+            _options = new BulkUpdateOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);

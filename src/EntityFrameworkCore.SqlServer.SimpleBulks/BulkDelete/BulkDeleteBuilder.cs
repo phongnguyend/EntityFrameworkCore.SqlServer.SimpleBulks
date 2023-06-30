@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkOptions _options;
+        private BulkDeleteOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -73,7 +73,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
         public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
         {
-            _options = new BulkOptions();
+            _options = new BulkDeleteOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);
