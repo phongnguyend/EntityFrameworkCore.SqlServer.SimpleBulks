@@ -7,11 +7,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public static class SqlTransactionExtensions
     {
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
@@ -20,11 +20,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithColumns(columnNames)
@@ -33,11 +33,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithColumns(columnNames)
@@ -46,9 +46,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .WithColumns(columnNamesSelector)
@@ -57,9 +57,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .WithColumns(columnNames)
@@ -68,9 +68,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
-            new BulkUpdateBuilder<T>(transaction)
+            return new BulkUpdateBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .WithColumns(columnNames)

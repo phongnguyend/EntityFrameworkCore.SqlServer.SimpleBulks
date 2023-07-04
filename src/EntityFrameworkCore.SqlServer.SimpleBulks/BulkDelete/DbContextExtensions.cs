@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class DbContextExtensions
     {
-        public static void BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -19,13 +19,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Select(x => x.PropertyName);
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
-            new BulkDeleteBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(primaryKeys)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(configureOptions)
-                .Execute();
+            return new BulkDeleteBuilder<T>(connection, transaction)
+                 .WithData(data)
+                 .WithId(primaryKeys)
+                 .WithDbColumnMappings(dbColumnMappings)
+                 .ToTable(tableName)
+                 .ConfigureBulkOptions(configureOptions)
+                 .Execute();
         }
     }
 }

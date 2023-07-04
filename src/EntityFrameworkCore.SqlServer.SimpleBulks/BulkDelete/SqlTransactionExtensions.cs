@@ -7,11 +7,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class SqlTransactionExtensions
     {
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
@@ -19,11 +19,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
@@ -31,11 +31,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)
@@ -43,9 +43,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
         {
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idSelector)
                 .ToTable(tableName)
@@ -53,9 +53,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, Action<BulkOptions> configureOptions = null)
         {
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumn)
                 .ToTable(tableName)
@@ -63,9 +63,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static void BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
         {
-            new BulkDeleteBuilder<T>(transaction)
+            return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
                 .WithId(idColumns)
                 .ToTable(tableName)

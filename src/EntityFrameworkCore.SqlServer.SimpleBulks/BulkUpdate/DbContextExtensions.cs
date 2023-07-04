@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public static class DbContextExtensions
     {
-        public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -20,17 +20,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Select(x => x.PropertyName);
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
-            new BulkUpdateBuilder<T>(connection, transaction)
-                .WithData(data)
-                .WithId(primaryKeys)
-                .WithColumns(columnNamesSelector)
-                .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
-                .ConfigureBulkOptions(configureOptions)
-                .Execute();
+            return new BulkUpdateBuilder<T>(connection, transaction)
+                 .WithData(data)
+                 .WithId(primaryKeys)
+                 .WithColumns(columnNamesSelector)
+                 .WithDbColumnMappings(dbColumnMappings)
+                 .ToTable(tableName)
+                 .ConfigureBulkOptions(configureOptions)
+                 .Execute();
         }
 
-        public static void BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -41,7 +41,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 .Select(x => x.PropertyName);
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
-            new BulkUpdateBuilder<T>(connection, transaction)
+            return new BulkUpdateBuilder<T>(connection, transaction)
                 .WithData(data)
                 .WithId(primaryKeys)
                 .WithColumns(columnNames)
