@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 {
     public static class DbContextExtensions
     {
-        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                  .Execute();
         }
 
-        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .Execute();
         }
 
-        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();

@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public static class DbContextExtensions
     {
-        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkUpdateOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -30,7 +30,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                  .Execute();
         }
 
-        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkOptions> configureOptions = null)
+        public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();

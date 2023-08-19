@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 {
     public static class DbContextExtensions
     {
-        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkInsertOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -35,7 +35,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .Execute();
         }
 
-        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkOptions> configureOptions = null)
+        public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();

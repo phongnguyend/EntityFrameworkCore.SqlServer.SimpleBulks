@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 {
     public static class DbContextExtensions
     {
-        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkOptions> configureOptions = null)
+        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkSelectOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
                  .Execute(machedValues);
         }
 
-        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkOptions> configureOptions = null)
+        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkSelectOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();

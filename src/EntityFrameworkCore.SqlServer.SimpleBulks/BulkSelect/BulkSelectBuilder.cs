@@ -79,7 +79,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             return this;
         }
 
-        public BulkSelectBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkSelectBuilder<T> ConfigureBulkOptions(Action<BulkSelectOptions> configureOptions)
         {
             _options = new BulkSelectOptions();
             if (configureOptions != null)

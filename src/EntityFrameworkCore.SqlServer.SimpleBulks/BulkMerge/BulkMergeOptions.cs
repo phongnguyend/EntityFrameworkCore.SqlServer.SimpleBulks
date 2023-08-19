@@ -2,5 +2,6 @@
 {
     public class BulkMergeOptions : BulkOptions
     {
+        public bool WithHoldLock { get; set; }
     }
 }

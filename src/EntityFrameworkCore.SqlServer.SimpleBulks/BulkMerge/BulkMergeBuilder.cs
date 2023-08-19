@@ -98,7 +98,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return this;
         }
 
-        public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkMergeOptions> configureOptions)
         {
             _options = new BulkMergeOptions();
             if (configureOptions != null)
@@ -139,7 +139,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
             }));
 
-            mergeStatementBuilder.AppendLine($"MERGE {_tableName} t");
+            var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
+
+            mergeStatementBuilder.AppendLine($"MERGE {_tableName}{hint} t");
             mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
             mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
 
@@ -168,15 +170,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
-            using (var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString()))
-            {
-                var affectedRows = updateCommand.ExecuteNonQuery();
+            using var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString());
+            var affectedRows = updateCommand.ExecuteNonQuery();
 
-                return new BulkMergeResult
-                {
-                    AffectedRows = affectedRows
-                };
-            }
+            return new BulkMergeResult
+            {
+                AffectedRows = affectedRows
+            };
         }
 
         private string CreateSetStatement(string prop, string leftTable, string rightTable)

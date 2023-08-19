@@ -86,7 +86,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             return this;
         }
 
-        public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkUpdateOptions> configureOptions)
         {
             _options = new BulkUpdateOptions();
             if (configureOptions != null)

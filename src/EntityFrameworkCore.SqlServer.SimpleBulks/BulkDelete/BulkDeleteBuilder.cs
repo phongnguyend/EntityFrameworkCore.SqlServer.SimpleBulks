@@ -71,7 +71,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             return this;
         }
 
-        public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkOptions> configureOptions)
+        public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkDeleteOptions> configureOptions)
         {
             _options = new BulkDeleteOptions();
             if (configureOptions != null)

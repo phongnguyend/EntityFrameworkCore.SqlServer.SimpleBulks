@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class DbContextExtensions
     {
-        public static BulkDeleteResult BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkDeleteOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();

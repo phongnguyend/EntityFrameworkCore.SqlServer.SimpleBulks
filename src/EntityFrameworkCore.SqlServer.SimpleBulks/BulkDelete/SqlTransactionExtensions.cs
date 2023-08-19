@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public static class SqlTransactionExtensions
     {
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -19,7 +19,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -31,7 +31,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
         {
             string tableName = TableMapper.Resolve(typeof(T));
 
@@ -43,7 +43,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
@@ -53,7 +53,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
@@ -63,7 +63,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 .Execute();
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlTransaction transaction, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(transaction)
                 .WithData(data)
