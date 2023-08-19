@@ -50,11 +50,19 @@ dbct.BulkUpdate(compositeKeyRows,
 dbct.BulkMerge(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
-    row => new { row.Column1, row.Column2, row.Column3 });
+    row => new { row.Column1, row.Column2, row.Column3 },
+    options =>
+    {
+        //options.WithHoldLock = true;
+    });
 dbct.BulkMerge(compositeKeyRows,
     row => new { row.Id1, row.Id2 },
     row => new { row.Column1, row.Column2, row.Column3 },
-    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+    options =>
+    {
+        //options.WithHoldLock = true;
+    });
                         
 dbct.BulkDelete(rows);
 dbct.BulkDelete(compositeKeyRows);
@@ -74,11 +82,19 @@ dbct.BulkUpdate(compositeKeyRows,
 dbct.BulkMerge(rows,
     "Id",
     new [] { "Column1", "Column2" },
-    new [] { "Column1", "Column2", "Column3" });
+    new [] { "Column1", "Column2", "Column3" },
+    options =>
+    {
+        //options.WithHoldLock = true;
+    });
 dbct.BulkMerge(compositeKeyRows,
     new [] { "Id1", "Id2" },
     new [] { "Column1", "Column2", "Column3" },
-    new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+    new [] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+    options =>
+    {
+        //options.WithHoldLock = true;
+    });
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
 ```c#
@@ -120,11 +136,19 @@ connection.BulkUpdate(compositeKeyRows,
 connection.BulkMerge(rows,
            row => row.Id,
            row => new { row.Column1, row.Column2 },
-           row => new { row.Column1, row.Column2, row.Column3 });
+           row => new { row.Column1, row.Column2, row.Column3 },
+           options =>
+           {
+               //options.WithHoldLock = true;
+           });
 connection.BulkMerge(compositeKeyRows,
            row => new { row.Id1, row.Id2 },
            row => new { row.Column1, row.Column2, row.Column3 },
-           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+           options =>
+           {
+               //options.WithHoldLock = true;
+           });
                         
 connection.BulkDelete(rows, row => row.Id);
 connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
@@ -153,11 +177,19 @@ connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
 connection.BulkMerge(rows, "Rows",
            "Id",
            new [] { "Column1", "Column2" },
-           new [] { "Column1", "Column2", "Column3" });
+           new [] { "Column1", "Column2", "Column3" },
+           options =>
+           {
+               //options.WithHoldLock = true;
+           });
 connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
            new [] { "Id1", "Id2" },
            new [] { "Column1", "Column2", "Column3" },
-           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+           options =>
+           {
+               //options.WithHoldLock = true;
+           });
 
 connection.BulkDelete(rows, "Rows", "Id");
 connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new [] { "Id1", "Id2" });
