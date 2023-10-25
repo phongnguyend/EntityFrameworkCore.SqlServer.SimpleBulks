@@ -25,12 +25,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             _connection = connection;
         }
 
-        public BulkInsertBuilder(SqlTransaction transaction)
-        {
-            _transaction = transaction;
-            _connection = transaction.Connection;
-        }
-
         public BulkInsertBuilder(SqlConnection connection, SqlTransaction transaction = null)
         {
             _connection = connection;

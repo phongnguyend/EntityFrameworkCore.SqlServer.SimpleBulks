@@ -24,12 +24,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             _connection = connection;
         }
 
-        public BulkSelectBuilder(SqlTransaction transaction)
-        {
-            _transaction = transaction;
-            _connection = transaction.Connection;
-        }
-
         public BulkSelectBuilder(SqlConnection connection, SqlTransaction transaction = null)
         {
             _connection = connection;
