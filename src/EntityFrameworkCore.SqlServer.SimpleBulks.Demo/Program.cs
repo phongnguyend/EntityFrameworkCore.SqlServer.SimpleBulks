@@ -57,8 +57,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime });
             }
 
-            SqlConnectionTest.Run();
-
             Console.WriteLine("Finished!");
             Console.ReadLine();
         }
