@@ -3,16 +3,20 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 {
     public class BulkUpdateTests : IDisposable
     {
+        private readonly ITestOutputHelper _output;
 
         private TestDbContext _context;
 
-        public BulkUpdateTests()
+        public BulkUpdateTests(ITestOutputHelper output)
         {
+            _output = output;
+
             _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
             _context.Database.EnsureCreated();
 
@@ -75,9 +79,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             }
 
             _context.BulkUpdate(rows,
-                    row => new { row.Column3, row.Column2 });
+                    row => new { row.Column3, row.Column2 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
             _context.BulkUpdate(compositeKeyRows,
-                    row => new { row.Column3, row.Column2 });
+                    row => new { row.Column3, row.Column2 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
             var newId = rows.Max(x => x.Id) + 1;
 
@@ -104,12 +116,20 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             _context.BulkMerge(rows,
                     row => row.Id,
                     row => new { row.Column1, row.Column2 },
-                    row => new { row.Column1, row.Column2, row.Column3 });
+                    row => new { row.Column1, row.Column2, row.Column3 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
             _context.BulkMerge(compositeKeyRows,
                     row => new { row.Id1, row.Id2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
-                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
             tran.Commit();
         }
@@ -135,9 +155,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             }
 
             _context.BulkUpdate(rows,
-                new[] { "Column3", "Column2" });
+                new[] { "Column3", "Column2" },
+                options =>
+                {
+                    options.LogTo = _output.WriteLine;
+                });
             _context.BulkUpdate(compositeKeyRows,
-                new[] { "Column3", "Column2" });
+                new[] { "Column3", "Column2" },
+                options =>
+                {
+                    options.LogTo = _output.WriteLine;
+                });
 
             var newId = rows.Max(x => x.Id) + 1;
 
@@ -164,11 +192,19 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             _context.BulkMerge(rows,
                 "Id",
                 new[] { "Column1", "Column2" },
-                new[] { "Column1", "Column2", "Column3" });
+                new[] { "Column1", "Column2", "Column3" },
+                options =>
+                {
+                    options.LogTo = _output.WriteLine;
+                });
             _context.BulkMerge(compositeKeyRows,
                 new[] { "Id1", "Id2" },
                 new[] { "Column1", "Column2", "Column3" },
-                new[] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+                new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+                options =>
+                {
+                    options.LogTo = _output.WriteLine;
+                });
 
             tran.Commit();
         }

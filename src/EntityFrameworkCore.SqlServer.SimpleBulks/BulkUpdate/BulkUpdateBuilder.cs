@@ -113,33 +113,39 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var joinCondition = string.Join(" and ", _idColumns.Select(x =>
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" collate {Constants.Collation}" : string.Empty;
+                $" COLLATE {Constants.Collation}" : string.Empty;
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
             var updateStatementBuilder = new StringBuilder();
-            updateStatementBuilder.AppendLine("update a set");
+            updateStatementBuilder.AppendLine("UPDATE a SET");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
-            updateStatementBuilder.AppendLine($"from {_tableName } a join [{ temptableName}] b on " + joinCondition);
+            updateStatementBuilder.AppendLine($"FROM [{_tableName}] a JOIN [{temptableName}] b ON " + joinCondition);
 
             _connection.EnsureOpen();
 
+            Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
             using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
+            Log("End creating temp table.");
 
+            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+            Log("End executing SqlBulkCopy.");
 
-            using (var updateCommand = _connection.CreateTextCommand(_transaction, updateStatementBuilder.ToString()))
+            var sqlUpdateStatement = updateStatementBuilder.ToString();
+
+            Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement);
+            var affectedRows = updateCommand.ExecuteNonQuery();
+            Log("End updating.");
+
+            return new BulkUpdateResult
             {
-                var affectedRows = updateCommand.ExecuteNonQuery();
-
-                return new BulkUpdateResult
-                {
-                    AffectedRows = affectedRows
-                };
-            }
+                AffectedRows = affectedRows
+            };
         }
 
         private string CreateSetStatement(string prop, string leftTable, string rightTable)
@@ -159,6 +165,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         {
             var rs = prop.Replace("+=", "");
             return rs;
+        }
+
+        private void Log(string message)
+        {
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkUpdate]: {message}");
         }
     }
 }

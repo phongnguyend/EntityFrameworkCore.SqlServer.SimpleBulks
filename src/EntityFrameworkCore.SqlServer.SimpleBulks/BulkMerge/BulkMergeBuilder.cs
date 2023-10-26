@@ -135,7 +135,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
-            mergeStatementBuilder.AppendLine($"MERGE {_tableName}{hint} t");
+            mergeStatementBuilder.AppendLine($"MERGE [{_tableName}]{hint} t");
             mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
             mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
 
@@ -157,15 +157,23 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             _connection.EnsureOpen();
 
+            Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
             using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
+            Log("End creating temp table.");
 
+            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+            Log("End executing SqlBulkCopy.");
 
-            using var updateCommand = _connection.CreateTextCommand(_transaction, mergeStatementBuilder.ToString());
+            var sqlMergeStatement = mergeStatementBuilder.ToString();
+
+            Log($"Begin merging temp table:{Environment.NewLine}{sqlMergeStatement}");
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement);
             var affectedRows = updateCommand.ExecuteNonQuery();
+            Log("End merging temp table.");
 
             return new BulkMergeResult
             {
@@ -190,6 +198,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         {
             var rs = prop.Replace("+=", "");
             return rs;
+        }
+
+        private void Log(string message)
+        {
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMerge]: {message}");
         }
     }
 }

@@ -2,16 +2,20 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 {
     public class BulkDeleteTests : IDisposable
     {
+        private readonly ITestOutputHelper _output;
 
         private TestDbContext _context;
 
-        public BulkDeleteTests()
+        public BulkDeleteTests(ITestOutputHelper output)
         {
+            _output = output;
+
             _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkDelete.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
             _context.Database.EnsureCreated();
 
@@ -61,8 +65,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
             var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
 
-            _context.BulkDelete(rows);
-            _context.BulkDelete(compositeKeyRows);
+            _context.BulkDelete(rows,
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
+            _context.BulkDelete(compositeKeyRows,
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
             tran.Commit();
         }

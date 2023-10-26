@@ -91,34 +91,43 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             var dataTable = _data.ToDataTable(_idColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
-            var joinCondition = string.Join(" and ", _idColumns.Select(x =>
+            var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" collate {Constants.Collation}" : string.Empty;
+                $" COLLATE {Constants.Collation}" : string.Empty;
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
-            var deleteStatement = $"delete a from {_tableName} a join [{temptableName}] b on " + joinCondition;
+            var deleteStatement = $"DELETE a FROM [{_tableName}] a JOIN [{temptableName}] b ON " + joinCondition;
 
             _connection.EnsureOpen();
 
+            Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
             using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
+            Log("End creating temp table.");
 
+
+            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+            Log("End executing SqlBulkCopy.");
 
-            using (var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement))
+            Log($"Begin deleting:{Environment.NewLine}{deleteStatement}");
+            using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement);
+            var affectedRows = deleteCommand.ExecuteNonQuery();
+            Log("End deleting.");
+
+            return new BulkDeleteResult
             {
-                var affectedRows = deleteCommand.ExecuteNonQuery();
-
-                return new BulkDeleteResult
-                {
-                    AffectedRows = affectedRows
-                };
-            }
+                AffectedRows = affectedRows
+            };
         }
 
+        private void Log(string message)
+        {
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkDelete]: {message}");
+        }
     }
 }

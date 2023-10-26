@@ -1,6 +1,7 @@
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
+using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 {
@@ -8,9 +9,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
     {
 
         private TestDbContext _context;
+        private readonly ITestOutputHelper _output;
 
-        public BulkInsertTests()
+        public BulkInsertTests(ITestOutputHelper output)
         {
+            _output = output;
             _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
             _context.Database.EnsureCreated();
         }
@@ -46,10 +49,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             }
 
             _context.BulkInsert(rows,
-                    row => new { row.Column1, row.Column2, row.Column3 });
+                    row => new { row.Column1, row.Column2, row.Column3 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
             _context.BulkInsert(compositeKeyRows,
-                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                    options =>
+                    {
+                        options.LogTo = _output.WriteLine;
+                    });
 
 
             // Assert

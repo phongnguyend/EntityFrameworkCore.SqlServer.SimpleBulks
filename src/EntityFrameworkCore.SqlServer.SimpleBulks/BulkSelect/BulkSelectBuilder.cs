@@ -149,5 +149,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
         {
             return $"a.[{GetDbColumnName(colunmName)}] as [{colunmName}]";
         }
+
+        private void Log(string message)
+        {
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkSelect]: {message}");
+        }
     }
 }
