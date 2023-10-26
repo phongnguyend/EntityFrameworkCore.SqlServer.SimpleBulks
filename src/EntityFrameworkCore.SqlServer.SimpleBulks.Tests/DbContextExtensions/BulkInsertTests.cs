@@ -178,5 +178,78 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             Assert.Empty(dbRows);
             Assert.Empty(dbCompositeKeyRows);
         }
+
+        [Fact]
+        public void Bulk_Insert_KeepIdentity()
+        {
+            var configurationEntries = new List<ConfigurationEntry>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                configurationEntries.Add(new ConfigurationEntry
+                {
+                    Id = Guid.NewGuid(),
+                    Key = $"Key{i}",
+                    Value = $"Value{i}",
+                    Description = string.Empty,
+                    CreatedDateTime = DateTimeOffset.Now,
+                });
+            }
+
+            _context.BulkInsert(configurationEntries, options =>
+            {
+                options.KeepIdentity = true;
+                options.LogTo = _output.WriteLine;
+            });
+
+            // Assert
+            configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
+            var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
+                Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
+                Assert.Equal(configurationEntries[i].Value, configurationEntriesInDb[i].Value);
+                Assert.Equal(configurationEntries[i].Description, configurationEntriesInDb[i].Description);
+                Assert.Equal(configurationEntries[i].CreatedDateTime, configurationEntriesInDb[i].CreatedDateTime);
+            }
+        }
+
+        [Fact]
+        public void Bulk_Insert_Return_DbGeneratedId()
+        {
+            var configurationEntries = new List<ConfigurationEntry>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                configurationEntries.Add(new ConfigurationEntry
+                {
+                    Key = $"Key{i}",
+                    Value = $"Value{i}",
+                    Description = string.Empty,
+                    CreatedDateTime = DateTimeOffset.Now,
+                });
+            }
+
+            _context.BulkInsert(configurationEntries, options =>
+            {
+                options.LogTo = _output.WriteLine;
+            });
+
+            // Assert
+            configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
+            var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
+
+            for (int i = 0; i < 100; i++)
+            {
+                Assert.NotEqual(Guid.Empty, configurationEntriesInDb[i].Id);
+                Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
+                Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
+                Assert.Equal(configurationEntries[i].Value, configurationEntriesInDb[i].Value);
+                Assert.Equal(configurationEntries[i].Description, configurationEntriesInDb[i].Description);
+                Assert.Equal(configurationEntries[i].CreatedDateTime, configurationEntriesInDb[i].CreatedDateTime);
+            }
+        }
     }
 }

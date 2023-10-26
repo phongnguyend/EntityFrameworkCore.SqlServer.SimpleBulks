@@ -108,6 +108,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 return;
             }
 
+            if (_options.KeepIdentity)
+            {
+                var columns = _columnNames.Select(x => x).ToList();
+                if (!columns.Contains(_ouputIdColumn))
+                {
+                    columns.Add(_ouputIdColumn);
+                }
+
+                dataTable = _data.ToDataTable(columns.ToList());
+
+                _connection.EnsureOpen();
+
+                Log($"Begin executing SqlBulkCopy. TableName: [{_tableName}]");
+                dataTable.SqlBulkCopy(_tableName, _dbColumnMappings, _connection, _transaction, _options);
+                Log("End executing SqlBulkCopy.");
+                return;
+            }
+
             var temptableName = "#" + Guid.NewGuid();
             dataTable = _data.ToDataTable(_columnNames.ToList(), addIndexNumberColumn: true);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
