@@ -95,7 +95,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
         public IEnumerable<T> Execute(IEnumerable<T> machedValues)
         {
-            var temptableName = "#" + Guid.NewGuid();
+            var temptableName = $"[#{Guid.NewGuid()}]";
 
             var dataTable = machedValues.ToDataTable(_matchedColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
@@ -109,7 +109,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
             var selectQueryBuilder = new StringBuilder();
             selectQueryBuilder.AppendLine($"select {string.Join(", ", _columnNames.Select(x => CreateSelectStatement(x)))} ");
-            selectQueryBuilder.AppendLine($"from {_tableName} a join [{temptableName}] b on " + joinCondition);
+            selectQueryBuilder.AppendLine($"from {_tableName} a join {temptableName} b on " + joinCondition);
 
             _connection.EnsureOpen();
 

@@ -10,6 +10,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database
 
         public DbSet<CompositeKeyRow<int, int>> CompositeKeyRows { get; set; }
 
+        public DbSet<SingleKeyRowWithSchema<int>> SingleKeyRowsWithSchema { get; set; }
+
+        public DbSet<CompositeKeyRowWithSchema<int, int>> CompositeKeyRowsWithSchema { get; set; }
+
         public TestDbContext(string connectionString)
         {
             _connectionString = connectionString;
@@ -25,6 +29,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CompositeKeyRow<int, int>>().HasKey(x => new { x.Id1, x.Id2 });
+            modelBuilder.Entity<CompositeKeyRowWithSchema<int, int>>().HasKey(x => new { x.Id1, x.Id2 });
             modelBuilder.Entity<ConfigurationEntry>().Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
             modelBuilder.Entity<ConfigurationEntry>().Property(x => x.Key).HasColumnName("Key1");
             modelBuilder.Entity<ConfigurationEntry>().Property(x => x.Id).HasColumnName("Id1");

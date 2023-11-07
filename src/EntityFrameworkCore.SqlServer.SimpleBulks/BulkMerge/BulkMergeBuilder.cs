@@ -114,7 +114,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
         public BulkMergeResult Execute()
         {
-            var temptableName = "#" + Guid.NewGuid();
+            var temptableName = $"[#{Guid.NewGuid()}]";
 
             var propertyNames = _updateColumnNames.Select(RemoveOperator).ToList();
             propertyNames.AddRange(_idColumns);
@@ -135,8 +135,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
-            mergeStatementBuilder.AppendLine($"MERGE [{_tableName}]{hint} t");
-            mergeStatementBuilder.AppendLine($"    USING [{temptableName}] s");
+            mergeStatementBuilder.AppendLine($"MERGE {_tableName}{hint} t");
+            mergeStatementBuilder.AppendLine($"    USING {temptableName} s");
             mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
 
             if (_updateColumnNames.Any())
@@ -164,7 +164,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             }
             Log("End creating temp table.");
 
-            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
+            Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
 

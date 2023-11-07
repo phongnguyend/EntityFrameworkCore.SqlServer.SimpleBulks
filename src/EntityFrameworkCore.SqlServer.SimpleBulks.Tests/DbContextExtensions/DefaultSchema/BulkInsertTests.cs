@@ -3,7 +3,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.DefaultSchema
 {
     public class BulkInsertTests : IDisposable
     {

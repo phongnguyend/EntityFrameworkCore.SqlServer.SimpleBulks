@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
         {
             var sql = new StringBuilder();
 
-            sql.AppendFormat("CREATE TABLE [{0}] (", tableName);
+            sql.AppendFormat("CREATE TABLE {0} (", tableName);
 
             for (int i = 0; i < table.Columns.Count; i++)
             {
@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             {
                 BatchSize = options.BatchSize,
                 BulkCopyTimeout = options.Timeout,
-                DestinationTableName = $"[{ tableName }]"
+                DestinationTableName = $"{ tableName }"
             };
 
             foreach (DataColumn dtColum in dataTable.Columns)

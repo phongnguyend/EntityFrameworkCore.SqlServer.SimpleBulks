@@ -9,8 +9,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "test");
+
             migrationBuilder.CreateTable(
                 name: "CompositeKeyRows",
+                columns: table => new
+                {
+                    Id1 = table.Column<int>(type: "int", nullable: false),
+                    Id2 = table.Column<int>(type: "int", nullable: false),
+                    Column1 = table.Column<int>(type: "int", nullable: false),
+                    Column2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Column3 = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompositeKeyRows", x => new { x.Id1, x.Id2 });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompositeKeyRows",
+                schema: "test",
                 columns: table => new
                 {
                     Id1 = table.Column<int>(type: "int", nullable: false),
@@ -56,6 +75,22 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                 {
                     table.PrimaryKey("PK_SingleKeyRows", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "SingleKeyRows",
+                schema: "test",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Column1 = table.Column<int>(type: "int", nullable: false),
+                    Column2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Column3 = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SingleKeyRows", x => x.Id);
+                });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -64,10 +99,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                 name: "CompositeKeyRows");
 
             migrationBuilder.DropTable(
+                name: "CompositeKeyRows",
+                schema: "test");
+
+            migrationBuilder.DropTable(
                 name: "ConfigurationEntry");
 
             migrationBuilder.DropTable(
                 name: "SingleKeyRows");
+
+            migrationBuilder.DropTable(
+                name: "SingleKeyRows",
+                schema: "test");
         }
     }
 }

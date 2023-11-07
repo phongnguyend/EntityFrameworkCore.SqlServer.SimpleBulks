@@ -4,7 +4,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Schema
 {
     public class BulkDeleteTests : IDisposable
     {
@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             var tran = _context.Database.BeginTransaction();
 
             var rows = new List<SingleKeyRow<int>>();
-            var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
+            var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
             for (int i = 0; i < 100; i++)
             {
@@ -33,7 +33,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
                     Column3 = DateTime.Now
                 });
 
-                compositeKeyRows.Add(new CompositeKeyRow<int, int>
+                compositeKeyRows.Add(new CompositeKeyRowWithSchema<int, int>
                 {
                     Id1 = i,
                     Id2 = i,
@@ -62,8 +62,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
         {
             var tran = _context.Database.BeginTransaction();
 
-            var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
-            var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
+            var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().Take(99).ToList();
+            var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().Take(99).ToList();
 
             _context.BulkDelete(rows,
                     options =>

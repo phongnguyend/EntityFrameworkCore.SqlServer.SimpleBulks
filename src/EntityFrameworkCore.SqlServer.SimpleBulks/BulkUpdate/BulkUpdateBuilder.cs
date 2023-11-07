@@ -102,7 +102,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 
         public BulkUpdateResult Execute()
         {
-            var temptableName = "#" + Guid.NewGuid();
+            var temptableName = $"[#{Guid.NewGuid()}]";
 
             var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
             propertyNamesIncludeId.AddRange(_idColumns);
@@ -120,7 +120,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine("UPDATE a SET");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
-            updateStatementBuilder.AppendLine($"FROM [{_tableName}] a JOIN [{temptableName}] b ON " + joinCondition);
+            updateStatementBuilder.AppendLine($"FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition);
 
             _connection.EnsureOpen();
 
@@ -131,7 +131,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             }
             Log("End creating temp table.");
 
-            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
+            Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
 

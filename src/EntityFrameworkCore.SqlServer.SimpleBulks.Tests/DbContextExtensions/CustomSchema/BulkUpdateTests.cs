@@ -5,7 +5,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Schema
 {
     public class BulkUpdateTests : IDisposable
     {
@@ -22,19 +22,19 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 
             var tran = _context.Database.BeginTransaction();
 
-            var rows = new List<SingleKeyRow<int>>();
-            var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
+            var rows = new List<SingleKeyRowWithSchema<int>>();
+            var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
             for (int i = 0; i < 100; i++)
             {
-                rows.Add(new SingleKeyRow<int>
+                rows.Add(new SingleKeyRowWithSchema<int>
                 {
                     Column1 = i,
                     Column2 = "" + i,
                     Column3 = DateTime.Now
                 });
 
-                compositeKeyRows.Add(new CompositeKeyRow<int, int>
+                compositeKeyRows.Add(new CompositeKeyRowWithSchema<int, int>
                 {
                     Id1 = i,
                     Id2 = i,
@@ -63,8 +63,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
         {
             var tran = _context.Database.BeginTransaction();
 
-            var rows = _context.SingleKeyRows.AsNoTracking().ToList();
-            var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+            var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
+            var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
 
             foreach (var row in rows)
             {
@@ -93,7 +93,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 
             var newId = rows.Max(x => x.Id) + 1;
 
-            rows.Add(new SingleKeyRow<int>
+            rows.Add(new SingleKeyRowWithSchema<int>
             {
                 Id = newId,
                 Column1 = newId,
@@ -104,7 +104,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
             var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
 
-            compositeKeyRows.Add(new CompositeKeyRow<int, int>
+            compositeKeyRows.Add(new CompositeKeyRowWithSchema<int, int>
             {
                 Id1 = newId1,
                 Id2 = newId2,
@@ -139,8 +139,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
         {
             var tran = _context.Database.BeginTransaction();
 
-            var rows = _context.SingleKeyRows.AsNoTracking().ToList();
-            var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+            var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
+            var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
 
             foreach (var row in rows)
             {
@@ -169,7 +169,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
 
             var newId = rows.Max(x => x.Id) + 1;
 
-            rows.Add(new SingleKeyRow<int>
+            rows.Add(new SingleKeyRowWithSchema<int>
             {
                 Id = newId,
                 Column1 = newId,
@@ -180,7 +180,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions
             var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
             var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
 
-            compositeKeyRows.Add(new CompositeKeyRow<int, int>
+            compositeKeyRows.Add(new CompositeKeyRowWithSchema<int, int>
             {
                 Id1 = newId1,
                 Id2 = newId2,

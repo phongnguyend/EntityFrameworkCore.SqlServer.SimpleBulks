@@ -87,7 +87,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
         public BulkDeleteResult Execute()
         {
-            var temptableName = "#" + Guid.NewGuid();
+            var temptableName = $"[#{Guid.NewGuid()}]";
             var dataTable = _data.ToDataTable(_idColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
@@ -98,7 +98,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
-            var deleteStatement = $"DELETE a FROM [{_tableName}] a JOIN [{temptableName}] b ON " + joinCondition;
+            var deleteStatement = $"DELETE a FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition;
 
             _connection.EnsureOpen();
 
@@ -110,7 +110,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             Log("End creating temp table.");
 
 
-            Log($"Begin executing SqlBulkCopy. TableName: [{temptableName}]");
+            Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
 

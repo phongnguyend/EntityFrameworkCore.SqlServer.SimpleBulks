@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20231025135846_Init")]
+    [Migration("20231107080117_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,6 +45,29 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     b.HasKey("Id1", "Id2");
 
                     b.ToTable("CompositeKeyRows");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.CompositeKeyRowWithSchema<int, int>", b =>
+                {
+                    b.Property<int>("Id1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Column1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Column2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Column3")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id1", "Id2");
+
+                    b.ToTable("CompositeKeyRows", "test");
                 });
 
             modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.ConfigurationEntry", b =>
@@ -109,6 +132,29 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SingleKeyRows");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.SingleKeyRowWithSchema<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("Column1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Column2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Column3")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SingleKeyRows", "test");
                 });
 #pragma warning restore 612, 618
         }
