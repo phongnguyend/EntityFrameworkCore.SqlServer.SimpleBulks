@@ -113,7 +113,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
             _connection.EnsureOpen();
 
-            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
@@ -124,7 +124,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
             var properties = typeof(T).GetProperties().Where(prop => _columnNames.Contains(prop.Name)).ToList();
 
-            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQueryBuilder.ToString());
+            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQueryBuilder.ToString(), _options);
             using var reader = updateCommand.ExecuteReader();
             while (reader.Read())
             {

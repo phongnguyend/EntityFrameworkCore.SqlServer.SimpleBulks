@@ -125,7 +125,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             _connection.EnsureOpen();
 
             Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
@@ -138,7 +138,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var sqlUpdateStatement = updateStatementBuilder.ToString();
 
             Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement);
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
             var affectedRows = updateCommand.ExecuteNonQuery();
             Log("End updating.");
 

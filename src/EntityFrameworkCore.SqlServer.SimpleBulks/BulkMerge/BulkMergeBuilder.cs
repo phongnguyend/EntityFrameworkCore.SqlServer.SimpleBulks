@@ -158,7 +158,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             _connection.EnsureOpen();
 
             Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
@@ -171,7 +171,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             var sqlMergeStatement = mergeStatementBuilder.ToString();
 
             Log($"Begin merging temp table:{Environment.NewLine}{sqlMergeStatement}");
-            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement);
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options);
             var affectedRows = updateCommand.ExecuteNonQuery();
             Log("End merging temp table.");
 

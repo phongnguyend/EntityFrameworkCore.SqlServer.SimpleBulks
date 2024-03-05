@@ -103,7 +103,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             _connection.EnsureOpen();
 
             Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable))
+            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
@@ -115,7 +115,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             Log("End executing SqlBulkCopy.");
 
             Log($"Begin deleting:{Environment.NewLine}{deleteStatement}");
-            using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement);
+            using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement, _options);
             var affectedRows = deleteCommand.ExecuteNonQuery();
             Log("End deleting.");
 

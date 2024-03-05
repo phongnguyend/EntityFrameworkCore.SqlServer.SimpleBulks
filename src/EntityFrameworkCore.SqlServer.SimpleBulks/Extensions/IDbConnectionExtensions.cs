@@ -30,11 +30,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             }
         }
 
-        public static IDbCommand CreateTextCommand(this IDbConnection connection, IDbTransaction transaction, string commandText)
+        public static IDbCommand CreateTextCommand(this IDbConnection connection, IDbTransaction transaction, string commandText, BulkOptions options = null)
         {
+            options ??= new BulkOptions()
+            {
+                BatchSize = 0,
+                Timeout = 30,
+            };
+
             var command = connection.CreateCommand();
             command.Transaction = transaction;
             command.CommandText = commandText;
+            command.CommandTimeout = options.Timeout;
             return command;
         }
     }
