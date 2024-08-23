@@ -27,7 +27,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .WithOuputId(idSelector)
+                .WithOutputId(idSelector)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .WithOuputId(idColumnName)
+                .WithOutputId(idColumnName)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
@@ -73,7 +73,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
-                .WithOuputId(idSelector)
+                .WithOutputId(idSelector)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
@@ -94,7 +94,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
-                .WithOuputId(idColumnName)
+                .WithOutputId(idColumnName)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }

@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             _connection = connection;
         }
 
-        public BulkUpdateBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        public BulkUpdateBuilder(SqlConnection connection, SqlTransaction transaction)
         {
             _connection = connection;
             _transaction = transaction;

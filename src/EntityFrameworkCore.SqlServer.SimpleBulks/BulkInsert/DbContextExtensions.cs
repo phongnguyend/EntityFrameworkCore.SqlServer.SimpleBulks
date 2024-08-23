@@ -30,7 +30,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columns)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
-                .WithOuputId(idColumn)
+                .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }
@@ -52,7 +52,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 .WithColumns(columnNamesSelector)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
-                .WithOuputId(idColumn)
+                .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
         }

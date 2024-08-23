@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             _connection = connection;
         }
 
-        public BulkDeleteBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        public BulkDeleteBuilder(SqlConnection connection, SqlTransaction transaction)
         {
             _connection = connection;
             _transaction = transaction;

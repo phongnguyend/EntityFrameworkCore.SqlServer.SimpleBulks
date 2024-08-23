@@ -25,7 +25,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             _connection = connection;
         }
 
-        public BulkMergeBuilder(SqlConnection connection, SqlTransaction transaction = null)
+        public BulkMergeBuilder(SqlConnection connection, SqlTransaction transaction)
         {
             _connection = connection;
             _transaction = transaction;
