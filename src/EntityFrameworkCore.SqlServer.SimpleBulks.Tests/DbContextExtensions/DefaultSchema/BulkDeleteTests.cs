@@ -57,13 +57,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             _context.Database.EnsureDeleted();
         }
 
-        [Fact]
-        public void Bulk_Delete_Using_Linq_With_Transaction()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Delete_Using_Linq_With_Transaction(int length)
         {
             var tran = _context.Database.BeginTransaction();
 
-            var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
-            var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
+            var rows = _context.SingleKeyRows.AsNoTracking().Take(length).ToList();
+            var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(length).ToList();
 
             _context.BulkDelete(rows,
                     options =>
@@ -77,6 +79,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                     });
 
             tran.Commit();
+
+            // Assert
+            var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+            Assert.Equal(100 - length, dbRows.Count);
+            Assert.Equal(100 - length, dbCompositeKeyRows.Count);
         }
     }
 }

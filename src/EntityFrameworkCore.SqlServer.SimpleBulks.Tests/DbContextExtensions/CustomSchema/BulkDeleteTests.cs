@@ -21,12 +21,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
 
             var tran = _context.Database.BeginTransaction();
 
-            var rows = new List<SingleKeyRow<int>>();
+            var rows = new List<SingleKeyRowWithSchema<int>>();
             var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
             for (int i = 0; i < 100; i++)
             {
-                rows.Add(new SingleKeyRow<int>
+                rows.Add(new SingleKeyRowWithSchema<int>
                 {
                     Column1 = i,
                     Column2 = "" + i,
@@ -57,13 +57,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             _context.Database.EnsureDeleted();
         }
 
-        [Fact]
-        public void Bulk_Delete_Using_Linq_With_Transaction()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Delete_Using_Linq_With_Transaction(int length)
         {
             var tran = _context.Database.BeginTransaction();
 
-            var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().Take(99).ToList();
-            var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().Take(99).ToList();
+            var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().Take(length).ToList();
+            var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().Take(length).ToList();
 
             _context.BulkDelete(rows,
                     options =>
@@ -77,6 +79,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
                     });
 
             tran.Commit();
+
+            // Assert
+            var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
+
+            Assert.Equal(100 - length, dbRows.Count);
+            Assert.Equal(100 - length, dbCompositeKeyRows.Count);
         }
     }
 }

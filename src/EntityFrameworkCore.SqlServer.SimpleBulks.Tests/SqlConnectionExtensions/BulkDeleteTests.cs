@@ -129,6 +129,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
                     });
                 }
             }
+
+            // Assert
+            var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+            Assert.Equal(1, dbRows.Count);
+            Assert.Equal(1, dbCompositeKeyRows.Count);
         }
     }
 }

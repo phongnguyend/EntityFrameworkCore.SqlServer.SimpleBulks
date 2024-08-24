@@ -155,20 +155,26 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 
         private BulkUpdateResult SingleUpdate(T dataToUpdate)
         {
+            var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
+            {
+                return CreateSetStatement(x);
+            }));
+
             var updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine($"UPDATE {_tableName} SET");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x))));
-            updateStatementBuilder.AppendLine($"WHERE {string.Join(" AND ", _idColumns.Select(x => CreateSetStatement(x)))}");
+            updateStatementBuilder.AppendLine($"WHERE {whereCondition}");
 
             var sqlUpdateStatement = updateStatementBuilder.ToString();
 
             var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
             propertyNamesIncludeId.AddRange(_idColumns);
 
-            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
-            dataToUpdate.ToSqlParameters(propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
-
             Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
+
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+
+            dataToUpdate.ToSqlParameters(propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
 
             _connection.EnsureOpen();
 

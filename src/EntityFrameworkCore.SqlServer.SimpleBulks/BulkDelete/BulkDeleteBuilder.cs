@@ -87,6 +87,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 
         public BulkDeleteResult Execute()
         {
+            if (_data.Count() == 1)
+            {
+                return SingleDelete(_data.First());
+            }
+
             var temptableName = $"[#{Guid.NewGuid()}]";
             var dataTable = _data.ToDataTable(_idColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
@@ -103,20 +108,52 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             _connection.EnsureOpen();
 
             Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
+
             using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
+
             Log("End creating temp table.");
 
 
             Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
+
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+
             Log("End executing SqlBulkCopy.");
 
             Log($"Begin deleting:{Environment.NewLine}{deleteStatement}");
+
             using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement, _options);
+
             var affectedRows = deleteCommand.ExecuteNonQuery();
+
+            Log("End deleting.");
+
+            return new BulkDeleteResult
+            {
+                AffectedRows = affectedRows
+            };
+        }
+
+        public BulkDeleteResult SingleDelete(T dataToDelete)
+        {
+            var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
+            {
+                return $"[{GetDbColumnName(x)}] = @{x}";
+            }));
+
+            var deleteStatement = $"DELETE FROM {_tableName} WHERE " + whereCondition;
+
+            Log($"Begin deleting:{Environment.NewLine}{deleteStatement}");
+
+            using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement, _options);
+
+            dataToDelete.ToSqlParameters(_idColumns).ForEach(x => deleteCommand.Parameters.Add(x));
+
+            var affectedRows = deleteCommand.ExecuteNonQuery();
+
             Log("End deleting.");
 
             return new BulkDeleteResult
