@@ -107,6 +107,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 
         public void Execute()
         {
+            if (_data.Count() == 1)
+            {
+                SingleInsert();
+                return;
+            }
+
             DataTable dataTable;
             if (string.IsNullOrWhiteSpace(_outputIdColumn))
             {
@@ -192,6 +198,67 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 idProperty.SetValue(row, returnedIds[idx]);
                 idx++;
             }
+        }
+
+        private void SingleInsert()
+        {
+            var insertStatementBuilder = new StringBuilder();
+
+            var columnsToInsert = _columnNames.Select(x => x).ToList();
+
+            if (_options.KeepIdentity)
+            {
+                if (!columnsToInsert.Contains(_outputIdColumn))
+                {
+                    columnsToInsert.Add(_outputIdColumn);
+                }
+
+                insertStatementBuilder.AppendLine($"INSERT INTO {_tableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{GetDbColumnName(x)}]"))})");
+                insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            }
+            else
+            {
+                insertStatementBuilder.AppendLine($"INSERT INTO {_tableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{GetDbColumnName(x)}]"))})");
+
+                if (!string.IsNullOrEmpty(_outputIdColumn))
+                {
+                    insertStatementBuilder.AppendLine($"OUTPUT inserted.[{GetDbColumnName(_outputIdColumn)}]");
+                }
+
+                insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            }
+
+            var insertStatement = insertStatementBuilder.ToString();
+
+            var dataToInsert = _data.First();
+
+            using var insertCommand = _connection.CreateTextCommand(_transaction, insertStatement, _options);
+            dataToInsert.ToSqlParameters(columnsToInsert).ForEach(x => insertCommand.Parameters.Add(x));
+
+            Log($"Begin executing INSERT. TableName: {_tableName}");
+
+            _connection.EnsureOpen();
+
+            if (_options.KeepIdentity || string.IsNullOrEmpty(_outputIdColumn))
+            {
+                var affectedRow = insertCommand.ExecuteNonQuery();
+            }
+            else
+            {
+                var dbColumn = GetDbColumnName(_outputIdColumn);
+                var idProperty = typeof(T).GetProperty(_outputIdColumn);
+
+                using var reader = insertCommand.ExecuteReader();
+                while (reader.Read())
+                {
+                    var returnedId = reader[dbColumn];
+
+                    idProperty.SetValue(dataToInsert, returnedId);
+                    break;
+                }
+            }
+
+            Log($"End executing INSERT. TableName: {_tableName}");
         }
 
         private void Log(string message)

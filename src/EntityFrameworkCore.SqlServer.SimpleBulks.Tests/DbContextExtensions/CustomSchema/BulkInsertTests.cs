@@ -23,13 +23,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             _context.Database.EnsureDeleted();
         }
 
-        [Fact]
-        public void Bulk_Insert_Using_Linq_Without_Transaction()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Insert_Using_Linq_Without_Transaction(int length)
         {
             var rows = new List<SingleKeyRowWithSchema<int>>();
             var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 rows.Add(new SingleKeyRowWithSchema<int>
                 {
@@ -67,7 +69,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
             var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 Assert.Equal(rows[i].Id, dbRows[i].Id);
                 Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -82,15 +84,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             }
         }
 
-        [Fact]
-        public void Bulk_Insert_Using_Linq_With_Transaction_Committed()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Insert_Using_Linq_With_Transaction_Committed(int length)
         {
             var tran = _context.Database.BeginTransaction();
 
             var rows = new List<SingleKeyRowWithSchema<int>>();
             var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 rows.Add(new SingleKeyRowWithSchema<int>
                 {
@@ -121,7 +125,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
             var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 Assert.Equal(rows[i].Id, dbRows[i].Id);
                 Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -136,15 +140,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             }
         }
 
-        [Fact]
-        public void Bulk_Insert_Using_Linq_With_Transaction_Rollbacked()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Insert_Using_Linq_With_Transaction_Rollbacked(int length)
         {
             var tran = _context.Database.BeginTransaction();
 
             var rows = new List<SingleKeyRowWithSchema<int>>();
             var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 rows.Add(new SingleKeyRowWithSchema<int>
                 {
@@ -179,12 +185,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             Assert.Empty(dbCompositeKeyRows);
         }
 
-        [Fact]
-        public void Bulk_Insert_KeepIdentity()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Insert_KeepIdentity(int length)
         {
             var configurationEntries = new List<ConfigurationEntry>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 configurationEntries.Add(new ConfigurationEntry
                 {
@@ -206,7 +214,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
                 Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
@@ -216,12 +224,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             }
         }
 
-        [Fact]
-        public void Bulk_Insert_Return_DbGeneratedId()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Insert_Return_DbGeneratedId(int length)
         {
             var configurationEntries = new List<ConfigurationEntry>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 configurationEntries.Add(new ConfigurationEntry
                 {
@@ -241,7 +251,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 Assert.NotEqual(Guid.Empty, configurationEntriesInDb[i].Id);
                 Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
