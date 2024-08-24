@@ -109,7 +109,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
         {
             if (_data.Count() == 1)
             {
-                SingleInsert();
+                SingleInsert(_data.First());
                 return;
             }
 
@@ -200,7 +200,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             }
         }
 
-        private void SingleInsert()
+        private void SingleInsert(T dataToInsert)
         {
             var insertStatementBuilder = new StringBuilder();
 
@@ -230,12 +230,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 
             var insertStatement = insertStatementBuilder.ToString();
 
-            var dataToInsert = _data.First();
-
             using var insertCommand = _connection.CreateTextCommand(_transaction, insertStatement, _options);
             dataToInsert.ToSqlParameters(columnsToInsert).ForEach(x => insertCommand.Parameters.Add(x));
 
-            Log($"Begin executing INSERT. TableName: {_tableName}");
+            Log($"Begin inserting: {Environment.NewLine}{insertStatement}");
 
             _connection.EnsureOpen();
 
@@ -258,7 +256,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 }
             }
 
-            Log($"End executing INSERT. TableName: {_tableName}");
+            Log($"End inserting.");
         }
 
         private void Log(string message)

@@ -102,6 +102,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 
         public BulkUpdateResult Execute()
         {
+            if (_data.Count() == 1)
+            {
+                return SingleUpdate(_data.First());
+            }
+
             var temptableName = $"[#{Guid.NewGuid()}]";
 
             var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
@@ -148,6 +153,35 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             };
         }
 
+        private BulkUpdateResult SingleUpdate(T dataToUpdate)
+        {
+            var updateStatementBuilder = new StringBuilder();
+            updateStatementBuilder.AppendLine($"UPDATE {_tableName} SET");
+            updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x))));
+            updateStatementBuilder.AppendLine($"WHERE {string.Join(" AND ", _idColumns.Select(x => CreateSetStatement(x)))}");
+
+            var sqlUpdateStatement = updateStatementBuilder.ToString();
+
+            var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
+            propertyNamesIncludeId.AddRange(_idColumns);
+
+            using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+            dataToUpdate.ToSqlParameters(propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
+
+            Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
+
+            _connection.EnsureOpen();
+
+            var affectedRow = updateCommand.ExecuteNonQuery();
+
+            Log($"End updating.");
+
+            return new BulkUpdateResult
+            {
+                AffectedRows = affectedRow
+            };
+        }
+
         private string CreateSetStatement(string prop, string leftTable, string rightTable)
         {
             string sqlOperator = "=";
@@ -159,6 +193,19 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             }
 
             return $"{leftTable}.[{GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
+        }
+
+        private string CreateSetStatement(string prop)
+        {
+            string sqlOperator = "=";
+            string sqlProp = RemoveOperator(prop);
+
+            if (prop.EndsWith("+="))
+            {
+                sqlOperator = "+=";
+            }
+
+            return $"[{GetDbColumnName(sqlProp)}] {sqlOperator} @{sqlProp}";
         }
 
         private static string RemoveOperator(string prop)

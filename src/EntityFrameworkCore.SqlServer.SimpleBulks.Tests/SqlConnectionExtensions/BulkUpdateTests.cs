@@ -293,6 +293,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
                         });
                 }
             }
+
+            // Assert
+            var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+            for (int i = 0; i < 101; i++)
+            {
+                Assert.Equal(rows[i].Id, dbRows[i].Id);
+                Assert.Equal(rows[i].Column1, dbRows[i].Column1);
+                Assert.Equal(rows[i].Column2, dbRows[i].Column2);
+                Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+
+                Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
+                Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
+                Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
+                Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
+                Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+            }
         }
     }
 }

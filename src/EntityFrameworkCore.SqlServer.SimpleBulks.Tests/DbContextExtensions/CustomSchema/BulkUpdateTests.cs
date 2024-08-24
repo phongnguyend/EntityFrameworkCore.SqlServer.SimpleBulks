@@ -19,13 +19,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
 
             _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
             _context.Database.EnsureCreated();
+        }
 
+        private void SeedData(int length)
+        {
             var tran = _context.Database.BeginTransaction();
 
             var rows = new List<SingleKeyRowWithSchema<int>>();
             var compositeKeyRows = new List<CompositeKeyRowWithSchema<int, int>>();
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < length; i++)
             {
                 rows.Add(new SingleKeyRowWithSchema<int>
                 {
@@ -58,9 +61,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             _context.Database.EnsureDeleted();
         }
 
-        [Fact]
-        public void Bulk_Update_Using_Linq_With_Transaction()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Update_Using_Linq_With_Transaction(int length)
         {
+            SeedData(length);
+
             var tran = _context.Database.BeginTransaction();
 
             var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
@@ -132,11 +139,33 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
                     });
 
             tran.Commit();
+
+            // Assert
+            var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
+
+            for (int i = 0; i < length + 1; i++)
+            {
+                Assert.Equal(rows[i].Id, dbRows[i].Id);
+                Assert.Equal(rows[i].Column1, dbRows[i].Column1);
+                Assert.Equal(rows[i].Column2, dbRows[i].Column2);
+                Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+
+                Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
+                Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
+                Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
+                Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
+                Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+            }
         }
 
-        [Fact]
-        public void Bulk_Update_Using_Dynamic_String_With_Transaction()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        public void Bulk_Update_Using_Dynamic_String_With_Transaction(int length)
         {
+            SeedData(length);
+
             var tran = _context.Database.BeginTransaction();
 
             var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
@@ -207,6 +236,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
                 });
 
             tran.Commit();
+
+            // Assert
+            var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
+            var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
+
+            for (int i = 0; i < length + 1; i++)
+            {
+                Assert.Equal(rows[i].Id, dbRows[i].Id);
+                Assert.Equal(rows[i].Column1, dbRows[i].Column1);
+                Assert.Equal(rows[i].Column2, dbRows[i].Column2);
+                Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+
+                Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
+                Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
+                Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
+                Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
+                Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+            }
         }
     }
 }
