@@ -99,7 +99,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" COLLATE {Constants.Collation}" : string.Empty;
+                $" COLLATE {_options.Collation}" : string.Empty;
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 

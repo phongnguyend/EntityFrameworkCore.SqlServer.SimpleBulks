@@ -103,7 +103,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             var joinCondition = string.Join(" and ", _matchedColumns.Select(x =>
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" collate {Constants.Collation}" : string.Empty;
+                $" collate {_options.Collation}" : string.Empty;
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 

@@ -2,5 +2,6 @@
 {
     public class BulkUpdateOptions : BulkOptions
     {
+        public string Collation { get; set; } = Constants.DefaultCollation;
     }
 }
