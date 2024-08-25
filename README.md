@@ -206,5 +206,54 @@ new BulkInsertBuilder<Row>(connection)
 	.Execute();
 ```
 
+## Configuration
+### BulkInsert
+```c#
+_context.BulkInsert(rows,
+		row => new { row.Column1, row.Column2, row.Column3 },
+		options =>
+		{
+			options.KeepIdentity = false;
+			options.BatchSize = 0;
+			options.Timeout = 30;
+			options.LogTo = Console.WriteLine;
+		});
+```
+### BulkUpdate
+```c#
+_context.BulkUpdate(rows,
+		row => new { row.Column3, row.Column2 },
+		options =>
+		{
+			options.BatchSize = 0;
+			options.Timeout = 30;
+			options.LogTo = Console.WriteLine;
+		});
+```
+### BulkMerge
+```c#
+_context.BulkMerge(rows,
+		row => row.Id,
+		row => new { row.Column1, row.Column2 },
+		row => new { row.Column1, row.Column2, row.Column3 },
+		options =>
+		{
+			options.BatchSize = 0;
+			options.Timeout = 30;
+			options.WithHoldLock = false;
+			options.LogTo = Console.WriteLine;
+		});
+```
+### BulkDelete
+```c#
+_context.BulkDelete(rows,
+		options =>
+		{
+			options.BatchSize = 0;
+			options.Timeout = 30;
+			options.LogTo = Console.WriteLine;
+		});
+```
+
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.
