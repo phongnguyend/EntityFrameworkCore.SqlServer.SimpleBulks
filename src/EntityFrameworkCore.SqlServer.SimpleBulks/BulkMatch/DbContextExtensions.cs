@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
 {
     public static class DbContextExtensions
     {
-        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkSelectOptions> configureOptions = null)
+        public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -18,16 +18,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             var columns = properties.Select(x => x.PropertyName);
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
-            return new BulkSelectBuilder<T>(connection, transaction)
-                 .WithColumns(columns)
+            return new BulkMatchBuilder<T>(connection, transaction)
+                 .WithReturnColumns(columns)
                  .WithDbColumnMappings(dbColumnMappings)
-                 .FromTable(tableName)
+                 .WithTable(tableName)
                  .WithMatchedColumns(matchColumnsSelector)
                  .ConfigureBulkOptions(configureOptions)
                  .Execute(machedValues);
         }
 
-        public static IEnumerable<T> BulkSelect<T>(this DbContext dbContext, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> matchColumnsSelector, IEnumerable<T> machedValues, Action<BulkSelectOptions> configureOptions = null)
+        public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchColumnsSelector, Expression<Func<T, object>> returnColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
         {
             string tableName = dbContext.GetTableName(typeof(T));
             var connection = dbContext.GetSqlConnection();
@@ -35,10 +35,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             var properties = dbContext.GetProperties(typeof(T));
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
-            return new BulkSelectBuilder<T>(connection, transaction)
-                 .WithColumns(columnNamesSelector)
+            return new BulkMatchBuilder<T>(connection, transaction)
+                 .WithColumns(returnColumnsSelector)
                  .WithDbColumnMappings(dbColumnMappings)
-                 .FromTable(tableName)
+                 .WithTable(tableName)
                  .WithMatchedColumns(matchColumnsSelector)
                  .ConfigureBulkOptions(configureOptions)
                  .Execute(machedValues);

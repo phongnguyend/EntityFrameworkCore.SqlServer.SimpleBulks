@@ -109,6 +109,60 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     b.ToTable("ConfigurationEntry");
                 });
 
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Contact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("newsequentialid()");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Customer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("newsequentialid()");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Customers");
+                });
+
             modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.SingleKeyRow<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -153,6 +207,22 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SingleKeyRows", "test");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Contact", b =>
+                {
+                    b.HasOne("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Customer", "Customer")
+                        .WithMany("Contacts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Customer", b =>
+                {
+                    b.Navigation("Contacts");
                 });
 #pragma warning restore 612, 618
         }

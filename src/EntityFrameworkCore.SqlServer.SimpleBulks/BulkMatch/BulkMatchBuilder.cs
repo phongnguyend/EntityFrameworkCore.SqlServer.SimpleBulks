@@ -7,75 +7,75 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
 {
-    public class BulkSelectBuilder<T>
+    public class BulkMatchBuilder<T>
     {
         private string _tableName;
         private IEnumerable<string> _matchedColumns;
-        private IEnumerable<string> _columnNames;
+        private IEnumerable<string> _returnColumns;
         private IDictionary<string, string> _dbColumnMappings;
-        private BulkSelectOptions _options;
+        private BulkMatchOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
-        public BulkSelectBuilder(SqlConnection connection)
+        public BulkMatchBuilder(SqlConnection connection)
         {
             _connection = connection;
         }
 
-        public BulkSelectBuilder(SqlConnection connection, SqlTransaction transaction)
+        public BulkMatchBuilder(SqlConnection connection, SqlTransaction transaction)
         {
             _connection = connection;
             _transaction = transaction;
         }
 
-        public BulkSelectBuilder<T> FromTable(string tableName)
+        public BulkMatchBuilder<T> WithTable(string tableName)
         {
             _tableName = tableName;
             return this;
         }
 
-        public BulkSelectBuilder<T> WithMatchedColumns(string matchedColumn)
+        public BulkMatchBuilder<T> WithMatchedColumns(string matchedColumn)
         {
             _matchedColumns = new List<string> { matchedColumn };
             return this;
         }
 
-        public BulkSelectBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
+        public BulkMatchBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
         {
             _matchedColumns = matchedColumns;
             return this;
         }
 
-        public BulkSelectBuilder<T> WithMatchedColumns(Expression<Func<T, object>> matchedColumnsSelector)
+        public BulkMatchBuilder<T> WithMatchedColumns(Expression<Func<T, object>> matchedColumnsSelector)
         {
             var matchedColumn = matchedColumnsSelector.Body.GetMemberName();
             _matchedColumns = string.IsNullOrEmpty(matchedColumn) ? matchedColumnsSelector.Body.GetMemberNames() : new List<string> { matchedColumn };
             return this;
         }
 
-        public BulkSelectBuilder<T> WithColumns(IEnumerable<string> columnNames)
+        public BulkMatchBuilder<T> WithReturnColumns(IEnumerable<string> returnColumns)
         {
-            _columnNames = columnNames;
+            _returnColumns = returnColumns;
             return this;
         }
 
-        public BulkSelectBuilder<T> WithColumns(Expression<Func<T, object>> columnNamesSelector)
+        public BulkMatchBuilder<T> WithColumns(Expression<Func<T, object>> columnNamesSelector)
         {
-            _columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
+            _returnColumns = columnNamesSelector.Body.GetMemberNames().ToArray();
             return this;
         }
 
-        public BulkSelectBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+        public BulkMatchBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
         {
             _dbColumnMappings = dbColumnMappings;
             return this;
         }
 
-        public BulkSelectBuilder<T> ConfigureBulkOptions(Action<BulkSelectOptions> configureOptions)
+        public BulkMatchBuilder<T> ConfigureBulkOptions(Action<BulkMatchOptions> configureOptions)
         {
-            _options = new BulkSelectOptions();
+            _options = new BulkMatchOptions();
             if (configureOptions != null)
             {
                 configureOptions(_options);
@@ -93,38 +93,51 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public IEnumerable<T> Execute(IEnumerable<T> machedValues)
+        public List<T> Execute(IEnumerable<T> machedValues)
         {
             var temptableName = $"[#{Guid.NewGuid()}]";
 
             var dataTable = machedValues.ToDataTable(_matchedColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
-            var joinCondition = string.Join(" and ", _matchedColumns.Select(x =>
+            var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
             {
                 string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" collate {_options.Collation}" : string.Empty;
+                $" COLLATE {_options.Collation}" : string.Empty;
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
             var selectQueryBuilder = new StringBuilder();
-            selectQueryBuilder.AppendLine($"select {string.Join(", ", _columnNames.Select(x => CreateSelectStatement(x)))} ");
-            selectQueryBuilder.AppendLine($"from {_tableName} a join {temptableName} b on " + joinCondition);
+            selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnColumns.Select(x => CreateSelectStatement(x)))} ");
+            selectQueryBuilder.AppendLine($"FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition);
 
             _connection.EnsureOpen();
+
+            Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
 
             using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
             {
                 createTemptableCommand.ExecuteNonQuery();
             }
 
+            Log("End creating temp table.");
+
+
+            Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
+
             dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+
+            Log("End executing SqlBulkCopy.");
+
+            var selectQuery = selectQueryBuilder.ToString();
+
+            Log($"Begin matching:{Environment.NewLine}{selectQuery}");
 
             var results = new List<T>();
 
-            var properties = typeof(T).GetProperties().Where(prop => _columnNames.Contains(prop.Name)).ToList();
+            var properties = typeof(T).GetProperties().Where(prop => _returnColumns.Contains(prop.Name)).ToList();
 
-            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQueryBuilder.ToString(), _options);
+            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
             using var reader = updateCommand.ExecuteReader();
             while (reader.Read())
             {
@@ -139,8 +152,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
                 }
 
                 results.Add(obj);
-
             }
+
+            Log($"End matching.");
 
             return results;
         }
@@ -152,7 +166,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkSelect
 
         private void Log(string message)
         {
-            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkSelect]: {message}");
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
         }
     }
 }
