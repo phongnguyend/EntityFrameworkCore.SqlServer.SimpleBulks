@@ -268,7 +268,13 @@ Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlSe
 ### BulkUpdate
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkUpdateBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkUpdateBenchmarks.cs)
 
-![alt text](/docs/benchmarks/bulkinsert/imgs/bulk-update.png)
+![alt text](/docs/benchmarks/bulkupdate/imgs/bulk-update.png)
+
+### BulkDelete
+[/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs)
+
+![alt text](/docs/benchmarks/bulkdelete/imgs/bulk-delete.png)
+
 
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.

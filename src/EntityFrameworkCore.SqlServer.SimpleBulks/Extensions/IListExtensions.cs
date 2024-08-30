@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
                 }
             }
 
-            var table = new DataTable();
+            var table = new DataTable() { MinimumCapacity = data.Count() };
             foreach (PropertyDescriptor prop in updatablePros)
             {
                 table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
