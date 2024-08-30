@@ -14,10 +14,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         private List<Customer> _customers;
         private List<Contact> _contacts;
 
-        //[Params(100, 1000, 10_000, 100_000)]
-        //public int RowsCount { get; set; }
-
-        [Params(100)]
+        [Params(100, 1000, 10_000, 100_000)]
         public int RowsCount { get; set; }
 
         [IterationSetup]
@@ -62,12 +59,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
             _context.Database.EnsureDeleted();
         }
 
-        //[Benchmark]
-        //public void EFCoreInsert()
-        //{
-        //    _context.AddRange(_customers);
-        //    _context.SaveChanges();
-        //}
+        [Benchmark]
+        public void EFCoreInsert()
+        {
+            _context.AddRange(_customers);
+            _context.SaveChanges();
+        }
 
         [Benchmark]
         public void BulkInsert()

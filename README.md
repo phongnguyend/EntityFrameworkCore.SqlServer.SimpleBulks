@@ -261,5 +261,9 @@ _context.BulkDelete(rows,
 
 ![alt text](/docs/benchmarks/bulkinsert/imgs/bulk-insert-single-table.png)
 
+- Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkInsertMultipleTablesBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkInsertMultipleTablesBenchmarks.cs)
+
+![alt text](/docs/benchmarks/bulkinsert/imgs/bulk-insert-multiple-tables.png)
+
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.
