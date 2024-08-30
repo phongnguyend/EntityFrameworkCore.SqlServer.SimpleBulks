@@ -255,5 +255,11 @@ _context.BulkDelete(rows,
 		});
 ```
 
+## Benchmarks
+### BulkInsert
+- Single Table [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkInsertSingleTableBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkInsertSingleTableBenchmarks.cs)
+
+![alt text](/docs/benchmarks/bulkinsert/imgs/bulk-insert-single-table.png)
+
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.
