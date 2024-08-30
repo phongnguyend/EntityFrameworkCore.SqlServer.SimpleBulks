@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         private List<Guid> _customerIds;
         private List<Customer> _newCustomers;
 
-        [Params(100, 1000, 10_000, 100_000)]
+        [Params(100, 1000, 10_000, 100_000, 250_000)]
         public int RowsCount { get; set; }
 
         [IterationSetup]
@@ -102,7 +102,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
             customers.AddRange(_newCustomers);
 
             _context.BulkMerge(customers,
-                x => x.Index,
+                x => x.Id,
                 x => new { x.FirstName },
                 x => new { x.FirstName, x.LastName, x.Index },
                 opt =>
