@@ -116,6 +116,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
 
+                    b.Property<string>("CountryIsoCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -125,9 +129,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
 
                     b.Property<int>("Index")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("bit");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -146,6 +147,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("newsequentialid()");
+
+                    b.Property<string>("CurrentCountryIsoCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()

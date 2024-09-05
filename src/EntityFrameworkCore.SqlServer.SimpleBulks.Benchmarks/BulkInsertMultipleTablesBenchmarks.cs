@@ -42,7 +42,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
                     {
                         EmailAddress = $"EmailAddress {i} - {j}",
                         PhoneNumber = $"PhoneNumber {i} - {j}",
-                        IsDefault = j % 2 == 0,
                         Index = j,
                     });
                 }

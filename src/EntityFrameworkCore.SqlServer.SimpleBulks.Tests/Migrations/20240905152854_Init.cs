@@ -68,6 +68,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentCountryIsoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Index = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -113,7 +114,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
                     EmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsDefault = table.Column<bool>(type: "bit", nullable: false),
+                    CountryIsoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Index = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

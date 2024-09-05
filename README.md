@@ -280,5 +280,10 @@ Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlSe
 
 ![alt text](/docs/benchmarks/bulkmerge/imgs/bulk-merge.png)
 
+### BulkMatch
+Single Column [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMatchSingleColumnBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMatchSingleColumnBenchmarks.cs)
+
+![alt text](/docs/benchmarks/bulkmatch/imgs/bulk-match-single-column.png)
+
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.

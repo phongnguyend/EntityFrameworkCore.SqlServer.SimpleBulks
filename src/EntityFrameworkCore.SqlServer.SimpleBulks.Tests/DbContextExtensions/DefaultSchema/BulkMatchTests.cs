@@ -23,6 +23,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
 
             var tran = _context.Database.BeginTransaction();
 
+            var isoCodes = new string[] { "VN", "US", "GB" };
+            var random = new Random(2024);
+
             _customers = new List<Customer>();
 
             for (int i = 0; i < 100; i++)
@@ -32,6 +35,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                     FirstName = "FirstName " + i,
                     LastName = "LastName " + i,
                     Index = i,
+                    CurrentCountryIsoCode = isoCodes[random.Next(isoCodes.Length)]
                 };
 
                 customer.Contacts = new List<Contact>();
@@ -42,7 +46,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                     {
                         EmailAddress = $"EmailAddress {i} - {j}",
                         PhoneNumber = $"PhoneNumber {i} - {j}",
-                        IsDefault = j % 2 == 0,
+                        CountryIsoCode = isoCodes[random.Next(isoCodes.Length)],
                         Index = j,
                     });
                 }
@@ -148,7 +152,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                 Assert.Equal(contactsInMemory[i].Id, contactsFromDb[i].Id);
                 Assert.Equal(contactsInMemory[i].EmailAddress, contactsFromDb[i].EmailAddress);
                 Assert.Equal(contactsInMemory[i].PhoneNumber, contactsFromDb[i].PhoneNumber);
-                Assert.Equal(contactsInMemory[i].IsDefault, contactsFromDb[i].IsDefault);
+                Assert.Equal(contactsInMemory[i].CountryIsoCode, contactsFromDb[i].CountryIsoCode);
                 Assert.Equal(contactsInMemory[i].Index, contactsFromDb[i].Index);
                 Assert.Equal(contactsInMemory[i].CustomerId, contactsFromDb[i].CustomerId);
             }
@@ -191,19 +195,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
         {
             // Arrange
             var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
-            var customerIds = customers.Select(x => x.Id).ToList();
-            var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x, IsDefault = true });
+            var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode });
 
             // Act
             var contactsFromDb = _context.BulkMatch(matchedContacts,
-                x => new { x.CustomerId, x.IsDefault },
+                x => new { x.CustomerId, x.CountryIsoCode },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 })
                 .OrderBy(x => x.Id).ToList();
 
-            var contactsInMemory = _contacts.Where(x => customerIds.Contains(x.CustomerId) && x.IsDefault).OrderBy(x => x.Id).ToList();
+            var contactsInMemory = _contacts.Where(x => customers.Any(y => y.Id == x.CustomerId && y.CurrentCountryIsoCode == x.CountryIsoCode)).OrderBy(x => x.Id).ToList();
 
             // Assert
             Assert.Equal(contactsInMemory.Count, contactsFromDb.Count);
@@ -212,7 +215,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                 Assert.Equal(contactsInMemory[i].Id, contactsFromDb[i].Id);
                 Assert.Equal(contactsInMemory[i].EmailAddress, contactsFromDb[i].EmailAddress);
                 Assert.Equal(contactsInMemory[i].PhoneNumber, contactsFromDb[i].PhoneNumber);
-                Assert.Equal(contactsInMemory[i].IsDefault, contactsFromDb[i].IsDefault);
+                Assert.Equal(contactsInMemory[i].CountryIsoCode, contactsFromDb[i].CountryIsoCode);
                 Assert.Equal(contactsInMemory[i].Index, contactsFromDb[i].Index);
                 Assert.Equal(contactsInMemory[i].CustomerId, contactsFromDb[i].CustomerId);
             }
@@ -223,12 +226,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
         {
             // Arrange
             var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
-            var customerIds = customers.Select(x => x.Id).ToList();
-            var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x, IsDefault = true });
+            var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode });
 
             // Act
             var contactsFromDb = _context.BulkMatch(matchedContacts,
-                x => new { x.CustomerId, x.IsDefault },
+                x => new { x.CustomerId, x.CountryIsoCode },
                 x => new { x.Id, x.PhoneNumber },
                 options =>
                 {
@@ -236,7 +238,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                 })
                 .OrderBy(x => x.Id).ToList();
 
-            var contactsInMemory = _contacts.Where(x => customerIds.Contains(x.CustomerId) && x.IsDefault).OrderBy(x => x.Id).ToList();
+            var contactsInMemory = _contacts.Where(x => customers.Any(y => y.Id == x.CustomerId && y.CurrentCountryIsoCode == x.CountryIsoCode)).OrderBy(x => x.Id).ToList();
 
             // Assert
             Assert.Equal(contactsInMemory.Count, contactsFromDb.Count);
