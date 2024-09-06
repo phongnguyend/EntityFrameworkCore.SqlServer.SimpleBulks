@@ -17,7 +17,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
         {
             _output = output;
 
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
+            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
             _context.Database.EnsureCreated();
         }
 
@@ -85,13 +85,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
                 row.Column3 = DateTime.Now;
             }
 
-            _context.BulkUpdate(rows,
+            var updateResult1 = _context.BulkUpdate(rows,
                     row => new { row.Column3, row.Column2 },
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
-            _context.BulkUpdate(compositeKeyRows,
+
+            var updateResult2 = _context.BulkUpdate(compositeKeyRows,
                     row => new { row.Column3, row.Column2 },
                     options =>
                     {
@@ -141,6 +142,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
             var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
 
+            Assert.Equal(length, updateResult1.AffectedRows);
+            Assert.Equal(length, updateResult2.AffectedRows);
+
             for (int i = 0; i < length + 1; i++)
             {
                 Assert.Equal(rows[i].Id, dbRows[i].Id);
@@ -180,13 +184,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
                 row.Column3 = DateTime.Now;
             }
 
-            _context.BulkUpdate(rows,
+            var updateResult1 = _context.BulkUpdate(rows,
                 new[] { "Column3", "Column2" },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-            _context.BulkUpdate(compositeKeyRows,
+
+            var updateResult2 = _context.BulkUpdate(compositeKeyRows,
                 new[] { "Column3", "Column2" },
                 options =>
                 {
@@ -234,6 +239,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             // Assert
             var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
             var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
+
+            Assert.Equal(length, updateResult1.AffectedRows);
+            Assert.Equal(length, updateResult2.AffectedRows);
 
             for (int i = 0; i < length + 1; i++)
             {

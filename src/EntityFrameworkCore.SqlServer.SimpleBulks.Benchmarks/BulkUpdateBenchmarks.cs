@@ -16,13 +16,16 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         private List<Customer> _customers;
         private List<Guid> _customerIds;
 
-        [Params(100, 1000, 10_000, 100_000, 250_000, 500_000)]
+        [Params(100, 1000, 10_000, 100_000, 250_000)]
         public int RowsCount { get; set; }
+
+        //[Params(500_000, 1_000_000)]
+        //public int RowsCount { get; set; }
 
         [IterationSetup]
         public void IterationSetup()
         {
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
+            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
             _context.Database.EnsureCreated();
             _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
 
@@ -81,12 +84,18 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
                 customer.FirstName = "Updated" + random.Next();
             }
 
-            _context.BulkUpdate(_customers,
+            var pageSize = 10_000;
+            var pages = _customers.Chunk(pageSize);
+
+            foreach (var page in pages)
+            {
+                _context.BulkUpdate(page,
                 x => new { x.FirstName },
                 opt =>
                 {
                     opt.Timeout = 0;
                 });
+            }
         }
     }
 }

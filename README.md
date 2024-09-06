@@ -14,6 +14,8 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 - Bulk Update
 - Bulk Delete
 - Bulk Merge
+- Bulk Match (preview)
+- Temp Table (preview)
 
 ## Examples
 - Refer [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
@@ -230,6 +232,16 @@ _context.BulkUpdate(rows,
 			options.LogTo = Console.WriteLine;
 		});
 ```
+### BulkDelete
+```c#
+_context.BulkDelete(rows,
+		options =>
+		{
+			options.BatchSize = 0;
+			options.Timeout = 30;
+			options.LogTo = Console.WriteLine;
+		});
+```
 ### BulkMerge
 ```c#
 _context.BulkMerge(rows,
@@ -242,16 +254,6 @@ _context.BulkMerge(rows,
 			options.Timeout = 30;
 			options.WithHoldLock = false;
 			options.ReturnDbGeneratedId = true;
-			options.LogTo = Console.WriteLine;
-		});
-```
-### BulkDelete
-```c#
-_context.BulkDelete(rows,
-		options =>
-		{
-			options.BatchSize = 0;
-			options.Timeout = 30;
 			options.LogTo = Console.WriteLine;
 		});
 ```
@@ -269,7 +271,9 @@ Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlSe
 ### BulkUpdate
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkUpdateBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkUpdateBenchmarks.cs)
 
-![alt text](/docs/benchmarks/bulkupdate/imgs/bulk-update.png)
+![alt text](/docs/benchmarks/bulkupdate/imgs/bulk-update-1.png)
+
+![alt text](/docs/benchmarks/bulkupdate/imgs/bulk-update-2.png)
 
 ### BulkDelete
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs)
