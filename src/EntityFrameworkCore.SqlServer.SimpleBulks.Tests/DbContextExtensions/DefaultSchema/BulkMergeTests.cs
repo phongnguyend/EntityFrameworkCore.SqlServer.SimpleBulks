@@ -278,6 +278,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
 
             Assert.Equal(length * 2, result.AffectedRows);
+            Assert.Equal(length, result.InsertedRows);
+            Assert.Equal(length, result.UpdatedRows);
 
             for (int i = 0; i < length * 2; i++)
             {
@@ -344,6 +346,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
 
             Assert.Equal(length * 2, result.AffectedRows);
+            Assert.Equal(length, result.InsertedRows);
+            Assert.Equal(length, result.UpdatedRows);
 
             for (int i = 0; i < length; i++)
             {
@@ -420,6 +424,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
 
             Assert.Equal(length, result.AffectedRows);
+            Assert.Equal(0, result.InsertedRows);
+            Assert.Equal(length, result.UpdatedRows);
             Assert.Equal(length, configurationEntriesInDb.Count);
 
             for (int i = 0; i < length; i++)
@@ -486,6 +492,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
 
             Assert.Equal(length, result.AffectedRows);
+            Assert.Equal(length, result.InsertedRows);
+            Assert.Equal(0, result.UpdatedRows);
             Assert.Equal(length * 2, configurationEntriesInDb.Count);
 
             for (int i = 0; i < length; i++)
@@ -562,6 +570,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
             var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
 
             Assert.Equal(0, result.AffectedRows);
+            Assert.Equal(0, result.InsertedRows);
+            Assert.Equal(0, result.UpdatedRows);
             Assert.Equal(length, configurationEntriesInDb.Count);
 
             for (int i = 0; i < length; i++)

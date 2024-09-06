@@ -10,14 +10,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
     [IterationCount(1)]
     [InvocationCount(1)]
     [MemoryDiagnoser]
-    public class BulkMergeBenchmarks
+    public class BulkMergeReturnDbGeneratedIdBenchmarks
     {
         private TestDbContext _context;
         private List<Customer> _customers;
-        private List<Guid> _customerIds;
         private List<Customer> _newCustomers;
+        private List<Customer> _allCustomers;
 
-        [Params(100, 1000, 10_000, 100_000, 250_000)]
+        //[Params(100, 1000, 10_000, 100_000)]
+        //public int RowsCount { get; set; }
+
+        [Params(250_000, 500_000, 1_000_000)]
         public int RowsCount { get; set; }
 
         [IterationSetup]
@@ -43,7 +46,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
             }
 
             _context.BulkInsert(_customers);
-            _customerIds = _customers.Select(x => x.Id).ToList();
 
             for (int i = RowsCount; i < RowsCount * 2; i++)
             {
@@ -56,6 +58,17 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
 
                 _newCustomers.Add(customer);
             }
+
+            _allCustomers = new List<Customer>(RowsCount * 2);
+            _allCustomers.AddRange(_customers);
+            _allCustomers.AddRange(_newCustomers);
+
+            var random = new Random(2024);
+
+            foreach (var customer in _customers)
+            {
+                customer.FirstName = "Updated" + random.Next();
+            }
         }
 
         [IterationCleanup]
@@ -65,49 +78,30 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         }
 
         [Benchmark]
-        public void EFCoreUpsert()
+        public void ReturnDbGeneratedId()
         {
-            var pageSize = 10_000;
-            var pages = _customerIds.Chunk(pageSize);
-
-            var random = new Random(2024);
-
-            foreach (var page in pages)
-            {
-                var customers = _context.Customers.Where(x => page.Contains(x.Id)).ToList();
-
-                foreach (var customer in customers)
-                {
-                    customer.FirstName = "Updated" + random.Next();
-                }
-            }
-
-            _context.AddRange(_newCustomers);
-
-            _context.SaveChanges();
-        }
-
-        [Benchmark]
-        public void BulkMerge()
-        {
-            var random = new Random(2024);
-
-            foreach (var customer in _customers)
-            {
-                customer.FirstName = "Updated" + random.Next();
-            }
-
-            var customers = new List<Customer>(RowsCount * 2);
-            customers.AddRange(_customers);
-            customers.AddRange(_newCustomers);
-
-            _context.BulkMerge(customers,
+            _context.BulkMerge(_allCustomers,
                 x => x.Id,
                 x => new { x.FirstName },
                 x => new { x.FirstName, x.LastName, x.Index },
                 opt =>
                 {
                     opt.Timeout = 0;
+                    opt.ReturnDbGeneratedId = true;
+                });
+        }
+
+        [Benchmark]
+        public void NotReturnDbGeneratedId()
+        {
+            _context.BulkMerge(_allCustomers,
+                x => x.Id,
+                x => new { x.FirstName },
+                x => new { x.FirstName, x.LastName, x.Index },
+                opt =>
+                {
+                    opt.Timeout = 0;
+                    opt.ReturnDbGeneratedId = false;
                 });
         }
     }

@@ -68,7 +68,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CurrentCountryIsoCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurrentCountryIsoCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Index = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

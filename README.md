@@ -281,6 +281,12 @@ Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlSe
 
 ![alt text](/docs/benchmarks/bulkmerge/imgs/bulk-merge.png)
 
+[/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMergeReturnDbGeneratedIdBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMergeReturnDbGeneratedIdBenchmarks.cs)
+
+![alt text](/docs/benchmarks/bulkmerge/imgs/bulk-merge-db-generated-id-1.png)
+
+![alt text](/docs/benchmarks/bulkmerge/imgs/bulk-merge-db-generated-id-2.png)
+
 ### BulkMatch
 Single Column [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMatchSingleColumnBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMatchSingleColumnBenchmarks.cs)
 
