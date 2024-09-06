@@ -10,11 +10,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
     [IterationCount(1)]
     [InvocationCount(1)]
     [MemoryDiagnoser]
-    public class BulkMatchSingleColumnBenchmarks
+    public class BulkMatchMultipleColumnsBenchmarks
     {
         private TestDbContext _context;
         private List<Customer> _customers;
-        private List<Guid> _customerIds;
+        private List<Contact> _contacts;
+        private List<Contact> _contactsToMatch;
 
         [Params(100, 1000, 10_000, 100_000)]
         public int RowsCount { get; set; }
@@ -32,7 +33,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
             var isoCodes = new string[] { "VN", "US", "GB" };
             var random = new Random(2024);
 
-            _customers = new List<Customer>(RowsCount);
+            _customers = new List<Customer>();
 
             for (int i = 0; i < RowsCount; i++)
             {
@@ -43,12 +44,46 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
                     Index = i,
                     CurrentCountryIsoCode = isoCodes[random.Next(isoCodes.Length)]
                 };
+
+                customer.Contacts = new List<Contact>();
+
+                for (int j = 0; j < 5; j++)
+                {
+                    customer.Contacts.Add(new Contact
+                    {
+                        EmailAddress = $"EmailAddress {i} - {j}",
+                        PhoneNumber = $"PhoneNumber {i} - {j}",
+                        CountryIsoCode = isoCodes[random.Next(isoCodes.Length)],
+                        Index = j,
+                    });
+                }
+
                 _customers.Add(customer);
             }
 
-            _context.BulkInsert(_customers);
+            _context.BulkInsert(_customers,
+                opt =>
+                {
+                    opt.Timeout = 0;
+                });
 
-            _customerIds = _customers.Select(x => x.Id).ToList();
+            foreach (var customer in _customers)
+            {
+                foreach (var contact in customer.Contacts)
+                {
+                    contact.CustomerId = customer.Id;
+                }
+            }
+
+            _contacts = _customers.SelectMany(x => x.Contacts).ToList();
+
+            _context.BulkInsert(_contacts,
+                opt =>
+                {
+                    opt.Timeout = 0;
+                });
+
+            _contactsToMatch = _customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode }).ToList();
         }
 
         [GlobalCleanup]
@@ -60,39 +95,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         [Benchmark]
         public void EFCoreSelect()
         {
-            var customers = new List<Customer>();
+            var contacts = new List<Contact>();
 
-            foreach (var id in _customerIds)
+            foreach (var contact in _contactsToMatch)
             {
-                customers.Add(_context.Customers.Where(x => x.Id == id).AsNoTracking().First());
+                contacts.AddRange(_context.Contacts.Where(x => x.CustomerId == contact.CustomerId && x.CountryIsoCode == contact.CountryIsoCode).AsNoTracking().ToList());
             }
-        }
 
-        [Benchmark]
-        public void EFCoreBatchSelect()
-        {
-            var pageSize = 10_000;
-            var pages = _customerIds.Chunk(pageSize);
-
-            var customers = new List<Customer>();
-
-            foreach (var page in pages)
-            {
-                customers.AddRange(_context.Customers.Where(x => page.Contains(x.Id)).AsNoTracking().ToList());
-            }
+            // Console.WriteLine(contacts.Count);
         }
 
         [Benchmark]
         public void BulkMatch()
         {
-            var matchedCustomers = _customerIds.Select(x => new Customer { Id = x }).ToList();
-
-            var customers = _context.BulkMatch(matchedCustomers,
-                x => x.Id,
+            var contacts = _context.BulkMatch(_contactsToMatch,
+                x => new { x.CustomerId, x.CountryIsoCode },
                 opt =>
                 {
                     opt.Timeout = 0;
                 });
+
+            // Console.WriteLine(contacts.Count);
         }
     }
 }
