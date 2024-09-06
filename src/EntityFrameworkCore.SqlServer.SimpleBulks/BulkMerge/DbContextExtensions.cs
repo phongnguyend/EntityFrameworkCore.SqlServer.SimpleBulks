@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+            var outputIdColumn = properties
+                .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
+                .Select(x => x.PropertyName)
+                .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
                  .WithData(data)
@@ -23,6 +28,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                  .WithUpdateColumns(updateColumnNamesSelector)
                  .WithInsertColumns(insertColumnNamesSelector)
                  .WithDbColumnMappings(dbColumnMappings)
+                 .WithOutputId(outputIdColumn)
                  .ToTable(tableName)
                  .ConfigureBulkOptions(configureOptions)
                  .Execute();
@@ -35,6 +41,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+            var outputIdColumn = properties
+                .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
+                .Select(x => x.PropertyName)
+                .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
@@ -42,6 +52,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .WithDbColumnMappings(dbColumnMappings)
+                .WithOutputId(outputIdColumn)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();
@@ -54,6 +65,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+            var outputIdColumn = properties
+                .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
+                .Select(x => x.PropertyName)
+                .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
                 .WithData(data)
@@ -61,6 +76,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
                 .WithDbColumnMappings(dbColumnMappings)
+                .WithOutputId(outputIdColumn)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute();

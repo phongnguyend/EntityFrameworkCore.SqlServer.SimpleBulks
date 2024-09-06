@@ -39,8 +39,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
 
                 compositeKeyRows.Add(new CompositeKeyRow<int, int>
                 {
-                    Id1 = i,
-                    Id2 = i,
+                    Id1 = i + 1,
+                    Id2 = i + 1,
                     Column1 = i,
                     Column2 = "" + i,
                     Column3 = DateTime.Now
@@ -98,18 +98,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                         options.LogTo = _output.WriteLine;
                     });
 
-            var newId = rows.Max(x => x.Id) + 1;
-
             rows.Add(new SingleKeyRow<int>
             {
-                Id = newId,
-                Column1 = newId,
-                Column2 = "Inserted using Merge" + newId,
+                Column1 = length + 1,
+                Column2 = "Inserted using Merge" + length + 1,
                 Column3 = DateTime.Now,
             });
 
-            var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
-            var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
+            var newId1 = length + 1;
+            var newId2 = length + 1;
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
             {
@@ -196,18 +193,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
                     options.LogTo = _output.WriteLine;
                 });
 
-            var newId = rows.Max(x => x.Id) + 1;
-
             rows.Add(new SingleKeyRow<int>
             {
-                Id = newId,
-                Column1 = newId,
-                Column2 = "Inserted using Merge" + newId,
+                Column1 = length + 1,
+                Column2 = "Inserted using Merge" + length + 1,
                 Column3 = DateTime.Now,
             });
 
-            var newId1 = compositeKeyRows.Max(x => x.Id1) + 1;
-            var newId2 = compositeKeyRows.Max(x => x.Id2) + 1;
+            var newId1 = length + 1;
+            var newId2 = length + 1;
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
             {

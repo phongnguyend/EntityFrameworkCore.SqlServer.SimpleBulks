@@ -241,6 +241,7 @@ _context.BulkMerge(rows,
 			options.BatchSize = 0;
 			options.Timeout = 30;
 			options.WithHoldLock = false;
+			options.ReturnDbGeneratedId = true;
 			options.LogTo = Console.WriteLine;
 		});
 ```

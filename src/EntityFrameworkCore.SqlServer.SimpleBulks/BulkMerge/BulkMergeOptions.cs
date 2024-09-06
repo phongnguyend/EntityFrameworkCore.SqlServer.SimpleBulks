@@ -5,5 +5,7 @@
         public string Collation { get; set; } = Constants.DefaultCollation;
 
         public bool WithHoldLock { get; set; }
+
+        public bool ReturnDbGeneratedId { get; set; } = true;
     }
 }
