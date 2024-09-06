@@ -9,7 +9,7 @@ or you can use **SqlConnectionExtensions.cs** to work directly with a **SqlConne
 ## Nuget
 https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 
-## EntityFrameworkCore.SqlServer.SimpleBulks supports:
+## EntityFrameworkCore.SqlServer.SimpleBulks Features:
 - Bulk Insert
 - Bulk Update
 - Bulk Delete
@@ -278,7 +278,9 @@ Multiple Tables (1x parent rows + 5x child rows) [/src/EntityFrameworkCore.SqlSe
 ### BulkDelete
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkDeleteBenchmarks.cs)
 
-![alt text](/docs/benchmarks/bulkdelete/imgs/bulk-delete.png)
+![alt text](/docs/benchmarks/bulkdelete/imgs/bulk-delete-1.png)
+
+![alt text](/docs/benchmarks/bulkdelete/imgs/bulk-delete-2.png)
 
 ### BulkMerge
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMergeBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/BulkMergeBenchmarks.cs)

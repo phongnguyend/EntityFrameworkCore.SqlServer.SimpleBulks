@@ -15,20 +15,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         private TestDbContext _context;
         private List<Customer> _customers;
         private List<Guid> _customerIds;
+        private List<Customer> _customersToDelete;
 
-        [Params(100, 1000, 10_000, 20_000)]
+        [Params(100, 1000, 10_000, 20_000, 50_000)]
         public int RowsCount { get; set; }
+
+        //[Params(100_000, 250_000, 500_000, 1_000_000)]
+        //public int RowsCount { get; set; }
 
         [IterationSetup]
         public void IterationSetup()
         {
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
+            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
             _context.Database.EnsureCreated();
             _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
 
-            _customers = new List<Customer>(RowsCount);
+            _customers = new List<Customer>(RowsCount * 2);
 
-            for (int i = 0; i < RowsCount; i++)
+            for (int i = 0; i < RowsCount * 2; i++)
             {
                 var customer = new Customer
                 {
@@ -41,7 +45,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
 
             _context.BulkInsert(_customers);
 
-            _customerIds = _customers.Select(x => x.Id).ToList();
+            _customerIds = _customers.Take(RowsCount).Select(x => x.Id).ToList();
+
+            _customersToDelete = _customerIds.Select(x => new Customer { Id = x }).ToList();
         }
 
         [IterationCleanup]
@@ -53,15 +59,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         [Benchmark]
         public void EFCoreDelete()
         {
-            var pageSize = 10_000;
-            var pages = _customerIds.Chunk(pageSize);
-
-            foreach (var page in pages)
-            {
-                var customers = _context.Customers.Where(x => page.Contains(x.Id)).ToList();
-
-                _context.RemoveRange(customers);
-            }
+            _context.RemoveRange(_customersToDelete);
 
             _context.SaveChanges();
         }
@@ -69,9 +67,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
         [Benchmark]
         public void BulkDelete()
         {
-            var customers = _customerIds.Select(x => new Customer { Id = x }).ToList();
-
-            _context.BulkDelete(customers,
+            _context.BulkDelete(_customersToDelete,
                 opt =>
                 {
                     opt.Timeout = 0;

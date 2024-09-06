@@ -67,12 +67,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             var rows = _context.SingleKeyRowsWithSchema.AsNoTracking().Take(length).ToList();
             var compositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().Take(length).ToList();
 
-            _context.BulkDelete(rows,
-                    options =>
-                    {
-                        options.LogTo = _output.WriteLine;
-                    });
-            _context.BulkDelete(compositeKeyRows,
+            var deleteResult1 = _context.BulkDelete(rows,
+                      options =>
+                      {
+                          options.LogTo = _output.WriteLine;
+                      });
+
+            var deleteResult2 = _context.BulkDelete(compositeKeyRows,
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -83,6 +84,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
             // Assert
             var dbRows = _context.SingleKeyRowsWithSchema.AsNoTracking().ToList();
             var dbCompositeKeyRows = _context.CompositeKeyRowsWithSchema.AsNoTracking().ToList();
+
+            Assert.Equal(length, deleteResult1.AffectedRows);
+            Assert.Equal(length, deleteResult2.AffectedRows);
 
             Assert.Equal(100 - length, dbRows.Count);
             Assert.Equal(100 - length, dbCompositeKeyRows.Count);
