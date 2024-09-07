@@ -15,7 +15,10 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 - Bulk Delete
 - Bulk Merge
 - Bulk Match
-- Temp Table (preview)
+- Temp Table
+- Direct Insert
+- Direct Update
+- Direct Delete
 
 ## Examples
 - Refer [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)

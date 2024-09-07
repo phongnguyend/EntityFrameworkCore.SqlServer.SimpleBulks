@@ -143,7 +143,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.Sc
         [Theory]
         [InlineData(1)]
         [InlineData(100)]
-        public void Bulk_Insert_Using_Linq_With_Transaction_Rollbacked(int length)
+        public void Bulk_Insert_Using_Linq_With_Transaction_RolledBack(int length)
         {
             var tran = _context.Database.BeginTransaction();
 

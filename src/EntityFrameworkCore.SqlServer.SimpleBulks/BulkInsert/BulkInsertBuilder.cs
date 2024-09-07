@@ -200,7 +200,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             }
         }
 
-        private void SingleInsert(T dataToInsert)
+        public void SingleInsert(T dataToInsert)
         {
             var insertStatementBuilder = new StringBuilder();
 
