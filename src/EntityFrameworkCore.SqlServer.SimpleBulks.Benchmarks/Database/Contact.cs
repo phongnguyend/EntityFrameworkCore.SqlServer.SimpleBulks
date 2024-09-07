@@ -8,7 +8,7 @@
 
         public string PhoneNumber { get; set; }
 
-        public string CountryIsoCode { get; set; }
+        public string? CountryIsoCode { get; set; }
 
         public int Index { get; set; }
 

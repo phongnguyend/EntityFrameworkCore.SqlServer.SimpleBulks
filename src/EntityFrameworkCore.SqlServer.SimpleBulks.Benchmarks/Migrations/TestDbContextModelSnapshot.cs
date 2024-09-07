@@ -117,7 +117,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.Migrations
                         .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<string>("CountryIsoCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20240906102109_Init")]
+    [Migration("20240907000833_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,7 +119,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.Migrations
                         .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<string>("CountryIsoCode")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
