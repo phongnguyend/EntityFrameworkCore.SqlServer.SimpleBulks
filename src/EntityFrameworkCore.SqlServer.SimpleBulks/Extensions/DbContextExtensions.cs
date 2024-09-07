@@ -17,6 +17,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             return entityType.GetSchemaQualifiedTableName();
         }
 
+        public static bool IsEntityType(this DbContext dbContext, Type type)
+        {
+            return dbContext.Model.FindEntityType(type) != null;
+        }
+
         public static SqlConnection GetSqlConnection(this DbContext dbContext)
         {
             return dbContext.Database.GetDbConnection().AsSqlConnection();

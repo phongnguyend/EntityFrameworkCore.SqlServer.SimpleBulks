@@ -10,6 +10,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable
     {
         private IEnumerable<T> _data;
         private IEnumerable<string> _columnNames;
+        private IDictionary<string, string> _dbColumnMappings;
+        private TempTableOptions _options;
         private readonly SqlConnection _connection;
         private readonly SqlTransaction _transaction;
 
@@ -42,11 +44,42 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable
             return this;
         }
 
+        public TempTableBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+        {
+            _dbColumnMappings = dbColumnMappings;
+            return this;
+        }
+
+        public TempTableBuilder<T> ConfigureTempTableOptions(Action<TempTableOptions> configureOptions)
+        {
+            _options = new TempTableOptions();
+            if (configureOptions != null)
+            {
+                configureOptions(_options);
+            }
+            return this;
+        }
+
+        private string GetTableName()
+        {
+            if (!string.IsNullOrWhiteSpace(_options.TableName))
+            {
+                return _options.TableName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_options.PrefixName))
+            {
+                return _options.PrefixName + "-" + Guid.NewGuid();
+            }
+
+            return Guid.NewGuid().ToString();
+        }
+
         public string Execute()
         {
-            var tempTableName = $"[#{Guid.NewGuid()}]";
+            var tempTableName = $"[#{GetTableName()}]";
             var dataTable = _data.ToDataTable(_columnNames);
-            var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName);
+            var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _dbColumnMappings);
 
             Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
@@ -60,7 +93,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable
 
             Log($"Begin executing SqlBulkCopy. TableName: {tempTableName}");
 
-            dataTable.SqlBulkCopy(tempTableName, null, _connection, _transaction);
+            dataTable.SqlBulkCopy(tempTableName, _dbColumnMappings, _connection, _transaction);
 
             Log("End executing SqlBulkCopy.");
 
@@ -69,7 +102,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable
 
         private void Log(string message)
         {
-            // _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [TempTable]: {message}");
+            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [TempTable]: {message}");
         }
     }
 }

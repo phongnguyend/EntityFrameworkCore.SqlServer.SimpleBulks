@@ -6,7 +6,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database
     {
         public TestDbContext CreateDbContext(string[] args)
         {
-            return new TestDbContext("Server=.;Database=EFCoreSimpleBulksTests;User Id=sa;Password=sqladmin123!@#");
+            return new TestDbContext("Server=.;Database=EFCoreSimpleBulksTests;User Id=sa;Password=sqladmin123!@#;Encrypt=False");
         }
     }
 }

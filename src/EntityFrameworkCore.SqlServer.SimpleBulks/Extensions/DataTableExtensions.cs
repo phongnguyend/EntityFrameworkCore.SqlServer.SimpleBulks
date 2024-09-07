@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DataTableExtensions
     {
-        public static string GenerateTableDefinition(this DataTable table, string tableName)
+        public static string GenerateTableDefinition(this DataTable table, string tableName, IDictionary<string, string> dbColumnMappings = null)
         {
             var sql = new StringBuilder();
 
@@ -15,7 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
             for (int i = 0; i < table.Columns.Count; i++)
             {
-                sql.Append($"\n\t[{table.Columns[i].ColumnName}]");
+                sql.Append($"\n\t[{GetDbColumnName(table.Columns[i].ColumnName, dbColumnMappings)}]");
                 var sqlType = table.Columns[i].DataType.ToSqlType();
                 sql.Append($" {sqlType} NULL");
                 sql.Append(",");
@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             {
                 BatchSize = options.BatchSize,
                 BulkCopyTimeout = options.Timeout,
-                DestinationTableName = $"{ tableName }"
+                DestinationTableName = $"{tableName}"
             };
 
             foreach (DataColumn dtColum in dataTable.Columns)

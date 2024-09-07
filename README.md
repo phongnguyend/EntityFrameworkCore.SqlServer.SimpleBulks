@@ -306,5 +306,10 @@ Multiple Columns [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/Bulk
 
 ![alt text](/docs/benchmarks/bulkmatch/imgs/bulk-match-multiple-columns-2.png)
 
+### Temp Table
+[/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/TempTableBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/TempTableBenchmarks.cs)
+
+![alt text](/docs/benchmarks/temptable/imgs/temp-table.png)
+
 ## License
 **EntityFrameworkCore.SqlServer.SimpleBulks** is licensed under the [MIT](/LICENSE) license.

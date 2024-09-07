@@ -17,7 +17,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
             {
                 dbct.Database.Migrate();
 
-                dbct.BulkDelete(dbct.Set<ConfigurationEntry>().AsNoTracking());
+                dbct.BulkDelete(dbct.Set<ConfigurationEntry>().AsNoTracking(),
+                    opt =>
+                    {
+                        opt.LogTo = Console.WriteLine;
+                    });
 
                 var configurationEntries = new List<ConfigurationEntry>();
 
@@ -31,7 +35,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                     });
                 }
 
-                dbct.BulkInsert(configurationEntries);
+                dbct.BulkInsert(configurationEntries,
+                    opt =>
+                    {
+                        opt.LogTo = Console.WriteLine;
+                    });
 
                 foreach (var row in configurationEntries)
                 {
@@ -42,7 +50,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 }
 
                 dbct.BulkUpdate(configurationEntries,
-                    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description });
+                    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+                    opt =>
+                    {
+                        opt.LogTo = Console.WriteLine;
+                    });
 
                 configurationEntries.Add(new ConfigurationEntry
                 {
@@ -54,7 +66,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo
                 dbct.BulkMerge(configurationEntries,
                     x => x.Id,
                     x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
-                    x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime });
+                    x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime },
+                    opt =>
+                    {
+                        opt.LogTo = Console.WriteLine;
+                    });
             }
 
             Console.WriteLine("Finished!");

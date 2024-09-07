@@ -18,7 +18,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
         {
             _output = output;
 
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkMatch.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#");
+            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkMatch.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
             _context.Database.EnsureCreated();
 
             var tran = _context.Database.BeginTransaction();
