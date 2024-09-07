@@ -14,7 +14,7 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 - Bulk Update
 - Bulk Delete
 - Bulk Merge
-- Bulk Match (preview)
+- Bulk Match
 - Temp Table (preview)
 
 ## Examples

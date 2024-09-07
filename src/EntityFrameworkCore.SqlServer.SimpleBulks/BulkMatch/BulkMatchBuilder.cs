@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
     {
         private string _tableName;
         private IEnumerable<string> _matchedColumns;
-        private IEnumerable<string> _returnColumns;
+        private IEnumerable<string> _returnedColumns;
         private IDictionary<string, string> _dbColumnMappings;
         private BulkMatchOptions _options;
         private readonly SqlConnection _connection;
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
             return this;
         }
 
-        public BulkMatchBuilder<T> WithMatchedColumns(string matchedColumn)
+        public BulkMatchBuilder<T> WithMatchedColumn(string matchedColumn)
         {
             _matchedColumns = new List<string> { matchedColumn };
             return this;
@@ -55,15 +55,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
             return this;
         }
 
-        public BulkMatchBuilder<T> WithReturnColumns(IEnumerable<string> returnColumns)
+        public BulkMatchBuilder<T> WithReturnedColumns(IEnumerable<string> returnedColumns)
         {
-            _returnColumns = returnColumns;
+            _returnedColumns = returnedColumns;
             return this;
         }
 
-        public BulkMatchBuilder<T> WithColumns(Expression<Func<T, object>> columnNamesSelector)
+        public BulkMatchBuilder<T> WithReturnedColumns(Expression<Func<T, object>> returnedColumnsSelector)
         {
-            _returnColumns = columnNamesSelector.Body.GetMemberNames().ToArray();
+            _returnedColumns = returnedColumnsSelector.Body.GetMemberNames().ToArray();
             return this;
         }
 
@@ -108,7 +108,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
             }));
 
             var selectQueryBuilder = new StringBuilder();
-            selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnColumns.Select(x => CreateSelectStatement(x)))} ");
+            selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
             selectQueryBuilder.AppendLine($"FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition);
 
             _connection.EnsureOpen();
@@ -135,7 +135,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
 
             var results = new List<T>();
 
-            var properties = typeof(T).GetProperties().Where(prop => _returnColumns.Contains(prop.Name)).ToList();
+            var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
 
             using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
             using var reader = updateCommand.ExecuteReader();
