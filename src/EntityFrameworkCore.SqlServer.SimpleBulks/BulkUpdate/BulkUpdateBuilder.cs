@@ -153,7 +153,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             };
         }
 
-        private BulkUpdateResult SingleUpdate(T dataToUpdate)
+        public BulkUpdateResult SingleUpdate(T dataToUpdate)
         {
             var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
             {

@@ -1,4 +1,3 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
@@ -17,7 +16,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions.De
         {
             _output = output;
 
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkDelete.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
+            _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.DirectDelete.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
             _context.Database.EnsureCreated();
 
             var tran = _context.Database.BeginTransaction();
