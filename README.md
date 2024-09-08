@@ -21,8 +21,7 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 - Direct Delete
 
 ## Examples
-- Refer [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
-
+[EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
 - Update the connection string:
   ```c#
   private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx";
@@ -55,19 +54,11 @@ dbct.BulkUpdate(compositeKeyRows,
 dbct.BulkMerge(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
-    row => new { row.Column1, row.Column2, row.Column3 },
-    options =>
-    {
-        //options.WithHoldLock = true;
-    });
+    row => new { row.Column1, row.Column2, row.Column3 });
 dbct.BulkMerge(compositeKeyRows,
     row => new { row.Id1, row.Id2 },
     row => new { row.Column1, row.Column2, row.Column3 },
-    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-    options =>
-    {
-        //options.WithHoldLock = true;
-    });
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
 dbct.BulkDelete(rows);
 dbct.BulkDelete(compositeKeyRows);
@@ -87,19 +78,11 @@ dbct.BulkUpdate(compositeKeyRows,
 dbct.BulkMerge(rows,
     "Id",
     new [] { "Column1", "Column2" },
-    new [] { "Column1", "Column2", "Column3" },
-    options =>
-    {
-        //options.WithHoldLock = true;
-    });
+    new [] { "Column1", "Column2", "Column3" });
 dbct.BulkMerge(compositeKeyRows,
     new [] { "Id1", "Id2" },
     new [] { "Column1", "Column2", "Column3" },
-    new [] { "Id1", "Id2", "Column1", "Column2", "Column3" },
-    options =>
-    {
-        //options.WithHoldLock = true;
-    });
+    new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
 ```c#
@@ -141,19 +124,11 @@ connection.BulkUpdate(compositeKeyRows,
 connection.BulkMerge(rows,
            row => row.Id,
            row => new { row.Column1, row.Column2 },
-           row => new { row.Column1, row.Column2, row.Column3 },
-           options =>
-           {
-               //options.WithHoldLock = true;
-           });
+           row => new { row.Column1, row.Column2, row.Column3 });
 connection.BulkMerge(compositeKeyRows,
            row => new { row.Id1, row.Id2 },
            row => new { row.Column1, row.Column2, row.Column3 },
-           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-           options =>
-           {
-               //options.WithHoldLock = true;
-           });
+           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
 connection.BulkDelete(rows, row => row.Id);
 connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
@@ -182,19 +157,11 @@ connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
 connection.BulkMerge(rows, "Rows",
            "Id",
            new [] { "Column1", "Column2" },
-           new [] { "Column1", "Column2", "Column3" },
-           options =>
-           {
-               //options.WithHoldLock = true;
-           });
+           new [] { "Column1", "Column2", "Column3" });
 connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
            new [] { "Id1", "Id2" },
            new [] { "Column1", "Column2", "Column3" },
-           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" },
-           options =>
-           {
-               //options.WithHoldLock = true;
-           });
+           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 
 connection.BulkDelete(rows, "Rows", "Id");
 connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new [] { "Id1", "Id2" });
@@ -215,50 +182,107 @@ new BulkInsertBuilder<Row>(connection)
 ### BulkInsert
 ```c#
 _context.BulkInsert(rows,
-		row => new { row.Column1, row.Column2, row.Column3 },
-		options =>
-		{
-			options.KeepIdentity = false;
-			options.BatchSize = 0;
-			options.Timeout = 30;
-			options.LogTo = Console.WriteLine;
-		});
+	row => new { row.Column1, row.Column2, row.Column3 },
+	options =>
+	{
+		options.KeepIdentity = false;
+		options.BatchSize = 0;
+		options.Timeout = 30;
+		options.LogTo = Console.WriteLine;
+	});
 ```
 ### BulkUpdate
 ```c#
 _context.BulkUpdate(rows,
-		row => new { row.Column3, row.Column2 },
-		options =>
-		{
-			options.BatchSize = 0;
-			options.Timeout = 30;
-			options.LogTo = Console.WriteLine;
-		});
+	row => new { row.Column3, row.Column2 },
+	options =>
+	{
+		options.BatchSize = 0;
+		options.Timeout = 30;
+		options.LogTo = Console.WriteLine;
+	});
 ```
 ### BulkDelete
 ```c#
 _context.BulkDelete(rows,
-		options =>
-		{
-			options.BatchSize = 0;
-			options.Timeout = 30;
-			options.LogTo = Console.WriteLine;
-		});
+	options =>
+	{
+		options.BatchSize = 0;
+		options.Timeout = 30;
+		options.LogTo = Console.WriteLine;
+	});
 ```
 ### BulkMerge
 ```c#
 _context.BulkMerge(rows,
-		row => row.Id,
-		row => new { row.Column1, row.Column2 },
-		row => new { row.Column1, row.Column2, row.Column3 },
-		options =>
-		{
-			options.BatchSize = 0;
-			options.Timeout = 30;
-			options.WithHoldLock = false;
-			options.ReturnDbGeneratedId = true;
-			options.LogTo = Console.WriteLine;
-		});
+	row => row.Id,
+	row => new { row.Column1, row.Column2 },
+	row => new { row.Column1, row.Column2, row.Column3 },
+	options =>
+	{
+		options.BatchSize = 0;
+		options.Timeout = 30;
+		options.WithHoldLock = false;
+		options.ReturnDbGeneratedId = true;
+		options.LogTo = Console.WriteLine;
+	});
+```
+### BulkMatch
+```c#
+var contactsFromDb = _context.BulkMatch(matchedContacts,
+    x => new { x.CustomerId, x.CountryIsoCode },
+    options =>
+    {
+        options.BatchSize = 0;
+		options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
+```
+### CreateTempTable
+```c#
+var customerTableName = _context.CreateTempTable(customers,
+    x => new
+    {
+        x.IdNumber,
+        x.FirstName,
+        x.LastName,
+        x.CurrentCountryIsoCode
+    },
+    options =>
+    {
+        options.BatchSize = 0;
+		options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
+```
+### DirectInsert
+```c#
+_context.DirectInsert(row,
+        row => new { row.Column1, row.Column2, row.Column3 },
+        options =>
+        {
+            options.Timeout = 30;
+            options.LogTo = Console.WriteLine;
+        });
+```
+### DirectUpdate
+```c#
+_context.DirectUpdate(row,
+        row => new { row.Column3, row.Column2 },
+        options =>
+        {
+            options.Timeout = 30;
+            options.LogTo = Console.WriteLine;
+        });
+```
+### DirectDelete
+```c#
+_context.DirectDelete(row,
+        options =>
+        {
+            options.Timeout = 30;
+            options.LogTo = Console.WriteLine;
+        });
 ```
 
 ## Benchmarks
