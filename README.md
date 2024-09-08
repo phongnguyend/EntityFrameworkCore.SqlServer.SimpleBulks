@@ -9,7 +9,7 @@ or you can use **SqlConnectionExtensions.cs** to work directly with a **SqlConne
 ## Nuget
 https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 
-## EntityFrameworkCore.SqlServer.SimpleBulks Features
+## Features
 - Bulk Insert
 - Bulk Update
 - Bulk Delete
@@ -283,6 +283,31 @@ _context.DirectDelete(row,
         options.Timeout = 30;
         options.LogTo = Console.WriteLine;
     });
+```
+
+## Returned Result
+### BulkUpdate
+```c#
+var updateResult = dbct.BulkUpdate(rows, row => new { row.Column3, row.Column2 });
+
+Console.WriteLine($"Updated: {updateResult.AffectedRows} row(s)");
+```
+### BulkDelete
+```c#
+var deleteResult = dbct.BulkDelete(rows);
+
+Console.WriteLine($"Deleted: {deleteResult.AffectedRows} row(s)");
+```
+### BulkMerge
+```c#
+var mergeResult = dbct.BulkMerge(rows,
+    row => row.Id,
+    row => new { row.Column1, row.Column2 },
+    row => new { row.Column1, row.Column2, row.Column3 });
+
+Console.WriteLine($"Updated: {mergeResult.UpdatedRows} row(s)");
+Console.WriteLine($"Inserted: {mergeResult.InsertedRows} row(s)");
+Console.WriteLine($"Affected: {mergeResult.AffectedRows} row(s)");
 ```
 
 ## Benchmarks
