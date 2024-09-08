@@ -234,7 +234,7 @@ var contactsFromDb = _context.BulkMatch(matchedContacts,
     options =>
     {
         options.BatchSize = 0;
-		options.Timeout = 30;
+        options.Timeout = 30;
         options.LogTo = Console.WriteLine;
     });
 ```
@@ -251,7 +251,7 @@ var customerTableName = _context.CreateTempTable(customers,
     options =>
     {
         options.BatchSize = 0;
-		options.Timeout = 30;
+        options.Timeout = 30;
         options.LogTo = Console.WriteLine;
     });
 ```
