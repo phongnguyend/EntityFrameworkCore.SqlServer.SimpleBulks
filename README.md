@@ -9,7 +9,7 @@ or you can use **SqlConnectionExtensions.cs** to work directly with a **SqlConne
 ## Nuget
 https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
 
-## EntityFrameworkCore.SqlServer.SimpleBulks Features:
+## EntityFrameworkCore.SqlServer.SimpleBulks Features
 - Bulk Insert
 - Bulk Update
 - Bulk Delete
@@ -28,8 +28,8 @@ https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
   ```
 - Build and run.
 
-## DbContextExtensions:
-### Using Lambda Expression:
+## DbContextExtensions
+### Using Lambda Expression
 ```c#
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
@@ -63,7 +63,7 @@ dbct.BulkMerge(compositeKeyRows,
 dbct.BulkDelete(rows);
 dbct.BulkDelete(compositeKeyRows);
 ```
-### Using Dynamic String:
+### Using Dynamic String
 ```c#
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
@@ -84,7 +84,7 @@ dbct.BulkMerge(compositeKeyRows,
     new [] { "Column1", "Column2", "Column3" },
     new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
 ```
-### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
+### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
 new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
 	.WithData(rows)
@@ -97,8 +97,8 @@ new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
 	.Execute();
 ```
 
-## SqlConnectionExtensions:
-### Using Lambda Expression:
+## SqlConnectionExtensions
+### Using Lambda Expression
 ```c#
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
@@ -133,7 +133,7 @@ connection.BulkMerge(compositeKeyRows,
 connection.BulkDelete(rows, row => row.Id);
 connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
-### Using Dynamic String:
+### Using Dynamic String
 ```c#
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
@@ -166,7 +166,7 @@ connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
 connection.BulkDelete(rows, "Rows", "Id");
 connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new [] { "Id1", "Id2" });
 ```
-### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression:
+### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
 new BulkInsertBuilder<Row>(connection)
 	.WithData(rows)
@@ -182,50 +182,50 @@ new BulkInsertBuilder<Row>(connection)
 ### BulkInsert
 ```c#
 _context.BulkInsert(rows,
-	row => new { row.Column1, row.Column2, row.Column3 },
-	options =>
-	{
-		options.KeepIdentity = false;
-		options.BatchSize = 0;
-		options.Timeout = 30;
-		options.LogTo = Console.WriteLine;
-	});
+    row => new { row.Column1, row.Column2, row.Column3 },
+    options =>
+    {
+        options.KeepIdentity = false;
+        options.BatchSize = 0;
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### BulkUpdate
 ```c#
 _context.BulkUpdate(rows,
-	row => new { row.Column3, row.Column2 },
-	options =>
-	{
-		options.BatchSize = 0;
-		options.Timeout = 30;
-		options.LogTo = Console.WriteLine;
-	});
+    row => new { row.Column3, row.Column2 },
+    options =>
+    {
+        options.BatchSize = 0;
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### BulkDelete
 ```c#
 _context.BulkDelete(rows,
-	options =>
-	{
-		options.BatchSize = 0;
-		options.Timeout = 30;
-		options.LogTo = Console.WriteLine;
-	});
+    options =>
+    {
+        options.BatchSize = 0;
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### BulkMerge
 ```c#
 _context.BulkMerge(rows,
-	row => row.Id,
-	row => new { row.Column1, row.Column2 },
-	row => new { row.Column1, row.Column2, row.Column3 },
-	options =>
-	{
-		options.BatchSize = 0;
-		options.Timeout = 30;
-		options.WithHoldLock = false;
-		options.ReturnDbGeneratedId = true;
-		options.LogTo = Console.WriteLine;
-	});
+    row => row.Id,
+    row => new { row.Column1, row.Column2 },
+    row => new { row.Column1, row.Column2, row.Column3 },
+    options =>
+    {
+        options.BatchSize = 0;
+        options.Timeout = 30;
+        options.WithHoldLock = false;
+        options.ReturnDbGeneratedId = true;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### BulkMatch
 ```c#
@@ -238,7 +238,7 @@ var contactsFromDb = _context.BulkMatch(matchedContacts,
         options.LogTo = Console.WriteLine;
     });
 ```
-### CreateTempTable
+### TempTable
 ```c#
 var customerTableName = _context.CreateTempTable(customers,
     x => new
@@ -258,31 +258,31 @@ var customerTableName = _context.CreateTempTable(customers,
 ### DirectInsert
 ```c#
 _context.DirectInsert(row,
-        row => new { row.Column1, row.Column2, row.Column3 },
-        options =>
-        {
-            options.Timeout = 30;
-            options.LogTo = Console.WriteLine;
-        });
+    row => new { row.Column1, row.Column2, row.Column3 },
+    options =>
+    {
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### DirectUpdate
 ```c#
 _context.DirectUpdate(row,
-        row => new { row.Column3, row.Column2 },
-        options =>
-        {
-            options.Timeout = 30;
-            options.LogTo = Console.WriteLine;
-        });
+    row => new { row.Column3, row.Column2 },
+    options =>
+    {
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 ### DirectDelete
 ```c#
 _context.DirectDelete(row,
-        options =>
-        {
-            options.Timeout = 30;
-            options.LogTo = Console.WriteLine;
-        });
+    options =>
+    {
+        options.Timeout = 30;
+        options.LogTo = Console.WriteLine;
+    });
 ```
 
 ## Benchmarks
@@ -333,7 +333,7 @@ Multiple Columns [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/Bulk
 
 ![alt text](/docs/benchmarks/bulkmatch/imgs/bulk-match-multiple-columns-2.png)
 
-### Temp Table
+### TempTable
 [/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/TempTableBenchmarks.cs](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/TempTableBenchmarks.cs)
 
 ![alt text](/docs/benchmarks/temptable/imgs/temp-table.png)
