@@ -7,13 +7,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks
     public static class TableMapper
     {
         private static readonly object _lock = new object();
-        private static Dictionary<Type, string> _mappings = new Dictionary<Type, string>();
+        private static Dictionary<Type, (string Schema, string TableName)> _mappings = new Dictionary<Type, (string Schema, string TableName)>();
 
-        public static void Register(Type type, string tableName)
+        public static void Register(Type type, string schema, string tableName)
         {
             lock (_lock)
             {
-                _mappings[type] = tableName;
+                _mappings[type] = (Schema: schema, TableName: tableName);
             }
         }
 
@@ -24,7 +24,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks
                 throw new Exception($"Type {type} has not been registered.");
             }
 
-            return _mappings[type];
+            var map = _mappings[type];
+
+            return string.IsNullOrEmpty(map.Schema) ? $"[{map.TableName}]" : $"[{map.Schema}].[{map.TableName}]";
         }
     }
 }

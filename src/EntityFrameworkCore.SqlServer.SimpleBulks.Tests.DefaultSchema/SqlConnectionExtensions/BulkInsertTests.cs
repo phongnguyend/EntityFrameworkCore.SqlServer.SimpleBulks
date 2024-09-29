@@ -23,8 +23,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
 
             _connection = new SqlConnection(connectionString);
 
-            TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
-            TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
+            TableMapper.Register(typeof(SingleKeyRow<int>), string.Empty, "SingleKeyRows");
+            TableMapper.Register(typeof(CompositeKeyRow<int, int>), string.Empty, "CompositeKeyRows");
         }
 
         public void Dispose()
