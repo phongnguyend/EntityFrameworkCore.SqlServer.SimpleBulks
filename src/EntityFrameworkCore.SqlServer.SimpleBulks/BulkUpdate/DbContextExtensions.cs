@@ -21,13 +21,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             return new BulkUpdateBuilder<T>(connection, transaction)
-                 .WithData(data)
                  .WithId(primaryKeys)
                  .WithColumns(columnNamesSelector)
                  .WithDbColumnMappings(dbColumnMappings)
                  .ToTable(tableName)
                  .ConfigureBulkOptions(configureOptions)
-                 .Execute();
+                 .Execute(data);
         }
 
         public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
@@ -42,13 +41,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             return new BulkUpdateBuilder<T>(connection, transaction)
-                .WithData(data)
                 .WithId(primaryKeys)
                 .WithColumns(columnNames)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
     }
 }

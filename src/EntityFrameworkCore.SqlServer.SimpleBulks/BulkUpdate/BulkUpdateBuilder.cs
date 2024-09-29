@@ -11,7 +11,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public class BulkUpdateBuilder<T>
     {
-        private IEnumerable<T> _data;
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _columnNames;
@@ -29,12 +28,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
         {
             _connection = connection;
             _transaction = transaction;
-        }
-
-        public BulkUpdateBuilder<T> WithData(IEnumerable<T> data)
-        {
-            _data = data;
-            return this;
         }
 
         public BulkUpdateBuilder<T> ToTable(string tableName)
@@ -100,11 +93,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public BulkUpdateResult Execute()
+        public BulkUpdateResult Execute(IEnumerable<T> data)
         {
-            if (_data.Count() == 1)
+            if (data.Count() == 1)
             {
-                return SingleUpdate(_data.First());
+                return SingleUpdate(data.First());
             }
 
             var temptableName = $"[#{Guid.NewGuid()}]";
@@ -112,7 +105,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
             propertyNamesIncludeId.AddRange(_idColumns);
 
-            var dataTable = _data.ToDataTable(propertyNamesIncludeId);
+            var dataTable = data.ToDataTable(propertyNamesIncludeId);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var joinCondition = string.Join(" and ", _idColumns.Select(x =>

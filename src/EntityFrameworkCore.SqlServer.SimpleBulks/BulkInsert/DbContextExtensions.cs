@@ -26,13 +26,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
-                .WithData(data)
                 .WithColumns(columns)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
@@ -48,13 +47,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             new BulkInsertBuilder<T>(connection, transaction)
-                .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .WithDbColumnMappings(dbColumnMappings)
                 .ToTable(tableName)
                 .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
     }
 }

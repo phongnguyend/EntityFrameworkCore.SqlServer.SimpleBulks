@@ -23,7 +23,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
-                 .WithData(data)
                  .WithId(idSelector)
                  .WithUpdateColumns(updateColumnNamesSelector)
                  .WithInsertColumns(insertColumnNamesSelector)
@@ -31,7 +30,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                  .WithOutputId(outputIdColumn)
                  .ToTable(tableName)
                  .ConfigureBulkOptions(configureOptions)
-                 .Execute();
+                 .Execute(data);
         }
 
         public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
@@ -47,7 +46,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
-                .WithData(data)
                 .WithId(idColumn)
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
@@ -55,7 +53,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithOutputId(outputIdColumn)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static BulkMergeResult BulkMerge<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
@@ -71,7 +69,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .FirstOrDefault();
 
             return new BulkMergeBuilder<T>(connection, transaction)
-                .WithData(data)
                 .WithId(idColumns)
                 .WithUpdateColumns(updateColumnNames)
                 .WithInsertColumns(insertColumnNames)
@@ -79,7 +76,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 .WithOutputId(outputIdColumn)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
     }
 }

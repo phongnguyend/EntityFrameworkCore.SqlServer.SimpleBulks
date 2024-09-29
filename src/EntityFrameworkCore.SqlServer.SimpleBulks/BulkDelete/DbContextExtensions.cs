@@ -20,12 +20,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
             return new BulkDeleteBuilder<T>(connection, transaction)
-                 .WithData(data)
                  .WithId(primaryKeys)
                  .WithDbColumnMappings(dbColumnMappings)
                  .ToTable(tableName)
                  .ConfigureBulkOptions(configureOptions)
-                 .Execute();
+                 .Execute(data);
         }
     }
 }

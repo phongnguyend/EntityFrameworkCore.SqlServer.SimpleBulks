@@ -9,7 +9,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public class BulkDeleteBuilder<T>
     {
-        private IEnumerable<T> _data;
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private IDictionary<string, string> _dbColumnMappings;
@@ -26,12 +25,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
         {
             _connection = connection;
             _transaction = transaction;
-        }
-
-        public BulkDeleteBuilder<T> WithData(IEnumerable<T> data)
-        {
-            _data = data;
-            return this;
         }
 
         public BulkDeleteBuilder<T> ToTable(string tableName)
@@ -85,15 +78,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public BulkDeleteResult Execute()
+        public BulkDeleteResult Execute(IEnumerable<T> data)
         {
-            if (_data.Count() == 1)
+            if (data.Count() == 1)
             {
-                return SingleDelete(_data.First());
+                return SingleDelete(data.First());
             }
 
             var temptableName = $"[#{Guid.NewGuid()}]";
-            var dataTable = _data.ToDataTable(_idColumns);
+            var dataTable = data.ToDataTable(_idColumns);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var joinCondition = string.Join(" AND ", _idColumns.Select(x =>

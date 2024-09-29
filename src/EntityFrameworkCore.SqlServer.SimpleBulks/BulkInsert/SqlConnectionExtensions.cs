@@ -12,11 +12,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = TableMapper.Resolve(typeof(T));
 
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector, Action<BulkInsertOptions> configureOptions = null)
@@ -24,12 +23,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = TableMapper.Resolve(typeof(T));
 
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOutputId(idSelector)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, Action<BulkInsertOptions> configureOptions = null)
@@ -37,11 +35,10 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = TableMapper.Resolve(typeof(T));
 
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> columnNames, string idColumnName, Action<BulkInsertOptions> configureOptions = null)
@@ -49,54 +46,49 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             string tableName = TableMapper.Resolve(typeof(T));
 
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOutputId(idColumnName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector, Action<BulkInsertOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNamesSelector)
                 .ToTable(tableName)
                 .WithOutputId(idSelector)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, Action<BulkInsertOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
 
         public static void BulkInsert<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> columnNames, string idColumnName, Action<BulkInsertOptions> configureOptions = null)
         {
             new BulkInsertBuilder<T>(connection)
-                .WithData(data)
                 .WithColumns(columnNames)
                 .ToTable(tableName)
                 .WithOutputId(idColumnName)
                 .ConfigureBulkOptions(configureOptions)
-                .Execute();
+                .Execute(data);
         }
     }
 }

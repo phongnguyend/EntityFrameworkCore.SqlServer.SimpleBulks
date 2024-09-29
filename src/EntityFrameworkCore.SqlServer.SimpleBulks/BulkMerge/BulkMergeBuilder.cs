@@ -10,7 +10,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 {
     public class BulkMergeBuilder<T>
     {
-        private IEnumerable<T> _data;
         private string _tableName;
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _updateColumnNames;
@@ -30,12 +29,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
         {
             _connection = connection;
             _transaction = transaction;
-        }
-
-        public BulkMergeBuilder<T> WithData(IEnumerable<T> data)
-        {
-            _data = data;
-            return this;
         }
 
         public BulkMergeBuilder<T> ToTable(string tableName)
@@ -125,7 +118,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
         }
 
-        public BulkMergeResult Execute()
+        public BulkMergeResult Execute(IEnumerable<T> data)
         {
             if (!_updateColumnNames.Any() && !_insertColumnNames.Any())
             {
@@ -141,7 +134,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             propertyNames.AddRange(_insertColumnNames);
             propertyNames = propertyNames.Distinct().ToList();
 
-            var dataTable = _data.ToDataTable(propertyNames, addIndexNumberColumn: returnDbGeneratedId);
+            var dataTable = data.ToDataTable(propertyNames, addIndexNumberColumn: returnDbGeneratedId);
             var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
             var mergeStatementBuilder = new StringBuilder();
@@ -244,7 +237,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 var idProperty = typeof(T).GetProperty(_outputIdColumn);
 
                 long idx = 0;
-                foreach (var row in _data)
+                foreach (var row in data)
                 {
                     if (returnedIds.TryGetValue(idx, out object id))
                     {
