@@ -9,7 +9,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
 {
     public class BulkDeleteBuilder<T>
     {
-        private string _tableName;
+        private TableInfor _table;
         private IEnumerable<string> _idColumns;
         private IDictionary<string, string> _dbColumnMappings;
         private BulkDeleteOptions _options;
@@ -27,9 +27,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
             _transaction = transaction;
         }
 
-        public BulkDeleteBuilder<T> ToTable(string tableName)
+        public BulkDeleteBuilder<T> ToTable(TableInfor table)
         {
-            _tableName = tableName;
+            _table = table;
             return this;
         }
 
@@ -96,7 +96,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
             }));
 
-            var deleteStatement = $"DELETE a FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition;
+            var deleteStatement = $"DELETE a FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition;
 
             _connection.EnsureOpen();
 
@@ -137,7 +137,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 return $"[{GetDbColumnName(x)}] = @{x}";
             }));
 
-            var deleteStatement = $"DELETE FROM {_tableName} WHERE " + whereCondition;
+            var deleteStatement = $"DELETE FROM {_table.SchemaQualifiedTableName} WHERE " + whereCondition;
 
             Log($"Begin deleting:{Environment.NewLine}{deleteStatement}");
 

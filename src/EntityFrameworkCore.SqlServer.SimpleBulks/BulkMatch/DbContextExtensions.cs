@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
     {
         public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
         {
-            string tableName = dbContext.GetTableName(typeof(T));
+            var table = dbContext.GetTableInfor(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
@@ -21,7 +21,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
             return new BulkMatchBuilder<T>(connection, transaction)
                  .WithReturnedColumns(columns)
                  .WithDbColumnMappings(dbColumnMappings)
-                 .WithTable(tableName)
+                 .WithTable(table)
                  .WithMatchedColumns(matchedColumnsSelector)
                  .ConfigureBulkOptions(configureOptions)
                  .Execute(machedValues);
@@ -29,7 +29,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
 
         public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
         {
-            string tableName = dbContext.GetTableName(typeof(T));
+            var table = dbContext.GetTableInfor(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
@@ -38,7 +38,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
             return new BulkMatchBuilder<T>(connection, transaction)
                  .WithReturnedColumns(returnedColumnsSelector)
                  .WithDbColumnMappings(dbColumnMappings)
-                 .WithTable(tableName)
+                 .WithTable(table)
                  .WithMatchedColumns(matchedColumnsSelector)
                  .ConfigureBulkOptions(configureOptions)
                  .Execute(machedValues);

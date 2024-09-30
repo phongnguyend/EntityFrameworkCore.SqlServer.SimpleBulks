@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
 {
     public class BulkUpdateBuilder<T>
     {
-        private string _tableName;
+        private TableInfor _table;
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _columnNames;
         private IDictionary<string, string> _dbColumnMappings;
@@ -30,9 +30,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             _transaction = transaction;
         }
 
-        public BulkUpdateBuilder<T> ToTable(string tableName)
+        public BulkUpdateBuilder<T> ToTable(TableInfor table)
         {
-            _tableName = tableName;
+            _table = table;
             return this;
         }
 
@@ -118,7 +118,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             var updateStatementBuilder = new StringBuilder();
             updateStatementBuilder.AppendLine("UPDATE a SET");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
-            updateStatementBuilder.AppendLine($"FROM {_tableName} a JOIN {temptableName} b ON " + joinCondition);
+            updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
             _connection.EnsureOpen();
 
@@ -154,7 +154,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
             }));
 
             var updateStatementBuilder = new StringBuilder();
-            updateStatementBuilder.AppendLine($"UPDATE {_tableName} SET");
+            updateStatementBuilder.AppendLine($"UPDATE {_table.SchemaQualifiedTableName} SET");
             updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x))));
             updateStatementBuilder.AppendLine($"WHERE {whereCondition}");
 

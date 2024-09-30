@@ -9,60 +9,60 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
     {
         public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null)
         {
-            string tableName = TableMapper.Resolve(typeof(T));
+            var table = TableMapper.Resolve(typeof(T));
 
             return new BulkDeleteBuilder<T>(connection)
                   .WithId(idSelector)
-                  .ToTable(tableName)
+                  .ToTable(table)
                   .ConfigureBulkOptions(configureOptions)
                   .Execute(data);
         }
 
         public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
         {
-            string tableName = TableMapper.Resolve(typeof(T));
+            var table = TableMapper.Resolve(typeof(T));
 
             return new BulkDeleteBuilder<T>(connection)
                 .WithId(idColumn)
-                .ToTable(tableName)
+                .ToTable(table)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
         }
 
         public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
         {
-            string tableName = TableMapper.Resolve(typeof(T));
+            var table = TableMapper.Resolve(typeof(T));
 
             return new BulkDeleteBuilder<T>(connection)
                 .WithId(idColumns)
-                .ToTable(tableName)
+                .ToTable(table)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(connection)
                 .WithId(idSelector)
-                .ToTable(tableName)
+                .ToTable(table)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, TableInfor table, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(connection)
                 .WithId(idColumn)
-                .ToTable(tableName)
+                .ToTable(table)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
         }
 
-        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, string tableName, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
+        public static BulkDeleteResult BulkDelete<T>(this SqlConnection connection, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
         {
             return new BulkDeleteBuilder<T>(connection)
                 .WithId(idColumns)
-                .ToTable(tableName)
+                .ToTable(table)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
         }

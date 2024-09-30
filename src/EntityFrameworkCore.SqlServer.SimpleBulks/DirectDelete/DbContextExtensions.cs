@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete
     {
         public static BulkDeleteResult DirectDelete<T>(this DbContext dbContext, T data, Action<BulkDeleteOptions> configureOptions = null)
         {
-            string tableName = dbContext.GetTableName(typeof(T));
+            var table = dbContext.GetTableInfor(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
@@ -22,7 +22,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete
             return new BulkDeleteBuilder<T>(connection, transaction)
                  .WithId(primaryKeys)
                  .WithDbColumnMappings(dbColumnMappings)
-                 .ToTable(tableName)
+                 .ToTable(table)
                  .ConfigureBulkOptions(configureOptions)
                  .SingleDelete(data);
         }

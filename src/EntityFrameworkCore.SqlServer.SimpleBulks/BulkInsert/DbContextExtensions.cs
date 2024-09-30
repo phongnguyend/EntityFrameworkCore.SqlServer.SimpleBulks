@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
     {
         public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkInsertOptions> configureOptions = null)
         {
-            string tableName = dbContext.GetTableName(typeof(T));
+            var table = dbContext.GetTableInfor(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
@@ -28,7 +28,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithColumns(columns)
                 .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
+                .ToTable(table)
                 .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);
@@ -36,7 +36,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
 
         public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
         {
-            string tableName = dbContext.GetTableName(typeof(T));
+            var table = dbContext.GetTableInfor(typeof(T));
             var connection = dbContext.GetSqlConnection();
             var transaction = dbContext.GetCurrentSqlTransaction();
             var properties = dbContext.GetProperties(typeof(T));
@@ -49,7 +49,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
             new BulkInsertBuilder<T>(connection, transaction)
                 .WithColumns(columnNamesSelector)
                 .WithDbColumnMappings(dbColumnMappings)
-                .ToTable(tableName)
+                .ToTable(table)
                 .WithOutputId(idColumn)
                 .ConfigureBulkOptions(configureOptions)
                 .Execute(data);

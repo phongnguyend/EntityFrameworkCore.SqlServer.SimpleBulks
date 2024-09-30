@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 {
     public class BulkMergeBuilder<T>
     {
-        private string _tableName;
+        private TableInfor _table;
         private IEnumerable<string> _idColumns;
         private IEnumerable<string> _updateColumnNames;
         private IEnumerable<string> _insertColumnNames;
@@ -31,9 +31,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
             _transaction = transaction;
         }
 
-        public BulkMergeBuilder<T> ToTable(string tableName)
+        public BulkMergeBuilder<T> ToTable(TableInfor table)
         {
-            _tableName = tableName;
+            _table = table;
             return this;
         }
 
@@ -148,7 +148,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
 
             var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
-            mergeStatementBuilder.AppendLine($"MERGE {_tableName}{hint} t");
+            mergeStatementBuilder.AppendLine($"MERGE {_table.SchemaQualifiedTableName}{hint} t");
             mergeStatementBuilder.AppendLine($"    USING {temptableName} s");
             mergeStatementBuilder.AppendLine($"ON ({joinCondition})");
 
