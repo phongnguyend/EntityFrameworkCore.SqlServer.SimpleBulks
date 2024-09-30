@@ -11,11 +11,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 {
     public static class DbContextExtensions
     {
-        public static string GetTableName(this DbContext dbContext, Type type)
-        {
-            return dbContext.GetTableInfor(type).SchemaQualifiedTableName;
-        }
-
         public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
         {
             var entityType = dbContext.Model.FindEntityType(type);
