@@ -90,7 +90,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
                 return columnName;
             }
 
-            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
+            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
 
         public BulkUpdateResult Execute(IEnumerable<T> data)

@@ -24,7 +24,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         public static string ToSqlType(this Type type)
         {
-            var sqlType = _mappings.ContainsKey(type) ? _mappings[type] : "nvarchar(max)";
+            var sqlType = _mappings.TryGetValue(type, out string value) ? value : "nvarchar(max)";
             return sqlType;
         }
 
@@ -47,7 +47,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
 
         private static bool IsSupportedType(PropertyInfo property)
         {
-            return _mappings.Keys.Contains(Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType) || property.PropertyType.IsValueType;
+            return _mappings.ContainsKey(Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType) || property.PropertyType.IsValueType;
         }
     }
 }

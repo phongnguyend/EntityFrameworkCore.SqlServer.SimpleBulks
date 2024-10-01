@@ -95,7 +95,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
                 return columnName;
             }
 
-            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
+            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
 
         public void Execute(IEnumerable<T> data)

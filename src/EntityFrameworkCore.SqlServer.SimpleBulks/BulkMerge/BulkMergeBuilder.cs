@@ -115,7 +115,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
                 return columnName;
             }
 
-            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
+            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
 
         public BulkMergeResult Execute(IEnumerable<T> data)

@@ -49,14 +49,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions
             bulkCopy.WriteToServer(dataTable);
         }
 
-        private static string GetDbColumnName(string columName, IDictionary<string, string> dbColumnMappings)
+        private static string GetDbColumnName(string columnName, IDictionary<string, string> dbColumnMappings)
         {
             if (dbColumnMappings == null)
             {
-                return columName;
+                return columnName;
             }
 
-            return dbColumnMappings.ContainsKey(columName) ? dbColumnMappings[columName] : columName;
+            return dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
     }
 }

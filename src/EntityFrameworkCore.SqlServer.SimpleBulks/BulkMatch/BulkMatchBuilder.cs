@@ -90,7 +90,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
                 return columnName;
             }
 
-            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
+            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
 
         public List<T> Execute(IEnumerable<T> machedValues)

@@ -75,7 +75,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
                 return columnName;
             }
 
-            return _dbColumnMappings.ContainsKey(columnName) ? _dbColumnMappings[columnName] : columnName;
+            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
         }
 
         public BulkDeleteResult Execute(IEnumerable<T> data)
