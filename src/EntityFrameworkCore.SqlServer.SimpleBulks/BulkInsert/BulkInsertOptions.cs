@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+
+public class BulkInsertOptions : BulkOptions
 {
-    public class BulkInsertOptions : BulkOptions
-    {
-        public bool KeepIdentity { get; set; }
-    }
+    public bool KeepIdentity { get; set; }
 }

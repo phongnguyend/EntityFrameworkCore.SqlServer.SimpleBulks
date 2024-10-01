@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
+
+public class BulkUpdateResult
 {
-    public class BulkUpdateResult
-    {
-        public int AffectedRows { get; set; }
-    }
+    public int AffectedRows { get; set; }
 }

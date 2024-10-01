@@ -4,105 +4,104 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks;
+
+[WarmupCount(0)]
+[IterationCount(1)]
+[InvocationCount(1)]
+[MemoryDiagnoser]
+public class BulkMergeReturnDbGeneratedIdBenchmarks
 {
-    [WarmupCount(0)]
-    [IterationCount(1)]
-    [InvocationCount(1)]
-    [MemoryDiagnoser]
-    public class BulkMergeReturnDbGeneratedIdBenchmarks
+    private TestDbContext _context;
+    private List<Customer> _customers;
+    private List<Customer> _newCustomers;
+    private List<Customer> _allCustomers;
+
+    //[Params(100, 1000, 10_000, 100_000)]
+    //public int RowsCount { get; set; }
+
+    [Params(250_000, 500_000, 1_000_000)]
+    public int RowsCount { get; set; }
+
+    [IterationSetup]
+    public void IterationSetup()
     {
-        private TestDbContext _context;
-        private List<Customer> _customers;
-        private List<Customer> _newCustomers;
-        private List<Customer> _allCustomers;
+        _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
+        _context.Database.EnsureCreated();
+        _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
 
-        //[Params(100, 1000, 10_000, 100_000)]
-        //public int RowsCount { get; set; }
+        _customers = new List<Customer>(RowsCount);
+        _newCustomers = new List<Customer>(RowsCount);
 
-        [Params(250_000, 500_000, 1_000_000)]
-        public int RowsCount { get; set; }
-
-        [IterationSetup]
-        public void IterationSetup()
+        for (int i = 0; i < RowsCount; i++)
         {
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-            _context.Database.EnsureCreated();
-            _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
-
-            _customers = new List<Customer>(RowsCount);
-            _newCustomers = new List<Customer>(RowsCount);
-
-            for (int i = 0; i < RowsCount; i++)
+            var customer = new Customer
             {
-                var customer = new Customer
-                {
-                    FirstName = "FirstName " + i,
-                    LastName = "LastName " + i,
-                    Index = i,
-                };
+                FirstName = "FirstName " + i,
+                LastName = "LastName " + i,
+                Index = i,
+            };
 
-                _customers.Add(customer);
-            }
+            _customers.Add(customer);
+        }
 
-            _context.BulkInsert(_customers);
+        _context.BulkInsert(_customers);
 
-            for (int i = RowsCount; i < RowsCount * 2; i++)
+        for (int i = RowsCount; i < RowsCount * 2; i++)
+        {
+            var customer = new Customer
             {
-                var customer = new Customer
-                {
-                    FirstName = "FirstName " + i,
-                    LastName = "LastName " + i,
-                    Index = i,
-                };
+                FirstName = "FirstName " + i,
+                LastName = "LastName " + i,
+                Index = i,
+            };
 
-                _newCustomers.Add(customer);
-            }
+            _newCustomers.Add(customer);
+        }
 
-            _allCustomers = new List<Customer>(RowsCount * 2);
-            _allCustomers.AddRange(_customers);
-            _allCustomers.AddRange(_newCustomers);
+        _allCustomers = new List<Customer>(RowsCount * 2);
+        _allCustomers.AddRange(_customers);
+        _allCustomers.AddRange(_newCustomers);
 
-            var random = new Random(2024);
+        var random = new Random(2024);
 
-            foreach (var customer in _customers)
+        foreach (var customer in _customers)
+        {
+            customer.FirstName = "Updated" + random.Next();
+        }
+    }
+
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        _context.Database.EnsureDeleted();
+    }
+
+    [Benchmark]
+    public void ReturnDbGeneratedId()
+    {
+        _context.BulkMerge(_allCustomers,
+            x => x.Id,
+            x => new { x.FirstName },
+            x => new { x.FirstName, x.LastName, x.Index },
+            opt =>
             {
-                customer.FirstName = "Updated" + random.Next();
-            }
-        }
+                opt.Timeout = 0;
+                opt.ReturnDbGeneratedId = true;
+            });
+    }
 
-        [IterationCleanup]
-        public void IterationCleanup()
-        {
-            _context.Database.EnsureDeleted();
-        }
-
-        [Benchmark]
-        public void ReturnDbGeneratedId()
-        {
-            _context.BulkMerge(_allCustomers,
-                x => x.Id,
-                x => new { x.FirstName },
-                x => new { x.FirstName, x.LastName, x.Index },
-                opt =>
-                {
-                    opt.Timeout = 0;
-                    opt.ReturnDbGeneratedId = true;
-                });
-        }
-
-        [Benchmark]
-        public void NotReturnDbGeneratedId()
-        {
-            _context.BulkMerge(_allCustomers,
-                x => x.Id,
-                x => new { x.FirstName },
-                x => new { x.FirstName, x.LastName, x.Index },
-                opt =>
-                {
-                    opt.Timeout = 0;
-                    opt.ReturnDbGeneratedId = false;
-                });
-        }
+    [Benchmark]
+    public void NotReturnDbGeneratedId()
+    {
+        _context.BulkMerge(_allCustomers,
+            x => x.Id,
+            x => new { x.FirstName },
+            x => new { x.FirstName, x.LastName, x.Index },
+            opt =>
+            {
+                opt.Timeout = 0;
+                opt.ReturnDbGeneratedId = false;
+            });
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
+
+public class BulkMatchOptions : BulkOptions
 {
-    public class BulkMatchOptions : BulkOptions
-    {
-        public string Collation { get; set; } = Constants.DefaultCollation;
-    }
+    public string Collation { get; set; } = Constants.DefaultCollation;
 }

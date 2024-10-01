@@ -7,166 +7,165 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
+
+public class BulkMatchBuilder<T>
 {
-    public class BulkMatchBuilder<T>
+    private TableInfor _table;
+    private IEnumerable<string> _matchedColumns;
+    private IEnumerable<string> _returnedColumns;
+    private IDictionary<string, string> _dbColumnMappings;
+    private BulkMatchOptions _options;
+    private readonly SqlConnection _connection;
+    private readonly SqlTransaction _transaction;
+
+    public BulkMatchBuilder(SqlConnection connection)
     {
-        private TableInfor _table;
-        private IEnumerable<string> _matchedColumns;
-        private IEnumerable<string> _returnedColumns;
-        private IDictionary<string, string> _dbColumnMappings;
-        private BulkMatchOptions _options;
-        private readonly SqlConnection _connection;
-        private readonly SqlTransaction _transaction;
+        _connection = connection;
+    }
 
-        public BulkMatchBuilder(SqlConnection connection)
+    public BulkMatchBuilder(SqlConnection connection, SqlTransaction transaction)
+    {
+        _connection = connection;
+        _transaction = transaction;
+    }
+
+    public BulkMatchBuilder<T> WithTable(TableInfor table)
+    {
+        _table = table;
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithMatchedColumn(string matchedColumn)
+    {
+        _matchedColumns = new List<string> { matchedColumn };
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
+    {
+        _matchedColumns = matchedColumns;
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithMatchedColumns(Expression<Func<T, object>> matchedColumnsSelector)
+    {
+        var matchedColumn = matchedColumnsSelector.Body.GetMemberName();
+        _matchedColumns = string.IsNullOrEmpty(matchedColumn) ? matchedColumnsSelector.Body.GetMemberNames() : new List<string> { matchedColumn };
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithReturnedColumns(IEnumerable<string> returnedColumns)
+    {
+        _returnedColumns = returnedColumns;
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithReturnedColumns(Expression<Func<T, object>> returnedColumnsSelector)
+    {
+        _returnedColumns = returnedColumnsSelector.Body.GetMemberNames().ToArray();
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    {
+        _dbColumnMappings = dbColumnMappings;
+        return this;
+    }
+
+    public BulkMatchBuilder<T> ConfigureBulkOptions(Action<BulkMatchOptions> configureOptions)
+    {
+        _options = new BulkMatchOptions();
+        if (configureOptions != null)
         {
-            _connection = connection;
+            configureOptions(_options);
+        }
+        return this;
+    }
+
+    private string GetDbColumnName(string columnName)
+    {
+        if (_dbColumnMappings == null)
+        {
+            return columnName;
         }
 
-        public BulkMatchBuilder(SqlConnection connection, SqlTransaction transaction)
+        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+    }
+
+    public List<T> Execute(IEnumerable<T> machedValues)
+    {
+        var temptableName = $"[#{Guid.NewGuid()}]";
+
+        var dataTable = machedValues.ToDataTable(_matchedColumns);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
+
+        var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
         {
-            _connection = connection;
-            _transaction = transaction;
+            string collation = dataTable.Columns[x].DataType == typeof(string) ?
+            $" COLLATE {_options.Collation}" : string.Empty;
+            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+        }));
+
+        var selectQueryBuilder = new StringBuilder();
+        selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
+        selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
+
+        _connection.EnsureOpen();
+
+        Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
+
+        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        {
+            createTemptableCommand.ExecuteNonQuery();
         }
 
-        public BulkMatchBuilder<T> WithTable(TableInfor table)
-        {
-            _table = table;
-            return this;
-        }
+        Log("End creating temp table.");
 
-        public BulkMatchBuilder<T> WithMatchedColumn(string matchedColumn)
-        {
-            _matchedColumns = new List<string> { matchedColumn };
-            return this;
-        }
 
-        public BulkMatchBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
-        {
-            _matchedColumns = matchedColumns;
-            return this;
-        }
+        Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
 
-        public BulkMatchBuilder<T> WithMatchedColumns(Expression<Func<T, object>> matchedColumnsSelector)
-        {
-            var matchedColumn = matchedColumnsSelector.Body.GetMemberName();
-            _matchedColumns = string.IsNullOrEmpty(matchedColumn) ? matchedColumnsSelector.Body.GetMemberNames() : new List<string> { matchedColumn };
-            return this;
-        }
+        dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
 
-        public BulkMatchBuilder<T> WithReturnedColumns(IEnumerable<string> returnedColumns)
-        {
-            _returnedColumns = returnedColumns;
-            return this;
-        }
+        Log("End executing SqlBulkCopy.");
 
-        public BulkMatchBuilder<T> WithReturnedColumns(Expression<Func<T, object>> returnedColumnsSelector)
-        {
-            _returnedColumns = returnedColumnsSelector.Body.GetMemberNames().ToArray();
-            return this;
-        }
+        var selectQuery = selectQueryBuilder.ToString();
 
-        public BulkMatchBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
-        {
-            _dbColumnMappings = dbColumnMappings;
-            return this;
-        }
+        Log($"Begin matching:{Environment.NewLine}{selectQuery}");
 
-        public BulkMatchBuilder<T> ConfigureBulkOptions(Action<BulkMatchOptions> configureOptions)
+        var results = new List<T>();
+
+        var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
+
+        using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
+        using var reader = updateCommand.ExecuteReader();
+        while (reader.Read())
         {
-            _options = new BulkMatchOptions();
-            if (configureOptions != null)
+            T obj = (T)Activator.CreateInstance(typeof(T));
+
+            foreach (var prop in properties)
             {
-                configureOptions(_options);
-            }
-            return this;
-        }
-
-        private string GetDbColumnName(string columnName)
-        {
-            if (_dbColumnMappings == null)
-            {
-                return columnName;
-            }
-
-            return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
-        }
-
-        public List<T> Execute(IEnumerable<T> machedValues)
-        {
-            var temptableName = $"[#{Guid.NewGuid()}]";
-
-            var dataTable = machedValues.ToDataTable(_matchedColumns);
-            var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
-
-            var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
-            {
-                string collation = dataTable.Columns[x].DataType == typeof(string) ?
-                $" COLLATE {_options.Collation}" : string.Empty;
-                return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
-            }));
-
-            var selectQueryBuilder = new StringBuilder();
-            selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
-            selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
-
-            _connection.EnsureOpen();
-
-            Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-
-            using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
-            {
-                createTemptableCommand.ExecuteNonQuery();
-            }
-
-            Log("End creating temp table.");
-
-
-            Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-
-            dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
-
-            Log("End executing SqlBulkCopy.");
-
-            var selectQuery = selectQueryBuilder.ToString();
-
-            Log($"Begin matching:{Environment.NewLine}{selectQuery}");
-
-            var results = new List<T>();
-
-            var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
-
-            using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
-            using var reader = updateCommand.ExecuteReader();
-            while (reader.Read())
-            {
-                T obj = (T)Activator.CreateInstance(typeof(T));
-
-                foreach (var prop in properties)
+                if (!Equals(reader[prop.Name], DBNull.Value))
                 {
-                    if (!Equals(reader[prop.Name], DBNull.Value))
-                    {
-                        prop.SetValue(obj, reader[prop.Name], null);
-                    }
+                    prop.SetValue(obj, reader[prop.Name], null);
                 }
-
-                results.Add(obj);
             }
 
-            Log($"End matching.");
-
-            return results;
+            results.Add(obj);
         }
 
-        private string CreateSelectStatement(string colunmName)
-        {
-            return $"a.[{GetDbColumnName(colunmName)}] as [{colunmName}]";
-        }
+        Log($"End matching.");
 
-        private void Log(string message)
-        {
-            _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
-        }
+        return results;
+    }
+
+    private string CreateSelectStatement(string colunmName)
+    {
+        return $"a.[{GetDbColumnName(colunmName)}] as [{colunmName}]";
+    }
+
+    private void Log(string message)
+    {
+        _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
     }
 }

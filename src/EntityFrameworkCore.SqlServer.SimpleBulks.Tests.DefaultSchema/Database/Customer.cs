@@ -1,17 +1,16 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+
+public class Customer
 {
-    public class Customer
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        public string FirstName { get; set; }
+    public string FirstName { get; set; }
 
-        public string LastName { get; set; }
+    public string LastName { get; set; }
 
-        public string CurrentCountryIsoCode { get; set; }
+    public string CurrentCountryIsoCode { get; set; }
 
-        public int Index { get; set; }
+    public int Index { get; set; }
 
-        public ICollection<Contact> Contacts { get; set; }
-    }
+    public ICollection<Contact> Contacts { get; set; }
 }

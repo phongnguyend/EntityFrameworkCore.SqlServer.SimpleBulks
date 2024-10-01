@@ -1,7 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+
+public class BulkDeleteResult
 {
-    public class BulkDeleteResult
-    {
-        public int AffectedRows { get; set; }
-    }
+    public int AffectedRows { get; set; }
 }

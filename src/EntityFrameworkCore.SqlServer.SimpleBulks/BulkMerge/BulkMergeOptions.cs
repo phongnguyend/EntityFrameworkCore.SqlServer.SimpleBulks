@@ -1,11 +1,10 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+
+public class BulkMergeOptions : BulkOptions
 {
-    public class BulkMergeOptions : BulkOptions
-    {
-        public string Collation { get; set; } = Constants.DefaultCollation;
+    public string Collation { get; set; } = Constants.DefaultCollation;
 
-        public bool WithHoldLock { get; set; }
+    public bool WithHoldLock { get; set; }
 
-        public bool ReturnDbGeneratedId { get; set; } = true;
-    }
+    public bool ReturnDbGeneratedId { get; set; } = true;
 }

@@ -7,100 +7,99 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Migrations
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Migrations;
+
+[DbContext(typeof(DemoDbContext))]
+[Migration("20211210042953_Init")]
+partial class Init
 {
-    [DbContext(typeof(DemoDbContext))]
-    [Migration("20211210042953_Init")]
-    partial class Init
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.6")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+        modelBuilder
+            .HasAnnotation("Relational:MaxIdentifierLength", 128)
+            .HasAnnotation("ProductVersion", "5.0.6")
+            .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.CompositeKeyRow", b =>
-                {
-                    b.Property<int>("Id1")
-                        .HasColumnType("int");
+        modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.CompositeKeyRow", b =>
+            {
+                b.Property<int>("Id1")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Id2")
-                        .HasColumnType("int");
+                b.Property<int>("Id2")
+                    .HasColumnType("int");
 
-                    b.Property<int>("Column1")
-                        .HasColumnType("int");
+                b.Property<int>("Column1")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Column2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Column2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Column3")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("Column3")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id1", "Id2");
+                b.HasKey("Id1", "Id2");
 
-                    b.ToTable("CompositeKeyRows");
-                });
+                b.ToTable("CompositeKeyRows");
+            });
 
-            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.ConfigurationEntry", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("Id1")
-                        .HasDefaultValueSql("newsequentialid()");
+        modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.ConfigurationEntry", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uniqueidentifier")
+                    .HasColumnName("Id1")
+                    .HasDefaultValueSql("newsequentialid()");
 
-                    b.Property<DateTimeOffset>("CreatedDateTime")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset>("CreatedDateTime")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Description")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsSensitive")
-                        .HasColumnType("bit");
+                b.Property<bool>("IsSensitive")
+                    .HasColumnType("bit");
 
-                    b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Key1");
+                b.Property<string>("Key")
+                    .HasColumnType("nvarchar(max)")
+                    .HasColumnName("Key1");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                b.Property<byte[]>("RowVersion")
+                    .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
+                    .HasColumnType("rowversion");
 
-                    b.Property<DateTimeOffset?>("UpdatedDateTime")
-                        .HasColumnType("datetimeoffset");
+                b.Property<DateTimeOffset?>("UpdatedDateTime")
+                    .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Value")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("ConfigurationEntries");
-                });
+                b.ToTable("ConfigurationEntries");
+            });
 
-            modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.Row", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+        modelBuilder.Entity("EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities.Row", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int")
+                    .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Column1")
-                        .HasColumnType("int");
+                b.Property<int>("Column1")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Column2")
-                        .HasColumnType("nvarchar(max)");
+                b.Property<string>("Column2")
+                    .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Column3")
-                        .HasColumnType("datetime2");
+                b.Property<DateTime>("Column3")
+                    .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Rows");
-                });
+                b.ToTable("Rows");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

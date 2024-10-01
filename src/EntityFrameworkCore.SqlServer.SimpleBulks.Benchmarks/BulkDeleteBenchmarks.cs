@@ -4,74 +4,73 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using Microsoft.EntityFrameworkCore;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks;
+
+[WarmupCount(0)]
+[IterationCount(1)]
+[InvocationCount(1)]
+[MemoryDiagnoser]
+public class BulkDeleteBenchmarks
 {
-    [WarmupCount(0)]
-    [IterationCount(1)]
-    [InvocationCount(1)]
-    [MemoryDiagnoser]
-    public class BulkDeleteBenchmarks
+    private TestDbContext _context;
+    private List<Customer> _customers;
+    private List<Guid> _customerIds;
+    private List<Customer> _customersToDelete;
+
+    [Params(100, 1000, 10_000, 20_000, 50_000)]
+    public int RowsCount { get; set; }
+
+    //[Params(100_000, 250_000, 500_000, 1_000_000)]
+    //public int RowsCount { get; set; }
+
+    [IterationSetup]
+    public void IterationSetup()
     {
-        private TestDbContext _context;
-        private List<Customer> _customers;
-        private List<Guid> _customerIds;
-        private List<Customer> _customersToDelete;
+        _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
+        _context.Database.EnsureCreated();
+        _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
 
-        [Params(100, 1000, 10_000, 20_000, 50_000)]
-        public int RowsCount { get; set; }
+        _customers = new List<Customer>(RowsCount * 2);
 
-        //[Params(100_000, 250_000, 500_000, 1_000_000)]
-        //public int RowsCount { get; set; }
-
-        [IterationSetup]
-        public void IterationSetup()
+        for (int i = 0; i < RowsCount * 2; i++)
         {
-            _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-            _context.Database.EnsureCreated();
-            _context.Database.SetCommandTimeout(TimeSpan.FromMinutes(2));
-
-            _customers = new List<Customer>(RowsCount * 2);
-
-            for (int i = 0; i < RowsCount * 2; i++)
+            var customer = new Customer
             {
-                var customer = new Customer
-                {
-                    FirstName = "FirstName " + i,
-                    LastName = "LastName " + i,
-                    Index = i,
-                };
-                _customers.Add(customer);
-            }
-
-            _context.BulkInsert(_customers);
-
-            _customerIds = _customers.Take(RowsCount).Select(x => x.Id).ToList();
-
-            _customersToDelete = _customerIds.Select(x => new Customer { Id = x }).ToList();
+                FirstName = "FirstName " + i,
+                LastName = "LastName " + i,
+                Index = i,
+            };
+            _customers.Add(customer);
         }
 
-        [IterationCleanup]
-        public void IterationCleanup()
-        {
-            _context.Database.EnsureDeleted();
-        }
+        _context.BulkInsert(_customers);
 
-        [Benchmark]
-        public void EFCoreDelete()
-        {
-            _context.RemoveRange(_customersToDelete);
+        _customerIds = _customers.Take(RowsCount).Select(x => x.Id).ToList();
 
-            _context.SaveChanges();
-        }
+        _customersToDelete = _customerIds.Select(x => new Customer { Id = x }).ToList();
+    }
 
-        [Benchmark]
-        public void BulkDelete()
-        {
-            _context.BulkDelete(_customersToDelete,
-                opt =>
-                {
-                    opt.Timeout = 0;
-                });
-        }
+    [IterationCleanup]
+    public void IterationCleanup()
+    {
+        _context.Database.EnsureDeleted();
+    }
+
+    [Benchmark]
+    public void EFCoreDelete()
+    {
+        _context.RemoveRange(_customersToDelete);
+
+        _context.SaveChanges();
+    }
+
+    [Benchmark]
+    public void BulkDelete()
+    {
+        _context.BulkDelete(_customersToDelete,
+            opt =>
+            {
+                opt.Timeout = 0;
+            });
     }
 }
