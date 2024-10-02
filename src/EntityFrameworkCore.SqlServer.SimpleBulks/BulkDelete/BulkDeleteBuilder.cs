@@ -145,6 +145,8 @@ public class BulkDeleteBuilder<T>
 
         dataToDelete.ToSqlParameters(_idColumns).ForEach(x => deleteCommand.Parameters.Add(x));
 
+        _connection.EnsureOpen();
+
         var affectedRows = deleteCommand.ExecuteNonQuery();
 
         Log("End deleting.");
