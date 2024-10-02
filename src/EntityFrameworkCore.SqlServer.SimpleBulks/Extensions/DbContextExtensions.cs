@@ -44,7 +44,7 @@ public static class DbContextExtensions
                        .GetProperties().Select(x => new
                        {
                            x.Name,
-                           ColumnName = x.GetColumnBaseName(),
+                           ColumnName = x.GetColumnName(),
                            ColumnType = x.GetColumnType(),
                            x.ValueGenerated,
                            IsPrimaryKey = x.IsPrimaryKey()
@@ -69,7 +69,7 @@ public static class DbContextExtensions
     {
         var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
         var entityProperties = dbContext.Model.FindEntityType(type)
-                       .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnBaseName(), ColumnType = x.GetColumnType() });
+                       .GetProperties().Select(x => new { x.Name, ColumnName = x.GetColumnName(), ColumnType = x.GetColumnType() });
 
         var data = typeProperties.Join(entityProperties, prop => prop.Name, entityProp => entityProp.Name, (prop, entityProp) => new { prop.Name, prop.PropertyType, entityProp.ColumnName, entityProp.ColumnType });
 
