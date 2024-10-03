@@ -21,7 +21,6 @@ public static class DbContextExtensions
             .Select(x => x.PropertyName);
         var idColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
-            .Select(x => x.PropertyName)
             .FirstOrDefault();
         var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
@@ -29,7 +28,8 @@ public static class DbContextExtensions
             .WithColumns(columns)
             .WithDbColumnMappings(dbColumnMappings)
             .ToTable(table)
-            .WithOutputId(idColumn)
+            .WithOutputId(idColumn?.PropertyName)
+            .WithOutputIdMode(GetOutputIdMode(idColumn))
             .ConfigureBulkOptions(configureOptions)
             .Execute(data);
     }
@@ -42,7 +42,6 @@ public static class DbContextExtensions
         var properties = dbContext.GetProperties(typeof(T));
         var idColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
-            .Select(x => x.PropertyName)
             .FirstOrDefault();
         var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
@@ -50,8 +49,19 @@ public static class DbContextExtensions
             .WithColumns(columnNamesSelector)
             .WithDbColumnMappings(dbColumnMappings)
             .ToTable(table)
-            .WithOutputId(idColumn)
+            .WithOutputId(idColumn?.PropertyName)
+            .WithOutputIdMode(GetOutputIdMode(idColumn))
             .ConfigureBulkOptions(configureOptions)
             .Execute(data);
+    }
+
+    private static OutputIdMode GetOutputIdMode(ColumnInfor columnInfor)
+    {
+        if (columnInfor == null)
+        {
+            return OutputIdMode.ServerGenerated;
+        }
+
+        return columnInfor.PropertyType == typeof(Guid) && string.IsNullOrEmpty(columnInfor.DefaultValueSql) ? OutputIdMode.ClientGenerated : OutputIdMode.ServerGenerated;
     }
 }

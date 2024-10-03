@@ -13,6 +13,7 @@ public class BulkInsertBuilder<T>
 {
     private TableInfor _table;
     private string _outputIdColumn;
+    private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
     private IDictionary<string, string> _dbColumnMappings;
     private BulkInsertOptions _options;
@@ -57,6 +58,12 @@ public class BulkInsertBuilder<T>
     public BulkInsertBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
     {
         _outputIdColumn = idSelector.Body.GetMemberName();
+        return this;
+    }
+
+    public BulkInsertBuilder<T> WithOutputIdMode(OutputIdMode outputIdMode)
+    {
+        _outputIdMode = outputIdMode;
         return this;
     }
 
