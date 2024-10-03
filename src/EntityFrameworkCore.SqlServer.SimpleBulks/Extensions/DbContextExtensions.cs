@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -37,30 +36,25 @@ public static class DbContextExtensions
         return transaction == null ? null : transaction.GetDbTransaction() as SqlTransaction;
     }
 
-    public static IList<(string PropertyName, Type PropertyType, string ColumnName, string ColumnType, ValueGenerated ValueGenerated, bool IsPrimaryKey)> GetProperties(this DbContext dbContext, Type type)
+    public static IList<ColumnInfor> GetProperties(this DbContext dbContext, Type type)
     {
         var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
         var entityProperties = dbContext.Model.FindEntityType(type)
-                       .GetProperties().Select(x => new
-                       {
-                           x.Name,
-                           ColumnName = x.GetColumnName(),
-                           ColumnType = x.GetColumnType(),
-                           x.ValueGenerated,
-                           IsPrimaryKey = x.IsPrimaryKey()
-                       });
+                       .GetProperties();
 
         var data = typeProperties.Join(entityProperties,
             prop => prop.Name,
             entityProp => entityProp.Name,
-            (prop, entityProp) => (
-                PropertyName: prop.Name,
-                prop.PropertyType,
-                entityProp.ColumnName,
-                entityProp.ColumnType,
-                entityProp.ValueGenerated,
-                entityProp.IsPrimaryKey
-            ));
+            (prop, entityProp) => new ColumnInfor
+            {
+                PropertyName = prop.Name,
+                PropertyType = prop.PropertyType,
+                ColumnName = entityProp.GetColumnName(),
+                ColumnType = entityProp.GetColumnType(),
+                ValueGenerated = entityProp.ValueGenerated,
+                DefaultValueSql = entityProp.GetDefaultValueSql(),
+                IsPrimaryKey = entityProp.IsPrimaryKey()
+            });
 
         return data.ToList();
     }
