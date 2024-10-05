@@ -141,7 +141,7 @@ public class BulkMergeBuilder<T>
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
         {
-            string collation = dataTable.Columns[x].DataType == typeof(string) ?
+            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" collate {_options.Collation}" : string.Empty;
             return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
         }));

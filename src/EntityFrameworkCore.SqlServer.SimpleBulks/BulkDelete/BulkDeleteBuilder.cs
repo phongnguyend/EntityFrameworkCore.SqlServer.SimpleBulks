@@ -91,7 +91,7 @@ public class BulkDeleteBuilder<T>
 
         var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
-            string collation = dataTable.Columns[x].DataType == typeof(string) ?
+            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
             return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
