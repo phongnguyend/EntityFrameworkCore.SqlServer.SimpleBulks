@@ -70,30 +70,29 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 dbct.BulkUpdate(rows,
-    new [] { "Column3", "Column2" });
+    [ "Column3", "Column2" ]);
 dbct.BulkUpdate(compositeKeyRows,
-    new [] { "Column3", "Column2" });
+    [ "Column3", "Column2" ]);
 
 dbct.BulkMerge(rows,
     "Id",
-    new [] { "Column1", "Column2" },
-    new [] { "Column1", "Column2", "Column3" });
+    [ "Column1", "Column2" ],
+    [ "Column1", "Column2", "Column3" ]);
 dbct.BulkMerge(compositeKeyRows,
-    new [] { "Id1", "Id2" },
-    new [] { "Column1", "Column2", "Column3" },
-    new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+    [ "Id1", "Id2" ],
+    [ "Column1", "Column2", "Column3" ],
+    [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
 new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
-	.WithData(rows)
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
-	// or .WithColumns(new [] { "Column1", "Column2", "Column3" })
+	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
 	.ToTable(dbct.GetTableName(typeof(Row)))
 	// or .ToTable("Rows")
-	.Execute();
+	.Execute(rows);
 ```
 
 ## SqlConnectionExtensions
@@ -140,41 +139,40 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 connection.BulkInsert(rows, "Rows",
-           new [] { "Column1", "Column2", "Column3" });
+           [ "Column1", "Column2", "Column3" ]);
 connection.BulkInsert(rows.Take(1000), "Rows",
            typeof(Row).GetDbColumnNames("Id"));
 connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
-           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+           [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
 connection.BulkUpdate(rows, "Rows",
            "Id",
-           new [] { "Column3", "Column2" });
+           [ "Column3", "Column2" ]);
 connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
-           new [] { "Id1", "Id2" },
-           new [] { "Column3", "Column2" });
+           [ "Id1", "Id2" ],
+           [ "Column3", "Column2" ]);
 
 connection.BulkMerge(rows, "Rows",
            "Id",
-           new [] { "Column1", "Column2" },
-           new [] { "Column1", "Column2", "Column3" });
+           [ "Column1", "Column2" ],
+           [ "Column1", "Column2", "Column3" ]);
 connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
-           new [] { "Id1", "Id2" },
-           new [] { "Column1", "Column2", "Column3" },
-           new [] { "Id1", "Id2", "Column1", "Column2", "Column3" });
+           [ "Id1", "Id2" ],
+           [ "Column1", "Column2", "Column3" ],
+           [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
 connection.BulkDelete(rows, "Rows", "Id");
-connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", new [] { "Id1", "Id2" });
+connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", [ "Id1", "Id2" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
 new BulkInsertBuilder<Row>(connection)
-	.WithData(rows)
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
-	// or .WithColumns(new [] { "Column1", "Column2", "Column3" })
+	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
 	.ToTable("Rows")
-	.Execute();
+	.Execute(rows);
 ```
 
 ## Configuration
