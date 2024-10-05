@@ -188,17 +188,17 @@ public class BulkMergeTests : IDisposable
 
         _context.BulkMerge(rows,
             "Id",
-            new[] { "Column1", "Column2", "Column3" },
-            new[] { "Column1", "Column2", "Column3" },
+            [ "Column1", "Column2", "Column3" ],
+            [ "Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;
                 options.ReturnDbGeneratedId = true;
             });
         _context.BulkMerge(compositeKeyRows,
-            new[] { "Id1", "Id2" },
-            new[] { "Column1", "Column2", "Column3" },
-            new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+            [ "Id1", "Id2"],
+            [ "Column1", "Column2", "Column3"],
+            [ "Id1", "Id2", "Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;

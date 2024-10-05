@@ -38,7 +38,7 @@ public class BulkUpdateBuilder<T>
 
     public BulkUpdateBuilder<T> WithId(string idColumn)
     {
-        _idColumns = new[] { idColumn };
+        _idColumns = [ idColumn ];
         return this;
     }
 

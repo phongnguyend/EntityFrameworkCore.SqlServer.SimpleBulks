@@ -139,14 +139,14 @@ public class DirectUpdateTests : IDisposable
         compositeKeyRow.Column3 = DateTime.Now;
 
         var updateResult1 = _context.DirectUpdate(row,
-              new[] { "Column3", "Column2" },
+              [ "Column3", "Column2" ],
               options =>
               {
                   options.LogTo = _output.WriteLine;
               });
 
         var updateResult2 = _context.DirectUpdate(compositeKeyRow,
-            new[] { "Column3", "Column2" },
+            [ "Column3", "Column2" ],
             options =>
             {
                 options.LogTo = _output.WriteLine;

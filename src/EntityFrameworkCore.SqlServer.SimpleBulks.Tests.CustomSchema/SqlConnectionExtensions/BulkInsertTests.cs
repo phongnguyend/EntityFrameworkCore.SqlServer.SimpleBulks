@@ -105,7 +105,7 @@ public class BulkInsertTests : IDisposable
             if (omitTableName)
             {
                 _connection.BulkInsert(rows,
-                    new[] { "Column1", "Column2", "Column3" },
+                    [ "Column1", "Column2", "Column3" ],
                     "Id",
                     options =>
                     {
@@ -113,7 +113,7 @@ public class BulkInsertTests : IDisposable
                     });
 
                 _connection.BulkInsert(compositeKeyRows,
-                    new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -122,7 +122,7 @@ public class BulkInsertTests : IDisposable
             else
             {
                 _connection.BulkInsert(rows, new TableInfor(TestConstants.Schema, "SingleKeyRows"),
-                    new[] { "Column1", "Column2", "Column3" },
+                    [ "Column1", "Column2", "Column3" ],
                     "Id",
                     options =>
                     {
@@ -130,7 +130,7 @@ public class BulkInsertTests : IDisposable
                     });
 
                 _connection.BulkInsert(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"),
-                    new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;

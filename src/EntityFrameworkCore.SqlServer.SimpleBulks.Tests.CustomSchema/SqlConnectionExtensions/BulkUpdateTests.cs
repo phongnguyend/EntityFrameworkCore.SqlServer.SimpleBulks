@@ -198,15 +198,15 @@ public class BulkUpdateTests : IDisposable
             {
                 _connection.BulkUpdate(rows,
                     "Id",
-                    new[] { "Column3", "Column2" },
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkUpdate(compositeKeyRows,
-                    new[] { "Id1", "Id2" },
-                    new[] { "Column3", "Column2" },
+                    ["Id1", "Id2"],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -216,15 +216,15 @@ public class BulkUpdateTests : IDisposable
             {
                 _connection.BulkUpdate(rows, new TableInfor(TestConstants.Schema, "SingleKeyRows"),
                     "Id",
-                    new[] { "Column3", "Column2" },
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkUpdate(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"),
-                    new[] { "Id1", "Id2" },
-                    new[] { "Column3", "Column2" },
+                    ["Id1", "Id2"],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -257,17 +257,17 @@ public class BulkUpdateTests : IDisposable
             {
                 _connection.BulkMerge(rows,
                     "Id",
-                    new[] { "Column1", "Column2" },
-                    new[] { "Column1", "Column2", "Column3" },
+                    ["Column1", "Column2"],
+                    ["Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkMerge(compositeKeyRows,
-                    new[] { "Id1", "Id2" },
-                    new[] { "Column1", "Column2", "Column3" },
-                    new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+                    ["Id1", "Id2"],
+                    ["Column1", "Column2", "Column3"],
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -277,17 +277,17 @@ public class BulkUpdateTests : IDisposable
             {
                 _connection.BulkMerge(rows, new TableInfor(TestConstants.Schema, "SingleKeyRows"),
                     "Id",
-                    new[] { "Column1", "Column2" },
-                    new[] { "Column1", "Column2", "Column3" },
+                    ["Column1", "Column2"],
+                    ["Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkMerge(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"),
-                    new[] { "Id1", "Id2" },
-                    new[] { "Column1", "Column2", "Column3" },
-                    new[] { "Id1", "Id2", "Column1", "Column2", "Column3" },
+                    ["Id1", "Id2"],
+                    ["Column1", "Column2", "Column3"],
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;

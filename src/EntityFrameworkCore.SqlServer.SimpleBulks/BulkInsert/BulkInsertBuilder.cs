@@ -116,7 +116,7 @@ public class BulkInsertBuilder<T>
         DataTable dataTable;
         if (string.IsNullOrWhiteSpace(_outputIdColumn))
         {
-            dataTable = data.ToDataTable(_columnNames.ToList());
+            dataTable = data.ToDataTable(_columnNames);
 
             _connection.EnsureOpen();
 
@@ -128,13 +128,13 @@ public class BulkInsertBuilder<T>
 
         if (_options.KeepIdentity)
         {
-            var columns = _columnNames.Select(x => x).ToList();
-            if (!columns.Contains(_outputIdColumn))
+            var columnsToInsert = _columnNames.Select(x => x).ToList();
+            if (!columnsToInsert.Contains(_outputIdColumn))
             {
-                columns.Add(_outputIdColumn);
+                columnsToInsert.Add(_outputIdColumn);
             }
 
-            dataTable = data.ToDataTable(columns.ToList());
+            dataTable = data.ToDataTable(columnsToInsert);
 
             _connection.EnsureOpen();
 
@@ -145,7 +145,7 @@ public class BulkInsertBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        dataTable = data.ToDataTable(_columnNames.ToList(), addIndexNumberColumn: true);
+        dataTable = data.ToDataTable(_columnNames, addIndexNumberColumn: true);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
 
         var mergeStatementBuilder = new StringBuilder();

@@ -35,7 +35,7 @@ public class BulkDeleteBuilder<T>
 
     public BulkDeleteBuilder<T> WithId(string idColumn)
     {
-        _idColumns = new[] { idColumn };
+        _idColumns = [ idColumn ];
         return this;
     }
 

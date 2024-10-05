@@ -110,7 +110,7 @@ public class BulkDeleteTests : IDisposable
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new[] { "Id1", "Id2" },
+                _connection.BulkDelete(compositeKeyRows, [ "Id1", "Id2" ],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -123,7 +123,7 @@ public class BulkDeleteTests : IDisposable
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"), new[] { "Id1", "Id2" },
+                _connection.BulkDelete(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"), [ "Id1", "Id2" ],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;

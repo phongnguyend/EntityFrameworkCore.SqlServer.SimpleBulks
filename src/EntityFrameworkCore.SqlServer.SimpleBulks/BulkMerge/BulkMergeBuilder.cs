@@ -39,7 +39,7 @@ public class BulkMergeBuilder<T>
 
     public BulkMergeBuilder<T> WithId(string idColumn)
     {
-        _idColumns = new[] { idColumn };
+        _idColumns = [ idColumn ];
         return this;
     }
 
