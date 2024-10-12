@@ -20,7 +20,7 @@ public class BulkInsertMultipleTablesBenchmarks
     [IterationSetup]
     public void IterationSetup()
     {
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
+        _context = new TestDbContext($"Server=127.0.0.1;Database=SimpleBulks.Benchmarks.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
         _context.Database.EnsureCreated();
 
         _customers = new List<Customer>(RowsCount);

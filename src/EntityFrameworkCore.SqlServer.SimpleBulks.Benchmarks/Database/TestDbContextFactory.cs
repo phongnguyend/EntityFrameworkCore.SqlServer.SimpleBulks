@@ -6,6 +6,6 @@ internal class TestDbContextFactory : IDesignTimeDbContextFactory<TestDbContext>
 {
     public TestDbContext CreateDbContext(string[] args)
     {
-        return new TestDbContext("Server=.;Database=EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks;User Id=sa;Password=sqladmin123!@#;Encrypt=False");
+        return new TestDbContext("Server=.;Database=SimpleBulks.Benchmarks;User Id=sa;Password=sqladmin123!@#;Encrypt=False");
     }
 }
