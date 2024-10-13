@@ -1,6 +1,16 @@
 ﻿using BenchmarkDotNet.Running;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks;
+using System.Diagnostics;
 
+var test = new BulkInsertSingleTableBenchmarks();
+test.RowsCount = 100000;
+test.IterationSetup();
+var start = Stopwatch.GetTimestamp();
+test.BulkInsert();
+var elapsed = Stopwatch.GetElapsedTime(start);
+Console.WriteLine($"Elapsed: {elapsed}");
+test.IterationCleanup();
+return;
 
 _ = BenchmarkRunner.Run<BulkInsertSingleTableBenchmarks>();
 _ = BenchmarkRunner.Run<BulkInsertMultipleTablesBenchmarks>();
