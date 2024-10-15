@@ -14,7 +14,7 @@ public class BulkUpdateBuilder<T>
     private TableInfor _table;
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _columnNames;
-    private IDictionary<string, string> _dbColumnMappings;
+    private IReadOnlyDictionary<string, string> _columnNameMappings;
     private BulkUpdateOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -67,9 +67,9 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    public BulkUpdateBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
-        _dbColumnMappings = dbColumnMappings;
+        _columnNameMappings = columnNameMappings;
         return this;
     }
 
@@ -85,12 +85,12 @@ public class BulkUpdateBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_dbColumnMappings == null)
+        if (_columnNameMappings == null)
         {
             return columnName;
         }
 
-        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public BulkUpdateResult Execute(IEnumerable<T> data)

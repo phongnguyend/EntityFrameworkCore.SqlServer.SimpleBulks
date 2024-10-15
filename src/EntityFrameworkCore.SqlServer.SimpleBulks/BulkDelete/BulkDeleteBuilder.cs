@@ -11,7 +11,7 @@ public class BulkDeleteBuilder<T>
 {
     private TableInfor _table;
     private IEnumerable<string> _idColumns;
-    private IDictionary<string, string> _dbColumnMappings;
+    private IReadOnlyDictionary<string, string> _columnNameMappings;
     private BulkDeleteOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -52,9 +52,9 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    public BulkDeleteBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
-        _dbColumnMappings = dbColumnMappings;
+        _columnNameMappings = columnNameMappings;
         return this;
     }
 
@@ -70,12 +70,12 @@ public class BulkDeleteBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_dbColumnMappings == null)
+        if (_columnNameMappings == null)
         {
             return columnName;
         }
 
-        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public BulkDeleteResult Execute(IEnumerable<T> data)

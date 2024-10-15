@@ -14,7 +14,7 @@ public class BulkMatchBuilder<T>
     private TableInfor _table;
     private IEnumerable<string> _matchedColumns;
     private IEnumerable<string> _returnedColumns;
-    private IDictionary<string, string> _dbColumnMappings;
+    private IReadOnlyDictionary<string, string> _columnNameMappings;
     private BulkMatchOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -67,9 +67,9 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public BulkMatchBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    public BulkMatchBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
-        _dbColumnMappings = dbColumnMappings;
+        _columnNameMappings = columnNameMappings;
         return this;
     }
 
@@ -85,12 +85,12 @@ public class BulkMatchBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_dbColumnMappings == null)
+        if (_columnNameMappings == null)
         {
             return columnName;
         }
 
-        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public List<T> Execute(IEnumerable<T> machedValues)

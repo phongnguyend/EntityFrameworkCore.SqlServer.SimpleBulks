@@ -14,7 +14,7 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _updateColumnNames;
     private IEnumerable<string> _insertColumnNames;
-    private IDictionary<string, string> _dbColumnMappings;
+    private IReadOnlyDictionary<string, string> _columnNameMappings;
     private string _outputIdColumn;
     private BulkMergeOptions _options;
     private readonly SqlConnection _connection;
@@ -80,9 +80,9 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    public BulkMergeBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
-        _dbColumnMappings = dbColumnMappings;
+        _columnNameMappings = columnNameMappings;
         return this;
     }
 
@@ -110,12 +110,12 @@ public class BulkMergeBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_dbColumnMappings == null)
+        if (_columnNameMappings == null)
         {
             return columnName;
         }
 
-        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public BulkMergeResult Execute(IEnumerable<T> data)

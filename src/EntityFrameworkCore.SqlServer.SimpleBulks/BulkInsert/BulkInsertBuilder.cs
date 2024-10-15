@@ -15,7 +15,7 @@ public class BulkInsertBuilder<T>
     private string _outputIdColumn;
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
-    private IDictionary<string, string> _dbColumnMappings;
+    private IReadOnlyDictionary<string, string> _columnNameMappings;
     private BulkInsertOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -79,9 +79,9 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
-    public BulkInsertBuilder<T> WithDbColumnMappings(IDictionary<string, string> dbColumnMappings)
+    public BulkInsertBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
-        _dbColumnMappings = dbColumnMappings;
+        _columnNameMappings = columnNameMappings;
         return this;
     }
 
@@ -97,12 +97,12 @@ public class BulkInsertBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_dbColumnMappings == null)
+        if (_columnNameMappings == null)
         {
             return columnName;
         }
 
-        return _dbColumnMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public void Execute(IEnumerable<T> data)
@@ -121,7 +121,7 @@ public class BulkInsertBuilder<T>
             _connection.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _dbColumnMappings, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -139,7 +139,7 @@ public class BulkInsertBuilder<T>
             _connection.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _dbColumnMappings, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }

@@ -16,18 +16,18 @@ public static class DbContextExtensions
 
         var isEntityType = dbContext.IsEntityType(typeof(T));
 
-        IDictionary<string, string> dbColumnMappings = null;
+        IReadOnlyDictionary<string, string> columnNameMappings = null;
 
         if (isEntityType)
         {
             var properties = dbContext.GetProperties(typeof(T));
-            dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+            columnNameMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
         }
 
         return new TempTableBuilder<T>(connection, transaction)
              .WithData(data)
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(dbColumnMappings)
+             .WithDbColumnMappings(columnNameMappings)
              .ConfigureTempTableOptions(configureOptions)
              .Execute();
     }
@@ -39,19 +39,19 @@ public static class DbContextExtensions
 
         var isEntityType = dbContext.IsEntityType(typeof(T));
 
-        IDictionary<string, string> dbColumnMappings = null;
+        IReadOnlyDictionary<string, string> columnNameMappings = null;
         IEnumerable<string> columnNames = typeof(T).GetDbColumnNames();
 
         if (isEntityType)
         {
             var properties = dbContext.GetProperties(typeof(T));
-            dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+            columnNameMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
         }
 
         return new TempTableBuilder<T>(connection, transaction)
              .WithData(data)
              .WithColumns(columnNames)
-             .WithDbColumnMappings(dbColumnMappings)
+             .WithDbColumnMappings(columnNameMappings)
              .ConfigureTempTableOptions(configureOptions)
              .Execute();
     }
