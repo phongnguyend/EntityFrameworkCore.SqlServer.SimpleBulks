@@ -1,4 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+﻿using static EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Enums;
+
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 
 public class CompositeKeyRow<TId1, TId2>
 {
@@ -11,4 +13,6 @@ public class CompositeKeyRow<TId1, TId2>
     public string Column2 { get; set; }
 
     public DateTime Column3 { get; set; }
+
+    public Season? Season { get; set; }
 }
