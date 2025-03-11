@@ -1,24 +1,16 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class BulkDeleteTests : IDisposable
+public class BulkDeleteTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
-    public BulkDeleteTests(ITestOutputHelper output)
+    public BulkDeleteTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkDelete")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkDelete.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
-
         var tran = _context.Database.BeginTransaction();
 
         var rows = new List<SingleKeyRow<int>>();
@@ -50,11 +42,6 @@ public class BulkDeleteTests : IDisposable
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
         tran.Commit();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]

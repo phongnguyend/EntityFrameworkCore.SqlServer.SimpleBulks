@@ -1,27 +1,15 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
-using static EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Enums;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class BulkInsertTests : IDisposable
+public class BulkInsertTests : BaseTest
 {
-
-    private TestDbContext _context;
-    private readonly ITestOutputHelper _output;
-
-    public BulkInsertTests(ITestOutputHelper output)
+    public BulkInsertTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkInsert")
     {
-        _output = output;
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]

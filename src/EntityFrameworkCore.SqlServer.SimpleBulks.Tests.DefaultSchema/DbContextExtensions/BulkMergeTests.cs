@@ -1,23 +1,16 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class BulkMergeTests : IDisposable
+public class BulkMergeTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
-    public BulkMergeTests(ITestOutputHelper output)
+    public BulkMergeTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkMerge")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
     }
 
     private void SeedData(int length)
@@ -53,11 +46,6 @@ public class BulkMergeTests : IDisposable
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
         tran.Commit();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]
@@ -188,17 +176,17 @@ public class BulkMergeTests : IDisposable
 
         _context.BulkMerge(rows,
             "Id",
-            [ "Column1", "Column2", "Column3" ],
-            [ "Column1", "Column2", "Column3" ],
+            ["Column1", "Column2", "Column3"],
+            ["Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;
                 options.ReturnDbGeneratedId = true;
             });
         _context.BulkMerge(compositeKeyRows,
-            [ "Id1", "Id2" ],
-            [ "Column1", "Column2", "Column3" ],
-            [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+            ["Id1", "Id2"],
+            ["Column1", "Column2", "Column3"],
+            ["Id1", "Id2", "Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;

@@ -1,17 +1,14 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class TempTableTests : IDisposable
+public class TempTableTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
     private readonly static List<CustomerDto> _customers = new List<CustomerDto>
     {
         new CustomerDto
@@ -62,17 +59,8 @@ public class TempTableTests : IDisposable
         }
     };
 
-    public TempTableTests(ITestOutputHelper output)
+    public TempTableTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.TempTable")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.TempTable.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Fact]
@@ -91,7 +79,7 @@ public class TempTableTests : IDisposable
                options =>
                {
                    options.LogTo = _output.WriteLine;
-                });
+               });
 
         string sql = $"select * from {tableName}";
 

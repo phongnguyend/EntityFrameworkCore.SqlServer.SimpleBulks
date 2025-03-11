@@ -1,23 +1,16 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class DirectUpdateTests : IDisposable
+public class DirectUpdateTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
-    public DirectUpdateTests(ITestOutputHelper output)
+    public DirectUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.DirectUpdate")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.DirectUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
     }
 
     private void SeedData(int length)
@@ -53,11 +46,6 @@ public class DirectUpdateTests : IDisposable
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
         tran.Commit();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]
@@ -139,14 +127,14 @@ public class DirectUpdateTests : IDisposable
         compositeKeyRow.Column3 = DateTime.Now;
 
         var updateResult1 = _context.DirectUpdate(row,
-              [ "Column3", "Column2" ],
+              ["Column3", "Column2"],
               options =>
               {
                   options.LogTo = _output.WriteLine;
               });
 
         var updateResult2 = _context.DirectUpdate(compositeKeyRow,
-            [ "Column3", "Column2" ],
+            ["Column3", "Column2"],
             options =>
             {
                 options.LogTo = _output.WriteLine;

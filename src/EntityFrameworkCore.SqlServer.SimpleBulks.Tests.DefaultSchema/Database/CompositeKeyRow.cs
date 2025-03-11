@@ -1,6 +1,4 @@
-﻿using static EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database.Enums;
-
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 
 public class CompositeKeyRow<TId1, TId2>
 {

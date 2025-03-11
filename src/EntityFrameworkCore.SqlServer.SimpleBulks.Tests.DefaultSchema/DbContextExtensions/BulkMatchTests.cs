@@ -1,26 +1,18 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class BulkMatchTests : IDisposable
+public class BulkMatchTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
     private readonly List<Customer> _customers;
     private readonly List<Contact> _contacts;
 
-    public BulkMatchTests(ITestOutputHelper output)
+    public BulkMatchTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkMatch")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkMatch.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
-
         var tran = _context.Database.BeginTransaction();
 
         var isoCodes = new string[] { "VN", "US", "GB" };
@@ -251,10 +243,5 @@ public class BulkMatchTests : IDisposable
             Assert.Equal(0, contactsFromDb[i].Index);
             Assert.Equal(Guid.Empty, contactsFromDb[i].CustomerId);
         }
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 }

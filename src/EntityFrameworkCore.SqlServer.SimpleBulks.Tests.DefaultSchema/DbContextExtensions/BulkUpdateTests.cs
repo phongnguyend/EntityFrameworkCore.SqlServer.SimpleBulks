@@ -1,24 +1,17 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class BulkUpdateTests : IDisposable
+public class BulkUpdateTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-
-    public BulkUpdateTests(ITestOutputHelper output)
+    public BulkUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkUpdate")
     {
-        _output = output;
-
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkUpdate.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
     }
 
     private void SeedData(int length)
@@ -54,11 +47,6 @@ public class BulkUpdateTests : IDisposable
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
         tran.Commit();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]
@@ -185,14 +173,14 @@ public class BulkUpdateTests : IDisposable
         }
 
         var updateResult1 = _context.BulkUpdate(rows,
-              [ "Column3", "Column2" ],
+              ["Column3", "Column2"],
               options =>
               {
                   options.LogTo = _output.WriteLine;
               });
 
         var updateResult2 = _context.BulkUpdate(compositeKeyRows,
-            [ "Column3", "Column2" ],
+            ["Column3", "Column2"],
             options =>
             {
                 options.LogTo = _output.WriteLine;
@@ -219,16 +207,16 @@ public class BulkUpdateTests : IDisposable
 
         _context.BulkMerge(rows,
             "Id",
-            [ "Column1", "Column2" ],
-            [ "Column1", "Column2", "Column3" ],
+            ["Column1", "Column2"],
+            ["Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;
             });
         _context.BulkMerge(compositeKeyRows,
-            [ "Id1", "Id2" ],
-            [ "Column1", "Column2", "Column3" ],
-            [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+            ["Id1", "Id2"],
+            ["Column1", "Column2", "Column3"],
+            ["Id1", "Id2", "Column1", "Column2", "Column3"],
             options =>
             {
                 options.LogTo = _output.WriteLine;

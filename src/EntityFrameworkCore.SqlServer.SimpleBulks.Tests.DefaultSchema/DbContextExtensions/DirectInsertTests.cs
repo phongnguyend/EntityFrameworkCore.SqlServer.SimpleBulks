@@ -1,26 +1,15 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public class DirectInsertTests : IDisposable
+public class DirectInsertTests : BaseTest
 {
-
-    private TestDbContext _context;
-    private readonly ITestOutputHelper _output;
-
-    public DirectInsertTests(ITestOutputHelper output)
+    public DirectInsertTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.DirectInsert")
     {
-        _output = output;
-        _context = new TestDbContext($"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.DirectInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False");
-        _context.Database.EnsureCreated();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Fact]
