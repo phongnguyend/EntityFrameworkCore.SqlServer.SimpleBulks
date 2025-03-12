@@ -1,29 +1,15 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
-public class BulkDeleteTests : IDisposable
+public class BulkDeleteTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-    private SqlConnection _connection;
-
-    public BulkDeleteTests(ITestOutputHelper output)
+    public BulkDeleteTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkDelete")
     {
-        _output = output;
-
-        var connectionString = $"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-        _context = new TestDbContext(connectionString);
-        _context.Database.EnsureCreated();
-
-        _connection = new SqlConnection(connectionString);
-
         TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
 
@@ -54,11 +40,6 @@ public class BulkDeleteTests : IDisposable
 
         _context.BulkInsert(compositeKeyRows,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]

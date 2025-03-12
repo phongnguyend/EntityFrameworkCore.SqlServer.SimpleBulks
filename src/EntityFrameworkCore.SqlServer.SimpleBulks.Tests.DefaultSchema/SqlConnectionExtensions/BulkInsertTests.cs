@@ -1,35 +1,16 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
-public class BulkInsertTests : IDisposable
+public class BulkInsertTests : BaseTest
 {
-
-    private TestDbContext _context;
-    private SqlConnection _connection;
-    private readonly ITestOutputHelper _output;
-
-    public BulkInsertTests(ITestOutputHelper output)
+    public BulkInsertTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkInsert")
     {
-        _output = output;
-
-        var connectionString = $"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-        _context = new TestDbContext(connectionString);
-        _context.Database.EnsureCreated();
-
-        _connection = new SqlConnection(connectionString);
-
         TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]

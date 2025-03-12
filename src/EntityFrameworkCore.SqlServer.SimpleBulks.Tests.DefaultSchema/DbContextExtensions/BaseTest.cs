@@ -1,9 +1,9 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
-public abstract class BaseTest: IDisposable
+public abstract class BaseTest : IDisposable
 {
     protected readonly ITestOutputHelper _output;
 

@@ -1,30 +1,16 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
-public class BulkUpdateTests : IDisposable
+public class BulkUpdateTests : BaseTest
 {
-    private readonly ITestOutputHelper _output;
-
-    private TestDbContext _context;
-    private SqlConnection _connection;
-
-    public BulkUpdateTests(ITestOutputHelper output)
+    public BulkUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkUpdate")
     {
-        _output = output;
-
-        var connectionString = $"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-        _context = new TestDbContext(connectionString);
-        _context.Database.EnsureCreated();
-
-        _connection = new SqlConnection(connectionString);
-
         TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
 
@@ -59,11 +45,6 @@ public class BulkUpdateTests : IDisposable
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
         tran.Commit();
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
     }
 
     [Theory]

@@ -1,7 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;

@@ -1,7 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
