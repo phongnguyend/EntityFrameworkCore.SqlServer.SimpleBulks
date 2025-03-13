@@ -8,10 +8,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
 
 public class BulkDeleteTests : BaseTest
 {
+    private string _schema = "";
+
     public BulkDeleteTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkDelete")
     {
-        TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
-        TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
+        TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
+        TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");
 
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
@@ -69,12 +71,12 @@ public class BulkDeleteTests : BaseTest
             }
             else
             {
-                _connection.BulkDelete(rows, new TableInfor("SingleKeyRows"), row => row.Id,
+                _connection.BulkDelete(rows, new TableInfor(_schema, "SingleKeyRows"), row => row.Id,
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new TableInfor("CompositeKeyRows"), row => new { row.Id1, row.Id2 },
+                _connection.BulkDelete(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), row => new { row.Id1, row.Id2 },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -90,7 +92,7 @@ public class BulkDeleteTests : BaseTest
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, [ "Id1", "Id2" ],
+                _connection.BulkDelete(compositeKeyRows, ["Id1", "Id2"],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -98,12 +100,12 @@ public class BulkDeleteTests : BaseTest
             }
             else
             {
-                _connection.BulkDelete(rows, new TableInfor("SingleKeyRows"), "Id",
+                _connection.BulkDelete(rows, new TableInfor(_schema, "SingleKeyRows"), "Id",
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new TableInfor("CompositeKeyRows"), [ "Id1", "Id2" ],
+                _connection.BulkDelete(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), ["Id1", "Id2"],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;

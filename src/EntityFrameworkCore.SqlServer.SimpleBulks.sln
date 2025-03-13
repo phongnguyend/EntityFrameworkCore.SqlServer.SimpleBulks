@@ -7,11 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Demo", "EntityFrameworkCore.SqlServer.SimpleBulks.Demo\EntityFrameworkCore.SqlServer.SimpleBulks.Demo.csproj", "{D02A8071-0568-4976-A8F5-A13280BD0E2A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema", "EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema\EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DefaultSchema.csproj", "{44C87ACC-EC79-446F-B882-7A19E5C9BA68}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks", "EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks\EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.csproj", "{4A802446-D3EE-43BA-899A-30997B0FDE8D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Tests.CustomSchema", "EntityFrameworkCore.SqlServer.SimpleBulks.Tests.CustomSchema\EntityFrameworkCore.SqlServer.SimpleBulks.Tests.CustomSchema.csproj", "{D550220E-CDF7-400C-9BDD-B6C5C4D9336C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0063B9C8-DD5C-4037-9D3C-FB5C36525478}"
 EndProject
@@ -20,6 +16,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{1CED856C-0B00-4588-AF7D-D27EEC947216}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{64070BB9-A2B0-4DC7-A903-7698ADABF0DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkCore.SqlServer.SimpleBulks.Tests", "EntityFrameworkCore.SqlServer.SimpleBulks.Tests\EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj", "{17441FD5-790E-4E7E-8877-1B6B35A753EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,18 +33,14 @@ Global
 		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D02A8071-0568-4976-A8F5-A13280BD0E2A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{44C87ACC-EC79-446F-B882-7A19E5C9BA68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{44C87ACC-EC79-446F-B882-7A19E5C9BA68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{44C87ACC-EC79-446F-B882-7A19E5C9BA68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{44C87ACC-EC79-446F-B882-7A19E5C9BA68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4A802446-D3EE-43BA-899A-30997B0FDE8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A802446-D3EE-43BA-899A-30997B0FDE8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A802446-D3EE-43BA-899A-30997B0FDE8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A802446-D3EE-43BA-899A-30997B0FDE8D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D550220E-CDF7-400C-9BDD-B6C5C4D9336C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D550220E-CDF7-400C-9BDD-B6C5C4D9336C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D550220E-CDF7-400C-9BDD-B6C5C4D9336C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D550220E-CDF7-400C-9BDD-B6C5C4D9336C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17441FD5-790E-4E7E-8877-1B6B35A753EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17441FD5-790E-4E7E-8877-1B6B35A753EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17441FD5-790E-4E7E-8877-1B6B35A753EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17441FD5-790E-4E7E-8877-1B6B35A753EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,9 +48,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4442AC01-14B1-47DC-A574-7C112C7F06EE} = {3E90B537-71C4-446D-A600-6BAB263E839C}
 		{D02A8071-0568-4976-A8F5-A13280BD0E2A} = {1CED856C-0B00-4588-AF7D-D27EEC947216}
-		{44C87ACC-EC79-446F-B882-7A19E5C9BA68} = {0063B9C8-DD5C-4037-9D3C-FB5C36525478}
 		{4A802446-D3EE-43BA-899A-30997B0FDE8D} = {64070BB9-A2B0-4DC7-A903-7698ADABF0DA}
-		{D550220E-CDF7-400C-9BDD-B6C5C4D9336C} = {0063B9C8-DD5C-4037-9D3C-FB5C36525478}
+		{17441FD5-790E-4E7E-8877-1B6B35A753EC} = {0063B9C8-DD5C-4037-9D3C-FB5C36525478}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {24F10989-2D0E-4B2C-9660-059CDED4B2E7}

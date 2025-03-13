@@ -10,11 +10,11 @@ public abstract class BaseTest : IDisposable
     protected readonly TestDbContext _context;
     protected readonly SqlConnection _connection;
 
-    protected BaseTest(ITestOutputHelper output, string dbPrefixName)
+    protected BaseTest(ITestOutputHelper output, string dbPrefixName, string schema = "")
     {
         _output = output;
         var connectionString = GetConnectionString(dbPrefixName);
-        _context = GetDbContext(connectionString);
+        _context = GetDbContext(connectionString, schema);
         _context.Database.EnsureCreated();
         _connection = new SqlConnection(connectionString);
     }
@@ -29,8 +29,8 @@ public abstract class BaseTest : IDisposable
         return $"Server=127.0.0.1;Database={dbPrefixName}.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
     }
 
-    protected TestDbContext GetDbContext(string connectionString)
+    protected TestDbContext GetDbContext(string connectionString, string schema)
     {
-        return new TestDbContext(connectionString);
+        return new TestDbContext(connectionString, schema);
     }
 }

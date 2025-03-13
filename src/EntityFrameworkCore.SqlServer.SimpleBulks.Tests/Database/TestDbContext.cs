@@ -5,6 +5,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 public class TestDbContext : DbContext
 {
     private readonly string _connectionString;
+    private readonly string _schema;
 
     public DbSet<SingleKeyRow<int>> SingleKeyRows { get; set; }
 
@@ -14,9 +15,10 @@ public class TestDbContext : DbContext
 
     public DbSet<Contact> Contacts { get; set; }
 
-    public TestDbContext(string connectionString)
+    public TestDbContext(string connectionString, string schema)
     {
         _connectionString = connectionString;
+        _schema = schema;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -28,6 +30,12 @@ public class TestDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        if(!string.IsNullOrEmpty(_schema))
+        {
+            modelBuilder.HasDefaultSchema(_schema);
+        }
+
         modelBuilder.Entity<CompositeKeyRow<int, int>>().HasKey(x => new { x.Id1, x.Id2 });
 
         modelBuilder.Entity<ConfigurationEntry>().Property(x => x.Id).HasDefaultValueSql("newsequentialid()");

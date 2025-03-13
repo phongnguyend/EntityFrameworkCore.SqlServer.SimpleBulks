@@ -9,10 +9,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
 
 public class BulkUpdateTests : BaseTest
 {
+    private string _schema = "";
+
     public BulkUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkUpdate")
     {
-        TableMapper.Register(typeof(SingleKeyRow<int>), "SingleKeyRows");
-        TableMapper.Register(typeof(CompositeKeyRow<int, int>), "CompositeKeyRows");
+        TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
+        TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");
 
         var tran = _context.Database.BeginTransaction();
 
@@ -91,7 +93,7 @@ public class BulkUpdateTests : BaseTest
             }
             else
             {
-                _connection.BulkUpdate(rows, new TableInfor("SingleKeyRows"),
+                _connection.BulkUpdate(rows, new TableInfor(_schema, "SingleKeyRows"),
                     row => row.Id,
                     row => new { row.Column3, row.Column2 },
                     options =>
@@ -99,7 +101,7 @@ public class BulkUpdateTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkUpdate(compositeKeyRows, new TableInfor("CompositeKeyRows"),
+                _connection.BulkUpdate(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
                     row => new { row.Id1, row.Id2 },
                     row => new { row.Column3, row.Column2 },
                     options =>
@@ -152,7 +154,7 @@ public class BulkUpdateTests : BaseTest
             }
             else
             {
-                _connection.BulkMerge(rows, new TableInfor("SingleKeyRows"),
+                _connection.BulkMerge(rows, new TableInfor(_schema, "SingleKeyRows"),
                     row => row.Id,
                     row => new { row.Column1, row.Column2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
@@ -161,7 +163,7 @@ public class BulkUpdateTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkMerge(compositeKeyRows, new TableInfor("CompositeKeyRows"),
+                _connection.BulkMerge(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
                     row => new { row.Id1, row.Id2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
@@ -178,15 +180,15 @@ public class BulkUpdateTests : BaseTest
             {
                 _connection.BulkUpdate(rows,
                     "Id",
-                    [ "Column3", "Column2" ],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkUpdate(compositeKeyRows,
-                    [ "Id1", "Id2" ],
-                    [ "Column3", "Column2" ],
+                    ["Id1", "Id2"],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -194,17 +196,17 @@ public class BulkUpdateTests : BaseTest
             }
             else
             {
-                _connection.BulkUpdate(rows, new TableInfor("SingleKeyRows"),
+                _connection.BulkUpdate(rows, new TableInfor(_schema, "SingleKeyRows"),
                     "Id",
-                    [ "Column3", "Column2" ],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkUpdate(compositeKeyRows, new TableInfor("CompositeKeyRows"),
-                    [ "Id1", "Id2" ],
-                    [ "Column3", "Column2" ],
+                _connection.BulkUpdate(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
+                    ["Id1", "Id2"],
+                    ["Column3", "Column2"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -237,17 +239,17 @@ public class BulkUpdateTests : BaseTest
             {
                 _connection.BulkMerge(rows,
                     "Id",
-                    [ "Column1", "Column2" ],
-                    [ "Column1", "Column2", "Column3" ],
+                    ["Column1", "Column2"],
+                    ["Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
                 _connection.BulkMerge(compositeKeyRows,
-                    [ "Id1", "Id2" ],
-                    [ "Column1", "Column2", "Column3" ],
-                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+                    ["Id1", "Id2"],
+                    ["Column1", "Column2", "Column3"],
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -255,19 +257,19 @@ public class BulkUpdateTests : BaseTest
             }
             else
             {
-                _connection.BulkMerge(rows, new TableInfor("SingleKeyRows"),
+                _connection.BulkMerge(rows, new TableInfor(_schema, "SingleKeyRows"),
                     "Id",
-                    [ "Column1", "Column2" ],
-                    [ "Column1", "Column2", "Column3" ],
+                    ["Column1", "Column2"],
+                    ["Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkMerge(compositeKeyRows, new TableInfor("CompositeKeyRows"),
-                    [ "Id1", "Id2" ],
-                    [ "Column1", "Column2", "Column3" ],
-                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+                _connection.BulkMerge(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
+                    ["Id1", "Id2"],
+                    ["Column1", "Column2", "Column3"],
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;

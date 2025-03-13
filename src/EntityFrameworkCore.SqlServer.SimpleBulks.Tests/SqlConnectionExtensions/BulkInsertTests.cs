@@ -1,36 +1,18 @@
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
-using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.CustomSchema;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
-public class BulkInsertTests : IDisposable
+public class BulkInsertTests : BaseTest
 {
+    private string _schema = "";
 
-    private TestDbContext _context;
-    private SqlConnection _connection;
-    private readonly ITestOutputHelper _output;
-
-    public BulkInsertTests(ITestOutputHelper output)
+    public BulkInsertTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkInsert")
     {
-        _output = output;
-
-        var connectionString = $"Server=127.0.0.1;Database=EFCoreSimpleBulksTests.BulkInsert.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-        _context = new TestDbContext(connectionString);
-        _context.Database.EnsureCreated();
-
-        _connection = new SqlConnection(connectionString);
-
-        TableMapper.Register(typeof(SingleKeyRow<int>), TestConstants.Schema, "SingleKeyRows");
-        TableMapper.Register(typeof(CompositeKeyRow<int, int>), TestConstants.Schema, "CompositeKeyRows");
-    }
-
-    public void Dispose()
-    {
-        _context.Database.EnsureDeleted();
+        TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
+        TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");
     }
 
     [Theory]
@@ -83,7 +65,7 @@ public class BulkInsertTests : IDisposable
             }
             else
             {
-                _connection.BulkInsert(rows, new TableInfor(TestConstants.Schema, "SingleKeyRows"),
+                _connection.BulkInsert(rows, new TableInfor(_schema, "SingleKeyRows"),
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
                     options =>
@@ -91,7 +73,7 @@ public class BulkInsertTests : IDisposable
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkInsert(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"),
+                _connection.BulkInsert(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
                     options =>
                     {
@@ -105,7 +87,7 @@ public class BulkInsertTests : IDisposable
             if (omitTableName)
             {
                 _connection.BulkInsert(rows,
-                    [ "Column1", "Column2", "Column3" ],
+                    ["Column1", "Column2", "Column3"],
                     "Id",
                     options =>
                     {
@@ -113,7 +95,7 @@ public class BulkInsertTests : IDisposable
                     });
 
                 _connection.BulkInsert(compositeKeyRows,
-                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
@@ -121,16 +103,16 @@ public class BulkInsertTests : IDisposable
             }
             else
             {
-                _connection.BulkInsert(rows, new TableInfor(TestConstants.Schema, "SingleKeyRows"),
-                    [ "Column1", "Column2", "Column3" ],
+                _connection.BulkInsert(rows, new TableInfor(_schema, "SingleKeyRows"),
+                    ["Column1", "Column2", "Column3"],
                     "Id",
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkInsert(compositeKeyRows, new TableInfor(TestConstants.Schema, "CompositeKeyRows"),
-                    [ "Id1", "Id2", "Column1", "Column2", "Column3" ],
+                _connection.BulkInsert(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
+                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
                         options.LogTo = _output.WriteLine;
