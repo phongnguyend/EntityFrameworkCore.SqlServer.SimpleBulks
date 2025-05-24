@@ -6,7 +6,11 @@ This library provides extension methods so that you can use with your EntityFram
 or you can use **SqlConnectionExtensions.cs** to work directly with a **SqlConnection** instance without using EntityFrameworkCore.
 
 ## Nuget
-https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks
+| Database | Package | GitHub |
+| -------- | ------- | ------ |
+| SQL Server| [EntityFrameworkCore.SqlServer.SimpleBulks](https://www.nuget.org/packages/EntityFrameworkCore.SqlServer.SimpleBulks) | [EntityFrameworkCore.SqlServer.SimpleBulks](https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks) |
+| PostgreSQL| [EntityFrameworkCore.PostgreSQL.SimpleBulks](https://www.nuget.org/packages/EntityFrameworkCore.PostgreSQL.SimpleBulks) | [EntityFrameworkCore.PostgreSQL.SimpleBulks](https://github.com/phongnguyend/EntityFrameworkCore.PostgreSQL.SimpleBulks) |
+| MySQL| [EntityFrameworkCore.MySQL.SimpleBulks](https://www.nuget.org/packages/EntityFrameworkCore.MySQL.SimpleBulks) | [EntityFrameworkCore.MySQL.SimpleBulks](https://github.com/phongnguyend/EntityFrameworkCore.MySQL.SimpleBulks) |
 
 ## Features
 - Bulk Insert
