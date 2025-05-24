@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
@@ -107,6 +108,16 @@ public class BulkInsertBuilder<T>
 
     private bool ReturnGeneratedId => !string.IsNullOrWhiteSpace(_outputIdColumn);
 
+    private PropertyInfo GetIdProperty()
+    {
+        return typeof(T).GetProperty(_outputIdColumn);
+    }
+
+    private static Action<T, Guid> GetSetIdMethod(PropertyInfo idProperty)
+    {
+        return (Action<T, Guid>)Delegate.CreateDelegate(typeof(Action<T, Guid>), idProperty.GetSetMethod());
+    }
+
     public void Execute(IEnumerable<T> data)
     {
         if (data.Count() == 1)
@@ -146,7 +157,7 @@ public class BulkInsertBuilder<T>
             return;
         }
 
-        var idProperty = typeof(T).GetProperty(_outputIdColumn);
+        var idProperty = GetIdProperty();
 
         if (_outputIdMode == OutputIdMode.ClientGenerated)
         {
@@ -156,11 +167,11 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            var setIdDelegate = (Action<T, Guid>)Delegate.CreateDelegate(typeof(Action<T, Guid>), idProperty.GetSetMethod());
+            var setId = GetSetIdMethod(idProperty);
 
             foreach (var row in data)
             {
-                setIdDelegate(row, SequentialGuidGenerator.Next());
+                setId(row, SequentialGuidGenerator.Next());
             }
 
             dataTable = data.ToDataTable(columnsToInsert);
@@ -250,9 +261,9 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            var idProperty = typeof(T).GetProperty(_outputIdColumn);
-            var setIdDelegate = (Action<T, Guid>)Delegate.CreateDelegate(typeof(Action<T, Guid>), idProperty.GetSetMethod());
-            setIdDelegate(dataToInsert, SequentialGuidGenerator.Next());
+            var idProperty = GetIdProperty();
+            var setId = GetSetIdMethod(idProperty);
+            setId(dataToInsert, SequentialGuidGenerator.Next());
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{GetDbColumnName(x)}]"))})");
             insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
@@ -285,7 +296,7 @@ public class BulkInsertBuilder<T>
         else
         {
             var dbColumn = GetDbColumnName(_outputIdColumn);
-            var idProperty = typeof(T).GetProperty(_outputIdColumn);
+            var idProperty = GetIdProperty();
 
             using var reader = insertCommand.ExecuteReader();
             while (reader.Read())
