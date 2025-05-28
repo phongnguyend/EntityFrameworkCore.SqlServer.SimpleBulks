@@ -18,4 +18,6 @@ public class ColumnInfor
     public string DefaultValueSql { get; set; }
 
     public bool IsPrimaryKey { get; set; }
+
+    public bool IsRowVersion { get; set; }
 }
