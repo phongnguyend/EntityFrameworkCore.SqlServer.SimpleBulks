@@ -10,7 +10,7 @@ public static class ExpressionExtensions
     {
         if (expression is MemberExpression memberExpression)
         {
-            return memberExpression.Member.Name;
+            return GetMemberName(memberExpression);
         }
 
         if (expression is UnaryExpression unaryExpression)
@@ -25,7 +25,7 @@ public static class ExpressionExtensions
     {
         if (expression is NewExpression newExpression)
         {
-            return newExpression.Arguments.Select(x => GetMemberName(x)).ToList();
+            return newExpression.Arguments.Select(GetMemberName).ToList();
         }
 
         return new List<string>();
@@ -38,6 +38,23 @@ public static class ExpressionExtensions
             return methodExpression.Method.Name;
         }
 
-        return ((MemberExpression)unaryExpression.Operand).Member.Name;
+        if (unaryExpression.Operand is MemberExpression memberExpression)
+        {
+            return GetMemberName(memberExpression);
+        }
+
+        return null;
+    }
+
+    private static string GetMemberName(MemberExpression memberExpression)
+    {
+        var path = new Stack<string>();
+        Expression current = memberExpression;
+        while (current is MemberExpression m)
+        {
+            path.Push(m.Member.Name);
+            current = m.Expression;
+        }
+        return string.Join(".", path);
     }
 }
