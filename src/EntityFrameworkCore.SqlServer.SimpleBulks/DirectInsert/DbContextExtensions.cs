@@ -22,11 +22,11 @@ public static class DbContextExtensions
         var idColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
             .FirstOrDefault();
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
         new BulkInsertBuilder<T>(connection, transaction)
             .WithColumns(columns)
-            .WithDbColumnMappings(dbColumnMappings)
+            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
             .ToTable(table)
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
@@ -43,11 +43,11 @@ public static class DbContextExtensions
         var idColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
             .FirstOrDefault();
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
         new BulkInsertBuilder<T>(connection, transaction)
             .WithColumns(columnNamesSelector)
-            .WithDbColumnMappings(dbColumnMappings)
+            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
             .ToTable(table)
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))

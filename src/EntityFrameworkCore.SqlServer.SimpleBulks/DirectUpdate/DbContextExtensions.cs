@@ -19,12 +19,12 @@ public static class DbContextExtensions
         var primaryKeys = properties
             .Where(x => x.IsPrimaryKey)
             .Select(x => x.PropertyName);
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
         return new BulkUpdateBuilder<T>(connection, transaction)
              .WithId(primaryKeys)
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(dbColumnMappings)
+             .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+             .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
              .ToTable(table)
              .ConfigureBulkOptions(configureOptions)
              .SingleUpdate(data);
@@ -39,12 +39,12 @@ public static class DbContextExtensions
         var primaryKeys = properties
             .Where(x => x.IsPrimaryKey)
             .Select(x => x.PropertyName);
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
         return new BulkUpdateBuilder<T>(connection, transaction)
             .WithId(primaryKeys)
             .WithColumns(columnNames)
-            .WithDbColumnMappings(dbColumnMappings)
+            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
             .SingleUpdate(data);

@@ -15,6 +15,7 @@ public class BulkMatchBuilder<T>
     private IEnumerable<string> _matchedColumns;
     private IEnumerable<string> _returnedColumns;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private IReadOnlyDictionary<string, string> _columnTypeMappings;
     private BulkMatchOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -70,6 +71,12 @@ public class BulkMatchBuilder<T>
     public BulkMatchBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
+        return this;
+    }
+
+    public BulkMatchBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        _columnTypeMappings = columnTypeMappings;
         return this;
     }
 

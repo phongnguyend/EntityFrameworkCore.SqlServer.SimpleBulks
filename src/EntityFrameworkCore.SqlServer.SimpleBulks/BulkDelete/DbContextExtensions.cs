@@ -17,11 +17,11 @@ public static class DbContextExtensions
         var primaryKeys = properties
             .Where(x => x.IsPrimaryKey)
             .Select(x => x.PropertyName);
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
 
         return new BulkDeleteBuilder<T>(connection, transaction)
              .WithId(primaryKeys)
-             .WithDbColumnMappings(dbColumnMappings)
+             .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+             .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
              .ToTable(table)
              .ConfigureBulkOptions(configureOptions)
              .Execute(data);

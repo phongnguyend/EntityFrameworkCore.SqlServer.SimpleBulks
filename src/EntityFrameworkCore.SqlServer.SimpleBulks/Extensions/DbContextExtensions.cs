@@ -12,6 +12,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DbContextExtensions
 {
+    static readonly object _lock = new();
+    private static readonly Dictionary<Type, IList<ColumnInfor>> _propertiesCache = [];
+
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
         var entityType = dbContext.Model.FindEntityType(type);
@@ -40,26 +43,41 @@ public static class DbContextExtensions
 
     public static IList<ColumnInfor> GetProperties(this DbContext dbContext, Type type)
     {
-        var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
-        var entityProperties = dbContext.Model.FindEntityType(type)
-                       .GetProperties();
+        if (_propertiesCache.TryGetValue(type, out IList<ColumnInfor> value1))
+        {
+            return value1;
+        }
 
-        var data = typeProperties.Join(entityProperties,
-            prop => prop.Name,
-            entityProp => entityProp.Name,
-            (prop, entityProp) => new ColumnInfor
+        lock (_lock)
+        {
+            if (_propertiesCache.TryGetValue(type, out IList<ColumnInfor> value2))
             {
-                PropertyName = prop.Name,
-                PropertyType = prop.PropertyType,
-                ColumnName = entityProp.GetColumnName(),
-                ColumnType = entityProp.GetColumnType(),
-                ValueGenerated = entityProp.ValueGenerated,
-                DefaultValueSql = entityProp.GetDefaultValueSql(),
-                IsPrimaryKey = entityProp.IsPrimaryKey(),
-                IsRowVersion = entityProp.IsRowVersion()
-            });
+                return value2;
+            }
 
-        return data.ToList();
+            var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
+            var entityProperties = dbContext.Model.FindEntityType(type)
+                           .GetProperties();
+
+            var data = typeProperties.Join(entityProperties,
+                prop => prop.Name,
+                entityProp => entityProp.Name,
+                (prop, entityProp) => new ColumnInfor
+                {
+                    PropertyName = prop.Name,
+                    PropertyType = prop.PropertyType,
+                    ColumnName = entityProp.GetColumnName(),
+                    ColumnType = entityProp.GetColumnType(),
+                    ValueGenerated = entityProp.ValueGenerated,
+                    DefaultValueSql = entityProp.GetDefaultValueSql(),
+                    IsPrimaryKey = entityProp.IsPrimaryKey(),
+                    IsRowVersion = entityProp.IsRowVersion()
+                }).ToList();
+
+            _propertiesCache[type] = data;
+
+            return data;
+        }
     }
 
     public static IDbCommand CreateTextCommand(this DbContext dbContext, string commandText, BulkOptions options = null)

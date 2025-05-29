@@ -17,6 +17,7 @@ public class BulkInsertBuilder<T>
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private IReadOnlyDictionary<string, string> _columnTypeMappings;
     private BulkInsertOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -83,6 +84,12 @@ public class BulkInsertBuilder<T>
     public BulkInsertBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
+        return this;
+    }
+
+    public BulkInsertBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        _columnTypeMappings = columnTypeMappings;
         return this;
     }
 

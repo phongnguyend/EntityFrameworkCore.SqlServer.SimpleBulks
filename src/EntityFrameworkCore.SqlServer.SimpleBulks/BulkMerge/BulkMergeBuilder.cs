@@ -15,6 +15,7 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _updateColumnNames;
     private IEnumerable<string> _insertColumnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private IReadOnlyDictionary<string, string> _columnTypeMappings;
     private string _outputIdColumn;
     private BulkMergeOptions _options;
     private readonly SqlConnection _connection;
@@ -83,6 +84,12 @@ public class BulkMergeBuilder<T>
     public BulkMergeBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
+        return this;
+    }
+
+    public BulkMergeBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        _columnTypeMappings = columnTypeMappings;
         return this;
     }
 

@@ -11,6 +11,7 @@ public class TempTableBuilder<T>
     private IEnumerable<T> _data;
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private IReadOnlyDictionary<string, string> _columnTypeMappings;
     private TempTableOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -47,6 +48,12 @@ public class TempTableBuilder<T>
     public TempTableBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
+        return this;
+    }
+
+    public TempTableBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        _columnTypeMappings = columnTypeMappings;
         return this;
     }
 

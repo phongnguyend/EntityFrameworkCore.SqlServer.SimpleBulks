@@ -16,7 +16,6 @@ public static class DbContextExtensions
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var properties = dbContext.GetProperties(typeof(T));
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
         var outputIdColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
             .Select(x => x.PropertyName)
@@ -26,7 +25,8 @@ public static class DbContextExtensions
              .WithId(idSelector)
              .WithUpdateColumns(updateColumnNamesSelector)
              .WithInsertColumns(insertColumnNamesSelector)
-             .WithDbColumnMappings(dbColumnMappings)
+             .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+             .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
              .WithOutputId(outputIdColumn)
              .ToTable(table)
              .ConfigureBulkOptions(configureOptions)
@@ -39,7 +39,6 @@ public static class DbContextExtensions
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var properties = dbContext.GetProperties(typeof(T));
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
         var outputIdColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
             .Select(x => x.PropertyName)
@@ -49,7 +48,8 @@ public static class DbContextExtensions
             .WithId(idColumn)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbColumnMappings)
+            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
             .WithOutputId(outputIdColumn)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
@@ -62,7 +62,6 @@ public static class DbContextExtensions
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var properties = dbContext.GetProperties(typeof(T));
-        var dbColumnMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
         var outputIdColumn = properties
             .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
             .Select(x => x.PropertyName)
@@ -72,7 +71,8 @@ public static class DbContextExtensions
             .WithId(idColumns)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbColumnMappings)
+            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
+            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
             .WithOutputId(outputIdColumn)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)

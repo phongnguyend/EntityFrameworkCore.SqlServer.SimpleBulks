@@ -15,6 +15,7 @@ public class BulkUpdateBuilder<T>
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private IReadOnlyDictionary<string, string> _columnTypeMappings;
     private BulkUpdateOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -70,6 +71,12 @@ public class BulkUpdateBuilder<T>
     public BulkUpdateBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
+        return this;
+    }
+
+    public BulkUpdateBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        _columnTypeMappings = columnTypeMappings;
         return this;
     }
 
