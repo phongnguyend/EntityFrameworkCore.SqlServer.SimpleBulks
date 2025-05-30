@@ -18,7 +18,7 @@ public static class DataTableExtensions
         for (int i = 0; i < table.Columns.Count; i++)
         {
             sql.Append($"\n\t[{GetDbColumnName(table.Columns[i].ColumnName, columnNameMappings)}]");
-            var sqlType = table.Columns[i].DataType.ToSqlType();
+            var sqlType = GetDbColumnType(table.Columns[i], columnTypeMappings);
             sql.Append($" {sqlType} NULL");
             sql.Append(",");
         }
