@@ -12,17 +12,37 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DbContextExtensions
 {
-    static readonly object _lock = new();
+    static readonly object _lockPropertiesCache = new();
+    static readonly object _lockTableInforCache = new();
+
     private static readonly Dictionary<Type, IList<ColumnInfor>> _propertiesCache = [];
+    private static readonly Dictionary<Type, TableInfor> _tableInfoCache = [];
 
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
-        var entityType = dbContext.Model.FindEntityType(type);
+        if (_tableInfoCache.TryGetValue(type, out TableInfor value1))
+        {
+            return value1;
+        }
 
-        var schema = entityType.GetSchema();
-        var tableName = entityType.GetTableName();
+        lock (_lockTableInforCache)
+        {
+            if (_tableInfoCache.TryGetValue(type, out TableInfor value2))
+            {
+                return value2;
+            }
 
-        return new TableInfor(schema, tableName);
+            var entityType = dbContext.Model.FindEntityType(type);
+
+            var schema = entityType.GetSchema();
+            var tableName = entityType.GetTableName();
+
+            var tableInfo = new TableInfor(schema, tableName);
+
+            _tableInfoCache[type] = tableInfo;
+
+            return tableInfo;
+        }
     }
 
     public static bool IsEntityType(this DbContext dbContext, Type type)
@@ -48,7 +68,7 @@ public static class DbContextExtensions
             return value1;
         }
 
-        lock (_lock)
+        lock (_lockPropertiesCache)
         {
             if (_propertiesCache.TryGetValue(type, out IList<ColumnInfor> value2))
             {
