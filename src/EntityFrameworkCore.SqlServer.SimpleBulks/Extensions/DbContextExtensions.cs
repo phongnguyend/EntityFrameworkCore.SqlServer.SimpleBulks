@@ -20,29 +20,16 @@ public static class DbContextExtensions
 
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
-        if (_tableInfoCache.TryGetValue(type, out TableInfor value1))
+        return _tableInfoCache.GetOrSet(_lockTableInforCache, type, () =>
         {
-            return value1;
-        }
-
-        lock (_lockTableInforCache)
-        {
-            if (_tableInfoCache.TryGetValue(type, out TableInfor value2))
-            {
-                return value2;
-            }
-
             var entityType = dbContext.Model.FindEntityType(type);
 
             var schema = entityType.GetSchema();
             var tableName = entityType.GetTableName();
 
             var tableInfo = new TableInfor(schema, tableName);
-
-            _tableInfoCache[type] = tableInfo;
-
             return tableInfo;
-        }
+        });
     }
 
     public static bool IsEntityType(this DbContext dbContext, Type type)
@@ -63,18 +50,8 @@ public static class DbContextExtensions
 
     public static IList<ColumnInfor> GetProperties(this DbContext dbContext, Type type)
     {
-        if (_propertiesCache.TryGetValue(type, out IList<ColumnInfor> value1))
+        return _propertiesCache.GetOrSet(_lockPropertiesCache, type, () =>
         {
-            return value1;
-        }
-
-        lock (_lockPropertiesCache)
-        {
-            if (_propertiesCache.TryGetValue(type, out IList<ColumnInfor> value2))
-            {
-                return value2;
-            }
-
             var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
             var entityProperties = dbContext.Model.FindEntityType(type)
                            .GetProperties();
@@ -93,11 +70,8 @@ public static class DbContextExtensions
                     IsPrimaryKey = entityProp.IsPrimaryKey(),
                     IsRowVersion = entityProp.IsRowVersion()
                 }).ToList();
-
-            _propertiesCache[type] = data;
-
             return data;
-        }
+        });
     }
 
     public static IDbCommand CreateTextCommand(this DbContext dbContext, string commandText, BulkOptions options = null)
