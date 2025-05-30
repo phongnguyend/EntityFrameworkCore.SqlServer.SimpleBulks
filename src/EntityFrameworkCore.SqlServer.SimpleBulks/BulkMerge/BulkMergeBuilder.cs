@@ -142,7 +142,7 @@ public class BulkMergeBuilder<T>
         propertyNames = propertyNames.Distinct().ToList();
 
         var dataTable = data.ToDataTable(propertyNames, addIndexNumberColumn: returnDbGeneratedId);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
 

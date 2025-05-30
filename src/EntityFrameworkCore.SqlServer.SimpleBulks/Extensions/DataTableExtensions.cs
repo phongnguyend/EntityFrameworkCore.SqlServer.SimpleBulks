@@ -7,7 +7,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DataTableExtensions
 {
-    public static string GenerateTableDefinition(this DataTable table, string tableName, IReadOnlyDictionary<string, string> columnNameMappings = null)
+    public static string GenerateTableDefinition(this DataTable table, string tableName,
+        IReadOnlyDictionary<string, string> columnNameMappings,
+        IReadOnlyDictionary<string, string> columnTypeMappings)
     {
         var sql = new StringBuilder();
 
@@ -57,5 +59,15 @@ public static class DataTableExtensions
         }
 
         return columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
+    }
+
+    private static string GetDbColumnType(DataColumn dataColumn, IReadOnlyDictionary<string, string> columnTypeMappings)
+    {
+        if (columnTypeMappings == null)
+        {
+            return dataColumn.DataType.ToSqlType();
+        }
+
+        return columnTypeMappings.TryGetValue(dataColumn.ColumnName, out string value) ? value : dataColumn.DataType.ToSqlType();
     }
 }

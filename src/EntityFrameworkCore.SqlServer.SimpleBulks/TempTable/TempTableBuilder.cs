@@ -86,7 +86,7 @@ public class TempTableBuilder<T>
     {
         var tempTableName = $"[#{GetTableName()}]";
         var dataTable = _data.ToDataTable(_columnNames);
-        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings);
+        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings, _columnTypeMappings);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 

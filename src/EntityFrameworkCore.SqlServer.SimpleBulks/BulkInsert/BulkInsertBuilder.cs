@@ -193,7 +193,7 @@ public class BulkInsertBuilder<T>
 
         var temptableName = $"[#{Guid.NewGuid()}]";
         dataTable = data.ToDataTable(_columnNames, addIndexNumberColumn: true);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
         mergeStatementBuilder.AppendLine($"MERGE INTO {_table.SchemaQualifiedTableName}");

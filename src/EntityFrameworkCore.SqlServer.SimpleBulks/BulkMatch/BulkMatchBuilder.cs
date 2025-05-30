@@ -105,7 +105,7 @@ public class BulkMatchBuilder<T>
         var temptableName = $"[#{Guid.NewGuid()}]";
 
         var dataTable = machedValues.ToDataTable(_matchedColumns);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
         {
