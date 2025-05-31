@@ -32,4 +32,31 @@ public class GetTableInforTests
         // Assert
         Assert.Equal(tableInfor1, tableInfor2);
     }
+
+    [Fact]
+    public async Task GetTableInfor_MultiThreads_ShoudReturnFromCache()
+    {
+        // Arrange && Act
+        var tasks = new List<Task<TableInfor>>();
+        for (int i = 0; i < 100; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                using var dbct = new TestDbContext("", "");
+                return dbct.GetTableInfor(typeof(ConfigurationEntry));
+            }));
+        }
+
+        await Task.WhenAll(tasks.ToArray());
+
+        var dbContext = new TestDbContext("", "");
+
+        var tableInfor = dbContext.GetTableInfor(typeof(ConfigurationEntry));
+
+        foreach (var task in tasks)
+        {
+            // Assert
+            Assert.Equal(tableInfor, task.Result);
+        }
+    }
 }
