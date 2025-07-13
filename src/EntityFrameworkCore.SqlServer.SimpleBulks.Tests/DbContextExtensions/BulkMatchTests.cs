@@ -5,12 +5,13 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkMatchTests : BaseTest
 {
     private readonly List<Customer> _customers;
     private readonly List<Contact> _contacts;
 
-    public BulkMatchTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkMatch")
+    public BulkMatchTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkMatch")
     {
         var tran = _context.Database.BeginTransaction();
 

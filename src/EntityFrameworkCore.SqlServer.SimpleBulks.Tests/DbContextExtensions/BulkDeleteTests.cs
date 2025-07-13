@@ -6,9 +6,10 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkDeleteTests : BaseTest
 {
-    public BulkDeleteTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkDelete")
+    public BulkDeleteTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkDelete")
     {
         var tran = _context.Database.BeginTransaction();
 

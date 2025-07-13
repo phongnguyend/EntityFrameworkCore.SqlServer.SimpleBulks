@@ -6,12 +6,13 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 public abstract class BaseTest : IDisposable
 {
     protected readonly ITestOutputHelper _output;
-
+    protected readonly SqlServerFixture _fixture;
     protected readonly TestDbContext _context;
 
-    protected BaseTest(ITestOutputHelper output, string dbPrefixName, string schema = "")
+    protected BaseTest(ITestOutputHelper output, SqlServerFixture fixture, string dbPrefixName, string schema = "")
     {
         _output = output;
+        _fixture = fixture;
         _context = GetDbContext(dbPrefixName, schema);
         _context.Database.EnsureCreated();
     }
@@ -21,13 +22,8 @@ public abstract class BaseTest : IDisposable
         _context.Database.EnsureDeleted();
     }
 
-    protected string GetConnectionString(string dbPrefixName)
-    {
-        return $"Server=127.0.0.1;Database={dbPrefixName}.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-    }
-
     protected TestDbContext GetDbContext(string dbPrefixName, string schema)
     {
-        return new TestDbContext(GetConnectionString(dbPrefixName), schema);
+        return new TestDbContext(_fixture.GetConnectionString(dbPrefixName), schema);
     }
 }

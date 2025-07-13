@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class TempTableTests : BaseTest
 {
     private readonly static List<CustomerDto> _customers = new List<CustomerDto>
@@ -58,7 +59,7 @@ public class TempTableTests : BaseTest
         }
     };
 
-    public TempTableTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.TempTable")
+    public TempTableTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.TempTable")
     {
     }
 

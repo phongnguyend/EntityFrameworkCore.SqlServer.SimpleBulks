@@ -6,11 +6,12 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkDeleteTests : BaseTest
 {
     private string _schema = "";
 
-    public BulkDeleteTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkDelete")
+    public BulkDeleteTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkDelete")
     {
         TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");

@@ -7,9 +7,10 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkUpdateTests : BaseTest
 {
-    public BulkUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkUpdate")
+    public BulkUpdateTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkUpdate")
     {
     }
 

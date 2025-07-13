@@ -7,13 +7,15 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtension
 public abstract class BaseTest : IDisposable
 {
     protected readonly ITestOutputHelper _output;
+    private readonly SqlServerFixture _fixture;
     protected readonly TestDbContext _context;
     protected readonly SqlConnection _connection;
 
-    protected BaseTest(ITestOutputHelper output, string dbPrefixName, string schema = "")
+    protected BaseTest(ITestOutputHelper output, SqlServerFixture fixture, string dbPrefixName, string schema = "")
     {
         _output = output;
-        var connectionString = GetConnectionString(dbPrefixName);
+        _fixture = fixture;
+        var connectionString = _fixture.GetConnectionString(dbPrefixName);
         _context = GetDbContext(connectionString, schema);
         _context.Database.EnsureCreated();
         _connection = new SqlConnection(connectionString);
@@ -22,11 +24,6 @@ public abstract class BaseTest : IDisposable
     public void Dispose()
     {
         _context.Database.EnsureDeleted();
-    }
-
-    protected string GetConnectionString(string dbPrefixName)
-    {
-        return $"Server=127.0.0.1;Database={dbPrefixName}.{Guid.NewGuid()};User Id=sa;Password=sqladmin123!@#;Encrypt=False";
     }
 
     protected TestDbContext GetDbContext(string connectionString, string schema)

@@ -6,9 +6,10 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkMergeTests : BaseTest
 {
-    public BulkMergeTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkMerge")
+    public BulkMergeTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkMerge")
     {
     }
 

@@ -7,11 +7,12 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SqlConnectionExtensions;
 
+[Collection("SqlServerCollection")]
 public class BulkUpdateTests : BaseTest
 {
     private string _schema = "";
 
-    public BulkUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.BulkUpdate")
+    public BulkUpdateTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkUpdate")
     {
         TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");

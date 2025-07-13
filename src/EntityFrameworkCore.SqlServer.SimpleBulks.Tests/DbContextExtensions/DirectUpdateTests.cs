@@ -6,9 +6,10 @@ using Xunit.Abstractions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.DbContextExtensions;
 
+[Collection("SqlServerCollection")]
 public class DirectUpdateTests : BaseTest
 {
-    public DirectUpdateTests(ITestOutputHelper output) : base(output, "EFCoreSimpleBulksTests.DirectUpdate")
+    public DirectUpdateTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.DirectUpdate")
     {
     }
 
