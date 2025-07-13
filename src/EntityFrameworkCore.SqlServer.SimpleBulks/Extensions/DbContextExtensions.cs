@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -12,15 +13,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DbContextExtensions
 {
-    static readonly object _lockPropertiesCache = new();
-    static readonly object _lockTableInforCache = new();
-
-    private static readonly Dictionary<Type, IList<ColumnInfor>> _propertiesCache = [];
-    private static readonly Dictionary<Type, TableInfor> _tableInfoCache = [];
+    private static readonly ConcurrentDictionary<Type, IList<ColumnInfor>> _propertiesCache = [];
+    private static readonly ConcurrentDictionary<Type, TableInfor> _tableInfoCache = [];
 
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
-        return _tableInfoCache.GetOrSet(_lockTableInforCache, type, () =>
+        return _tableInfoCache.GetOrAdd(type, (type) =>
         {
             var entityType = dbContext.Model.FindEntityType(type);
 
@@ -50,7 +48,7 @@ public static class DbContextExtensions
 
     public static IList<ColumnInfor> GetProperties(this DbContext dbContext, Type type)
     {
-        return _propertiesCache.GetOrSet(_lockPropertiesCache, type, () =>
+        return _propertiesCache.GetOrAdd(type, (type) =>
         {
             var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
             var entityProperties = dbContext.Model.FindEntityType(type)
