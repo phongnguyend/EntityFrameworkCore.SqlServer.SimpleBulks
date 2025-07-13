@@ -27,7 +27,7 @@ jobs:
         dotnet-version: 8.0.100
 
     - name: Test
-      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
     - name: Build
       run: dotnet build EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj --configuration Release
