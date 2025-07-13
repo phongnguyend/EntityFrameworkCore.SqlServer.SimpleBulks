@@ -1,0 +1,39 @@
+name: .Net Build EntityFrameworkCore.SqlServer.SimpleBulks
+
+on:
+  push:
+    paths: 
+      - 'src/**'
+  pull_request:
+    paths: 
+      - 'src/**'
+  workflow_dispatch:
+  
+jobs:
+  build:
+
+    defaults: 
+      run:
+        working-directory: src
+        
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+  
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.100
+
+    - name: Test
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj
+
+    - name: Build
+      run: dotnet build EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj --configuration Release
+
+    - name: Upload EntityFrameworkCore.SqlServer.SimpleBulks
+      uses: actions/upload-artifact@v4
+      with:
+        name: EntityFrameworkCore.SqlServer.SimpleBulks
+        path: src/EntityFrameworkCore.SqlServer.SimpleBulks/bin/Release/*.nupkg
