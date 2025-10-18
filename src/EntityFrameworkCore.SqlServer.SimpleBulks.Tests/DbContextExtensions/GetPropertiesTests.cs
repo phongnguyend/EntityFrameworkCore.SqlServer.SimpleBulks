@@ -56,7 +56,7 @@ public class GetPropertiesTests
     public async Task GetProperties_MultiThreads_ShoudReturnFromCache()
     {
         // Arrange && Act
-        var tasks = new List<Task<IList<ColumnInfor>>>();
+        var tasks = new List<Task<IReadOnlyList<ColumnInfor>>>();
         for (int i = 0; i < 100; i++)
         {
             tasks.Add(Task.Run(() =>
