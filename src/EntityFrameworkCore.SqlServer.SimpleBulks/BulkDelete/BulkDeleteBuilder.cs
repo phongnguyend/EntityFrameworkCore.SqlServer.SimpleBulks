@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 
@@ -167,5 +169,15 @@ public class BulkDeleteBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkDelete]: {message}");
+    }
+
+    public Task<BulkDeleteResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Execute(data));
+    }
+
+    public Task<BulkDeleteResult> SingleDeleteAsync(T dataToDelete, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(SingleDelete(dataToDelete));
     }
 }

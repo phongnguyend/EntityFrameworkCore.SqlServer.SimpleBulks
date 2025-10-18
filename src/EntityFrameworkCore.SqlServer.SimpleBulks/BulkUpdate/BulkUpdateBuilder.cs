@@ -6,6 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
@@ -223,5 +225,15 @@ public class BulkUpdateBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkUpdate]: {message}");
+    }
+
+    public Task<BulkUpdateResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Execute(data));
+    }
+
+    public Task<BulkUpdateResult> SingleUpdateAsync(T dataToUpdate, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(SingleUpdate(dataToUpdate));
     }
 }

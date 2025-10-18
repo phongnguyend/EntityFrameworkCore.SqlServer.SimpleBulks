@@ -7,6 +7,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 
@@ -321,5 +323,17 @@ public class BulkInsertBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkInsert]: {message}");
+    }
+
+    public Task ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    {
+        Execute(data);
+        return Task.CompletedTask;
+    }
+
+    public Task SingleInsertAsync(T dataToInsert, CancellationToken cancellationToken = default)
+    {
+        SingleInsert(dataToInsert);
+        return Task.CompletedTask;
     }
 }

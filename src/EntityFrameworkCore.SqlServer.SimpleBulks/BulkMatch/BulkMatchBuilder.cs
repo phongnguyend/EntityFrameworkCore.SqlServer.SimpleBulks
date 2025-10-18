@@ -6,6 +6,8 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
@@ -174,5 +176,10 @@ public class BulkMatchBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
+    }
+
+    public Task<List<T>> ExecuteAsync(IEnumerable<T> machedValues, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Execute(machedValues));
     }
 }
