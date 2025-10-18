@@ -1,9 +1,7 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
@@ -15,18 +13,12 @@ public static class DbContextExtensions
         var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
-        var properties = dbContext.GetProperties(typeof(T));
-        var columns = properties
-            .Where(x => x.ValueGenerated == ValueGenerated.Never)
-            .Select(x => x.PropertyName);
-        var idColumn = properties
-            .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
-            .FirstOrDefault();
+        var idColumn = dbContext.GetOutputId(typeof(T));
 
         new BulkInsertBuilder<T>(connection, transaction)
-            .WithColumns(columns)
-            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
-            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
+            .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
+            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
+            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
             .ToTable(table)
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
@@ -39,15 +31,12 @@ public static class DbContextExtensions
         var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
-        var properties = dbContext.GetProperties(typeof(T));
-        var idColumn = properties
-            .Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd)
-            .FirstOrDefault();
+        var idColumn = dbContext.GetOutputId(typeof(T));
 
         new BulkInsertBuilder<T>(connection, transaction)
             .WithColumns(columnNamesSelector)
-            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
-            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
+            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
+            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
             .ToTable(table)
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))

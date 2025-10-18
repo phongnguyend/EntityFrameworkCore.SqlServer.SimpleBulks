@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,16 +15,12 @@ public static class DbContextAsyncExtensions
         var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
-        var properties = dbContext.GetProperties(typeof(T));
-        var primaryKeys = properties
-            .Where(x => x.IsPrimaryKey)
-            .Select(x => x.PropertyName);
 
         return new BulkUpdateBuilder<T>(connection, transaction)
-             .WithId(primaryKeys)
+             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
-             .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
+             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
+             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
              .ToTable(table)
              .ConfigureBulkOptions(configureOptions)
              .ExecuteAsync(data, cancellationToken);
@@ -36,16 +31,12 @@ public static class DbContextAsyncExtensions
         var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
-        var properties = dbContext.GetProperties(typeof(T));
-        var primaryKeys = properties
-            .Where(x => x.IsPrimaryKey)
-            .Select(x => x.PropertyName);
 
         return new BulkUpdateBuilder<T>(connection, transaction)
-            .WithId(primaryKeys)
+            .WithId(dbContext.GetPrimaryKeys(typeof(T)))
             .WithColumns(columnNames)
-            .WithDbColumnMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnName))
-            .WithDbColumnTypeMappings(properties.ToDictionary(x => x.PropertyName, x => x.ColumnType))
+            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
+            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
             .ExecuteAsync(data, cancellationToken);

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
@@ -21,9 +20,8 @@ public static class DbContextExtensions
 
         if (isEntityType)
         {
-            var properties = dbContext.GetProperties(typeof(T));
-            columnNameMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-            columnTypeMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnType);
+            columnNameMappings = dbContext.GetColumnNames(typeof(T));
+            columnTypeMappings = dbContext.GetColumnTypes(typeof(T));
         }
 
         return new TempTableBuilder<T>(connection, transaction)
@@ -48,9 +46,8 @@ public static class DbContextExtensions
 
         if (isEntityType)
         {
-            var properties = dbContext.GetProperties(typeof(T));
-            columnNameMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
-            columnTypeMappings = properties.ToDictionary(x => x.PropertyName, x => x.ColumnType);
+            columnNameMappings = dbContext.GetColumnNames(typeof(T));
+            columnTypeMappings = dbContext.GetColumnTypes(typeof(T));
         }
 
         return new TempTableBuilder<T>(connection, transaction)

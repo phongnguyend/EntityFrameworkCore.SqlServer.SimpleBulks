@@ -15,6 +15,12 @@ public static class DbContextExtensions
 {
     private static readonly ConcurrentDictionary<Type, IReadOnlyList<ColumnInfor>> _propertiesCache = [];
     private static readonly ConcurrentDictionary<Type, TableInfor> _tableInfoCache = [];
+    private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, string>> _columnNamesCache = [];
+    private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, string>> _columnTypesCache = [];
+    private static readonly ConcurrentDictionary<Type, IReadOnlyList<string>> _primaryKeysCache = [];
+    private static readonly ConcurrentDictionary<Type, ColumnInfor> _outputIdCache = [];
+    private static readonly ConcurrentDictionary<Type, IReadOnlyList<string>> _insertablePropertyNamesCache = [];
+    private static readonly ConcurrentDictionary<Type, IReadOnlyList<string>> _allPropertyNamesCache = [];
 
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
@@ -67,8 +73,62 @@ public static class DbContextExtensions
                     DefaultValueSql = entityProp.GetDefaultValueSql(),
                     IsPrimaryKey = entityProp.IsPrimaryKey(),
                     IsRowVersion = entityProp.IsRowVersion()
-                }).ToList();
+                }).ToArray();
             return data;
+        });
+    }
+
+    public static IReadOnlyDictionary<string, string> GetColumnNames(this DbContext dbContext, Type type)
+    {
+        return _columnNamesCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.ToDictionary(x => x.PropertyName, x => x.ColumnName);
+        });
+    }
+
+    public static IReadOnlyDictionary<string, string> GetColumnTypes(this DbContext dbContext, Type type)
+    {
+        return _columnTypesCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.ToDictionary(x => x.PropertyName, x => x.ColumnType);
+        });
+    }
+
+    public static IReadOnlyList<string> GetPrimaryKeys(this DbContext dbContext, Type type)
+    {
+        return _primaryKeysCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.Where(x => x.IsPrimaryKey).Select(x => x.PropertyName).ToArray();
+        });
+    }
+
+    public static ColumnInfor GetOutputId(this DbContext dbContext, Type type)
+    {
+        return _outputIdCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.Where(x => x.IsPrimaryKey && x.ValueGenerated == ValueGenerated.OnAdd).FirstOrDefault();
+        });
+    }
+
+    public static IReadOnlyList<string> GetInsertablePropertyNames(this DbContext dbContext, Type type)
+    {
+        return _insertablePropertyNamesCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.Where(x => x.ValueGenerated == ValueGenerated.Never).Select(x => x.PropertyName).ToArray();
+        });
+    }
+
+    public static IReadOnlyList<string> GetAllPropertyNames(this DbContext dbContext, Type type)
+    {
+        return _allPropertyNamesCache.GetOrAdd(type, (type) =>
+        {
+            var properties = dbContext.GetProperties(type);
+            return properties.Select(x => x.PropertyName).ToArray();
         });
     }
 
