@@ -3,6 +3,8 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 
@@ -110,5 +112,10 @@ public class TempTableBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [TempTable]: {message}");
+    }
+
+    public Task<string> ExecuteAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(Execute());
     }
 }

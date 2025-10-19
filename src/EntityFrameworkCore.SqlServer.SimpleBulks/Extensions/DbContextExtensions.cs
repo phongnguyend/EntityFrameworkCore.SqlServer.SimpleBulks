@@ -47,7 +47,7 @@ public static class DbContextExtensions
 
     public static SqlConnection GetSqlConnection(this DbContext dbContext)
     {
-        return dbContext.Database.GetDbConnection().AsSqlConnection();
+        return dbContext.Database.GetDbConnection() as SqlConnection;
     }
 
     public static SqlTransaction GetCurrentSqlTransaction(this DbContext dbContext)

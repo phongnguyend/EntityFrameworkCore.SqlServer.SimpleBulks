@@ -3,14 +3,9 @@ using System.Data;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
-public static class IDbConnectionExtensions
+public static class SqlConnectionExtensions
 {
-    public static SqlConnection AsSqlConnection(this IDbConnection connection)
-    {
-        return connection as SqlConnection;
-    }
-
-    public static void EnsureOpen(this IDbConnection connection)
+    public static void EnsureOpen(this SqlConnection connection)
     {
         var connectionState = connection.State;
 
@@ -20,7 +15,7 @@ public static class IDbConnectionExtensions
         }
     }
 
-    public static void EnsureClosed(this IDbConnection connection)
+    public static void EnsureClosed(this SqlConnection connection)
     {
         var connectionState = connection.State;
 
@@ -30,7 +25,7 @@ public static class IDbConnectionExtensions
         }
     }
 
-    public static IDbCommand CreateTextCommand(this IDbConnection connection, IDbTransaction transaction, string commandText, BulkOptions options = null)
+    public static SqlCommand CreateTextCommand(this SqlConnection connection, SqlTransaction transaction, string commandText, BulkOptions options = null)
     {
         options ??= new BulkOptions()
         {
