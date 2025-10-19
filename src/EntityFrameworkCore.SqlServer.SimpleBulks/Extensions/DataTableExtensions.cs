@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
@@ -49,6 +51,29 @@ public static class DataTableExtensions
         }
 
         bulkCopy.WriteToServer(dataTable);
+    }
+
+    public static async Task SqlBulkCopyAsync(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null, CancellationToken cancellationToken = default)
+    {
+        options ??= new BulkOptions()
+        {
+            BatchSize = 0,
+            Timeout = 30,
+        };
+
+        using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
+        {
+            BatchSize = options.BatchSize,
+            BulkCopyTimeout = options.Timeout,
+            DestinationTableName = $"{tableName}"
+        };
+
+        foreach (DataColumn dtColum in dataTable.Columns)
+        {
+            bulkCopy.ColumnMappings.Add(dtColum.ColumnName, GetDbColumnName(dtColum.ColumnName, columnNameMappings));
+        }
+
+        await bulkCopy.WriteToServerAsync(dataTable, cancellationToken);
     }
 
     private static string GetDbColumnName(string columnName, IReadOnlyDictionary<string, string> columnNameMappings)
