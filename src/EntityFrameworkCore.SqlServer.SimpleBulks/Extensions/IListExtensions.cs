@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class IListExtensions
 {
-    public static DataTable ToDataTable<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, bool addIndexNumberColumn = false)
+    public static DataTable ToDataTable<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+
         var properties = TypeDescriptor.GetProperties(typeof(T));
 
         var updatablePros = new List<PropertyDescriptor>();
         foreach (PropertyDescriptor prop in properties)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (propertyNames.Contains(prop.Name))
             {
                 updatablePros.Add(prop);
@@ -24,6 +30,8 @@ public static class IListExtensions
         var table = new DataTable() { MinimumCapacity = data.Count() };
         foreach (PropertyDescriptor prop in updatablePros)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
         }
 
@@ -36,9 +44,13 @@ public static class IListExtensions
 
         foreach (T item in data)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var row = table.NewRow();
             foreach (PropertyDescriptor prop in updatablePros)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 var value = prop.GetValue(item) ?? DBNull.Value;
                 row[prop.Name] = value;
             }
@@ -53,5 +65,13 @@ public static class IListExtensions
             idx++;
         }
         return table;
+    }
+
+    public static async Task<DataTable> ToDataTableAsync<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
+    {
+        return await Task.Run(() =>
+        {
+            return data.ToDataTable(propertyNames, addIndexNumberColumn, cancellationToken);
+        }, cancellationToken);
     }
 }
