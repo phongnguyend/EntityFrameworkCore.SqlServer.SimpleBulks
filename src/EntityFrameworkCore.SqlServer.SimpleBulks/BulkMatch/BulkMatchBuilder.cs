@@ -178,8 +178,68 @@ public class BulkMatchBuilder<T>
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
     }
 
-    public Task<List<T>> ExecuteAsync(IEnumerable<T> machedValues, CancellationToken cancellationToken = default)
+    public async Task<List<T>> ExecuteAsync(IEnumerable<T> machedValues, CancellationToken cancellationToken = default)
     {
-        return Task.FromResult(Execute(machedValues));
+        var temptableName = $"[#{Guid.NewGuid()}]";
+
+        var dataTable = await machedValues.ToDataTableAsync(_matchedColumns, cancellationToken: cancellationToken);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+
+        var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
+        {
+            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
+            $" COLLATE {_options.Collation}" : string.Empty;
+            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+        }));
+
+        var selectQueryBuilder = new StringBuilder();
+        selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
+        selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
+
+        await _connection.EnsureOpenAsync(cancellationToken);
+
+        Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
+
+        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        {
+            await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
+        }
+
+        Log("End creating temp table.");
+
+        Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
+
+        await dataTable.SqlBulkCopyAsync(temptableName, null, _connection, _transaction, _options, cancellationToken);
+
+        Log("End executing SqlBulkCopy.");
+
+        var selectQuery = selectQueryBuilder.ToString();
+
+        Log($"Begin matching:{Environment.NewLine}{selectQuery}");
+
+        var results = new List<T>();
+
+        var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
+
+        using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
+        using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            T obj = (T)Activator.CreateInstance(typeof(T));
+
+            foreach (var prop in properties)
+            {
+                if (!Equals(reader[prop.Name], DBNull.Value))
+                {
+                    prop.SetValue(obj, reader[prop.Name], null);
+                }
+            }
+
+            results.Add(obj);
+        }
+
+        Log($"End matching.");
+
+        return results;
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
@@ -12,6 +14,16 @@ public static class SqlConnectionExtensions
         if (connectionState != ConnectionState.Open)
         {
             connection.Open();
+        }
+    }
+
+    public static async Task EnsureOpenAsync(this SqlConnection connection, CancellationToken cancellationToken = default)
+    {
+        var connectionState = connection.State;
+
+        if (connectionState != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
         }
     }
 
