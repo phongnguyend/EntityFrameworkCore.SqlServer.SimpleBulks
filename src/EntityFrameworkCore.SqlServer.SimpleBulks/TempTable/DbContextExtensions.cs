@@ -33,7 +33,7 @@ public static class DbContextExtensions
              .Execute();
     }
 
-    public static string CreateTempTable<T>(this DbContext dbContext, IEnumerable<T> data, Action<TempTableOptions> configureOptions = null)
+    public static string CreateTempTable<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<TempTableOptions> configureOptions = null)
     {
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
@@ -42,7 +42,6 @@ public static class DbContextExtensions
 
         IReadOnlyDictionary<string, string> columnNameMappings = null;
         IReadOnlyDictionary<string, string> columnTypeMappings = null;
-        IEnumerable<string> columnNames = typeof(T).GetDbColumnNames();
 
         if (isEntityType)
         {

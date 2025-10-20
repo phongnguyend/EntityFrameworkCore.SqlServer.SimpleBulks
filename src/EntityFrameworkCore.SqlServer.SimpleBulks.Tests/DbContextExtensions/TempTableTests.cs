@@ -183,6 +183,7 @@ public class TempTableTests : BaseTest
 
         // Act
         var tableName = _context.CreateTempTable(_customers,
+               ["IdNumber", "FirstName", "LastName", "CurrentCountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -219,12 +220,14 @@ public class TempTableTests : BaseTest
 
         // Act
         var customerTableName = _context.CreateTempTable(_customers,
+               ["IdNumber", "FirstName", "LastName", "CurrentCountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
                });
 
         var contactTableName = _context.CreateTempTable(_contacts,
+               ["EmailAddress", "PhoneNumber", "CustomerIdNumber", "CountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -306,12 +309,14 @@ public class TempTableTests : BaseTest
 
         // Act
         var customerTableName = _context.CreateTempTable(customers,
+               ["Id", "FirstName", "LastName", "Index"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
                });
 
         var contactTableName = _context.CreateTempTable(contacts,
+               ["CustomerId", "EmailAddress", "PhoneNumber", "Index"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -368,6 +373,7 @@ public class TempTableTests : BaseTest
 
         // Act
         var tableName = _context.CreateTempTable(configurationEntries,
+               ["Id", "Key", "Value"],
                options =>
                {
                    options.LogTo = _output.WriteLine;

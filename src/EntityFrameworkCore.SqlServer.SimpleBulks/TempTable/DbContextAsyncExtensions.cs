@@ -35,7 +35,7 @@ public static class DbContextAsyncExtensions
              .ExecuteAsync(cancellationToken);
     }
 
-    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, Action<TempTableOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<TempTableOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
@@ -44,7 +44,6 @@ public static class DbContextAsyncExtensions
 
         IReadOnlyDictionary<string, string> columnNameMappings = null;
         IReadOnlyDictionary<string, string> columnTypeMappings = null;
-        IEnumerable<string> columnNames = typeof(T).GetDbColumnNames();
 
         if (isEntityType)
         {

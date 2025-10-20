@@ -45,9 +45,18 @@ public class TempTableBenchmarks
     [Benchmark]
     public void CreateTempTable()
     {
-        _context.CreateTempTable(_customers, opt =>
-        {
-            opt.Timeout = 0;
-        });
+        _context.CreateTempTable(_customers,
+            x => new
+            {
+                x.Id,
+                x.FirstName,
+                x.LastName,
+                x.CurrentCountryIsoCode,
+                x.Index
+            },
+            opt =>
+            {
+                opt.Timeout = 0;
+            });
     }
 }

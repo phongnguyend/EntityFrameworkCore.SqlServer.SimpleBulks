@@ -183,6 +183,7 @@ public class TempTableTests : BaseTest
 
         // Act
         var tableName = await _context.CreateTempTableAsync(_customers,
+               ["IdNumber", "FirstName", "LastName", "CurrentCountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -219,12 +220,14 @@ public class TempTableTests : BaseTest
 
         // Act
         var customerTableName = await _context.CreateTempTableAsync(_customers,
+               ["IdNumber", "FirstName", "LastName", "CurrentCountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
                });
 
         var contactTableName = await _context.CreateTempTableAsync(_contacts,
+               ["EmailAddress", "PhoneNumber", "CustomerIdNumber", "CountryIsoCode"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -306,12 +309,14 @@ public class TempTableTests : BaseTest
 
         // Act
         var customerTableName = await _context.CreateTempTableAsync(customers,
+               ["Id", "FirstName", "LastName", "Index"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
                });
 
         var contactTableName = await _context.CreateTempTableAsync(contacts,
+               ["CustomerId", "EmailAddress", "PhoneNumber", "Index"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
@@ -368,6 +373,7 @@ public class TempTableTests : BaseTest
 
         // Act
         var tableName = await _context.CreateTempTableAsync(configurationEntries,
+               ["Id", "Key", "Value"],
                options =>
                {
                    options.LogTo = _output.WriteLine;
