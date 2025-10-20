@@ -40,31 +40,31 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 // Insert all columns
-dbct.BulkInsert(rows);
-dbct.BulkInsert(compositeKeyRows);
+await dbct.BulkInsertAsync(rows);
+await dbct.BulkInsertAsync(compositeKeyRows);
 
 // Insert selected columns only
-dbct.BulkInsert(rows,
+await dbct.BulkInsertAsync(rows,
     row => new { row.Column1, row.Column2, row.Column3 });
-dbct.BulkInsert(compositeKeyRows,
+await dbct.BulkInsertAsync(compositeKeyRows,
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
-dbct.BulkUpdate(rows,
+await dbct.BulkUpdateAsync(rows,
     row => new { row.Column3, row.Column2 });
-dbct.BulkUpdate(compositeKeyRows,
+await dbct.BulkUpdateAsync(compositeKeyRows,
     row => new { row.Column3, row.Column2 });
 
-dbct.BulkMerge(rows,
+await dbct.BulkMergeAsync(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
     row => new { row.Column1, row.Column2, row.Column3 });
-dbct.BulkMerge(compositeKeyRows,
+await dbct.BulkMergeAsync(compositeKeyRows,
     row => new { row.Id1, row.Id2 },
     row => new { row.Column1, row.Column2, row.Column3 },
     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
-dbct.BulkDelete(rows);
-dbct.BulkDelete(compositeKeyRows);
+await dbct.BulkDeleteAsync(rows);
+await dbct.BulkDeleteAsync(compositeKeyRows);
 ```
 ### Using Dynamic String
 ```c#
@@ -73,30 +73,30 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
-dbct.BulkUpdate(rows,
+await dbct.BulkUpdateAsync(rows,
     [ "Column3", "Column2" ]);
-dbct.BulkUpdate(compositeKeyRows,
+await dbct.BulkUpdateAsync(compositeKeyRows,
     [ "Column3", "Column2" ]);
 
-dbct.BulkMerge(rows,
+await dbct.BulkMergeAsync(rows,
     "Id",
     [ "Column1", "Column2" ],
     [ "Column1", "Column2", "Column3" ]);
-dbct.BulkMerge(compositeKeyRows,
+await dbct.BulkMergeAsync(compositeKeyRows,
     [ "Id1", "Id2" ],
     [ "Column1", "Column2", "Column3" ],
     [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
-new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
+await new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
 	.ToTable(dbct.GetTableName(typeof(Row)))
 	// or .ToTable("Rows")
-	.Execute(rows);
+	.ExecuteAsync(rows);
 ```
 
 ## SqlConnectionExtensions
@@ -111,29 +111,29 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 TableMapper.Register(typeof(Row), "Rows");
 TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
 
-connection.BulkInsert(rows,
+await connection.BulkInsertAsync(rows,
            row => new { row.Column1, row.Column2, row.Column3 });
-connection.BulkInsert(compositeKeyRows,
+await connection.BulkInsertAsync(compositeKeyRows,
            row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
-connection.BulkUpdate(rows,
+await connection.BulkUpdateAsync(rows,
            row => row.Id,
            row => new { row.Column3, row.Column2 });
-connection.BulkUpdate(compositeKeyRows,
+await connection.BulkUpdateAsync(compositeKeyRows,
            row => new { row.Id1, row.Id2 },
            row => new { row.Column3, row.Column2 });
 
-connection.BulkMerge(rows,
+await connection.BulkMergeAsync(rows,
            row => row.Id,
            row => new { row.Column1, row.Column2 },
            row => new { row.Column1, row.Column2, row.Column3 });
-connection.BulkMerge(compositeKeyRows,
+await connection.BulkMergeAsync(compositeKeyRows,
            row => new { row.Id1, row.Id2 },
            row => new { row.Column1, row.Column2, row.Column3 },
            row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
-connection.BulkDelete(rows, row => row.Id);
-connection.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 });
+await connection.BulkDeleteAsync(rows, row => row.Id);
+await connection.BulkDeleteAsync(compositeKeyRows, row => new { row.Id1, row.Id2 });
 ```
 ### Using Dynamic String
 ```c#
@@ -142,47 +142,47 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
-connection.BulkInsert(rows, "Rows",
+await connection.BulkInsertAsync(rows,
            [ "Column1", "Column2", "Column3" ]);
-connection.BulkInsert(rows.Take(1000), "Rows",
+await connection.BulkInsertAsync(rows.Take(1000),
            typeof(Row).GetDbColumnNames("Id"));
-connection.BulkInsert(compositeKeyRows, "CompositeKeyRows",
+await connection.BulkInsertAsync(compositeKeyRows,
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
-connection.BulkUpdate(rows, "Rows",
+await connection.BulkUpdateAsync(rows,
            "Id",
            [ "Column3", "Column2" ]);
-connection.BulkUpdate(compositeKeyRows, "CompositeKeyRows",
+await connection.BulkUpdateAsync(compositeKeyRows,
            [ "Id1", "Id2" ],
            [ "Column3", "Column2" ]);
 
-connection.BulkMerge(rows, "Rows",
+await connection.BulkMergeAsync(rows,
            "Id",
            [ "Column1", "Column2" ],
            [ "Column1", "Column2", "Column3" ]);
-connection.BulkMerge(compositeKeyRows, "CompositeKeyRows",
+await connection.BulkMergeAsync(compositeKeyRows,
            [ "Id1", "Id2" ],
            [ "Column1", "Column2", "Column3" ],
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
-connection.BulkDelete(rows, "Rows", "Id");
-connection.BulkDelete(compositeKeyRows, "CompositeKeyRows", [ "Id1", "Id2" ]);
+await connection.BulkDeleteAsync(rows, "Id");
+await connection.BulkDeleteAsync(compositeKeyRows, [ "Id1", "Id2" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
-new BulkInsertBuilder<Row>(connection)
+await new BulkInsertBuilder<Row>(connection)
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
 	.ToTable("Rows")
-	.Execute(rows);
+	.ExecuteAsync(rows);
 ```
 
 ## Configuration
 ### BulkInsert
 ```c#
-_context.BulkInsert(rows,
+await _context.BulkInsertAsync(rows,
     row => new { row.Column1, row.Column2, row.Column3 },
     options =>
     {
@@ -194,7 +194,7 @@ _context.BulkInsert(rows,
 ```
 ### BulkUpdate
 ```c#
-_context.BulkUpdate(rows,
+await _context.BulkUpdateAsync(rows,
     row => new { row.Column3, row.Column2 },
     options =>
     {
@@ -205,7 +205,7 @@ _context.BulkUpdate(rows,
 ```
 ### BulkDelete
 ```c#
-_context.BulkDelete(rows,
+await _context.BulkDeleteAsync(rows,
     options =>
     {
         options.BatchSize = 0;
@@ -215,7 +215,7 @@ _context.BulkDelete(rows,
 ```
 ### BulkMerge
 ```c#
-_context.BulkMerge(rows,
+await _context.BulkMergeAsync(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
     row => new { row.Column1, row.Column2, row.Column3 },
@@ -230,7 +230,7 @@ _context.BulkMerge(rows,
 ```
 ### BulkMatch
 ```c#
-var contactsFromDb = _context.BulkMatch(matchedContacts,
+var contactsFromDb = await _context.BulkMatchAsync(matchedContacts,
     x => new { x.CustomerId, x.CountryIsoCode },
     options =>
     {
@@ -241,7 +241,7 @@ var contactsFromDb = _context.BulkMatch(matchedContacts,
 ```
 ### TempTable
 ```c#
-var customerTableName = _context.CreateTempTable(customers,
+var customerTableName = await _context.CreateTempTableAsync(customers,
     x => new
     {
         x.IdNumber,
@@ -258,7 +258,7 @@ var customerTableName = _context.CreateTempTable(customers,
 ```
 ### DirectInsert
 ```c#
-_context.DirectInsert(row,
+await _context.DirectInsertAsync(row,
     row => new { row.Column1, row.Column2, row.Column3 },
     options =>
     {
@@ -268,7 +268,7 @@ _context.DirectInsert(row,
 ```
 ### DirectUpdate
 ```c#
-_context.DirectUpdate(row,
+await _context.DirectUpdateAsync(row,
     row => new { row.Column3, row.Column2 },
     options =>
     {
@@ -278,7 +278,7 @@ _context.DirectUpdate(row,
 ```
 ### DirectDelete
 ```c#
-_context.DirectDelete(row,
+await _context.DirectDeleteAsync(row,
     options =>
     {
         options.Timeout = 30;
@@ -289,19 +289,19 @@ _context.DirectDelete(row,
 ## Returned Result
 ### BulkUpdate
 ```c#
-var updateResult = dbct.BulkUpdate(rows, row => new { row.Column3, row.Column2 });
+var updateResult = await dbct.BulkUpdateAsync(rows, row => new { row.Column3, row.Column2 });
 
 Console.WriteLine($"Updated: {updateResult.AffectedRows} row(s)");
 ```
 ### BulkDelete
 ```c#
-var deleteResult = dbct.BulkDelete(rows);
+var deleteResult = await dbct.BulkDeleteAsync(rows);
 
 Console.WriteLine($"Deleted: {deleteResult.AffectedRows} row(s)");
 ```
 ### BulkMerge
 ```c#
-var mergeResult = dbct.BulkMerge(rows,
+var mergeResult = await dbct.BulkMergeAsync(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
     row => new { row.Column1, row.Column2, row.Column3 });
