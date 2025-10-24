@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
@@ -20,4 +21,6 @@ public class ColumnInfor
     public bool IsPrimaryKey { get; init; }
 
     public bool IsRowVersion { get; init; }
+
+    public ValueConverter? ValueConverter { get; set; }
 }

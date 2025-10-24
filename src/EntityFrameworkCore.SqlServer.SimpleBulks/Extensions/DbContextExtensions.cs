@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _insertablePropertyNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesWithoutRowVersionsCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, ValueConverter>> _valueConvertersCache = [];
 
     public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
     {
@@ -77,7 +79,8 @@ public static class DbContextExtensions
                     ValueGenerated = entityProp.ValueGenerated,
                     DefaultValueSql = entityProp.GetDefaultValueSql(),
                     IsPrimaryKey = entityProp.IsPrimaryKey(),
-                    IsRowVersion = entityProp.IsRowVersion()
+                    IsRowVersion = entityProp.IsRowVersion(),
+                    ValueConverter = entityProp.GetValueConverter(),
                 }).ToArray();
             return data;
         });
@@ -150,6 +153,16 @@ public static class DbContextExtensions
         {
             var properties = dbContext.GetProperties(key.EntityType);
             return properties.Where(x => !x.IsRowVersion).Select(x => x.PropertyName).ToArray();
+        });
+    }
+
+    public static IReadOnlyDictionary<string, ValueConverter> GetValueConverters(this DbContext dbContext, Type type)
+    {
+        var cacheKey = new CacheKey(dbContext.GetType(), type);
+        return _valueConvertersCache.GetOrAdd(cacheKey, (key) =>
+        {
+            var properties = dbContext.GetProperties(key.EntityType);
+            return properties.Where(x => x.ValueConverter != null).ToDictionary(x => x.PropertyName, x => x.ValueConverter);
         });
     }
 
