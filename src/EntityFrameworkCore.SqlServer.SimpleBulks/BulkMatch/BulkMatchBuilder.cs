@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,6 +19,7 @@ public class BulkMatchBuilder<T>
     private IEnumerable<string> _returnedColumns;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkMatchOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -82,6 +84,12 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
+    public BulkMatchBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
+        return this;
+    }
+
     public BulkMatchBuilder<T> ConfigureBulkOptions(Action<BulkMatchOptions> configureOptions)
     {
         _options = new BulkMatchOptions();
@@ -106,7 +114,7 @@ public class BulkMatchBuilder<T>
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var dataTable = machedValues.ToDataTable(_matchedColumns);
+        var dataTable = machedValues.ToDataTable(_matchedColumns, valueConverters: _valueConverters);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
@@ -182,7 +190,7 @@ public class BulkMatchBuilder<T>
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var dataTable = await machedValues.ToDataTableAsync(_matchedColumns, cancellationToken: cancellationToken);
+        var dataTable = await machedValues.ToDataTableAsync(_matchedColumns, valueConverters: _valueConverters, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>

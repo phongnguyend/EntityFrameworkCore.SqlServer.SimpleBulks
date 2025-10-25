@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,6 +21,7 @@ public class BulkInsertBuilder<T>
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkInsertOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -95,6 +97,12 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
+    public BulkInsertBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
+        return this;
+    }
+
     public BulkInsertBuilder<T> ConfigureBulkOptions(Action<BulkInsertOptions> configureOptions)
     {
         _options = new BulkInsertOptions();
@@ -138,7 +146,7 @@ public class BulkInsertBuilder<T>
         DataTable dataTable;
         if (!ReturnGeneratedId)
         {
-            dataTable = data.ToDataTable(_columnNames);
+            dataTable = data.ToDataTable(_columnNames, valueConverters: _valueConverters);
 
             _connection.EnsureOpen();
 
@@ -156,7 +164,7 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            dataTable = data.ToDataTable(columnsToInsert);
+            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _valueConverters);
 
             _connection.EnsureOpen();
 
@@ -183,7 +191,7 @@ public class BulkInsertBuilder<T>
                 setId(row, SequentialGuidGenerator.Next());
             }
 
-            dataTable = data.ToDataTable(columnsToInsert);
+            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _valueConverters);
 
             _connection.EnsureOpen();
 
@@ -194,7 +202,7 @@ public class BulkInsertBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        dataTable = data.ToDataTable(_columnNames, addIndexNumberColumn: true);
+        dataTable = data.ToDataTable(_columnNames, valueConverters: _valueConverters, addIndexNumberColumn: true);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
@@ -336,7 +344,7 @@ public class BulkInsertBuilder<T>
         DataTable dataTable;
         if (!ReturnGeneratedId)
         {
-            dataTable = await data.ToDataTableAsync(_columnNames, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
@@ -354,7 +362,7 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            dataTable = await data.ToDataTableAsync(columnsToInsert, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _valueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
@@ -381,7 +389,7 @@ public class BulkInsertBuilder<T>
                 setId(row, SequentialGuidGenerator.Next());
             }
 
-            dataTable = await data.ToDataTableAsync(columnsToInsert, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _valueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
@@ -392,7 +400,7 @@ public class BulkInsertBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        dataTable = await data.ToDataTableAsync(_columnNames, addIndexNumberColumn: true, cancellationToken: cancellationToken);
+        dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, addIndexNumberColumn: true, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();

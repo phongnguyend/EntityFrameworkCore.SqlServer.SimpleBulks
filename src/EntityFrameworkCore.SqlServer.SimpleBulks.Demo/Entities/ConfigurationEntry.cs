@@ -23,6 +23,11 @@ public class ConfigurationEntry
 
     public bool IsSensitive { get; set; }
 
+    public Season? SeasonAsInt { get; set; }
+
+    public Season? SeasonAsString { get; set; }
+
+
     [NotMapped]
     public string TestNotMapped { get; set; }
 }

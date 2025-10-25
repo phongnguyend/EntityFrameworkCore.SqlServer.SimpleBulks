@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -14,6 +15,7 @@ public class TempTableBuilder<T>
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private TempTableOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -59,6 +61,12 @@ public class TempTableBuilder<T>
         return this;
     }
 
+    public TempTableBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
+        return this;
+    }
+
     public TempTableBuilder<T> ConfigureTempTableOptions(Action<TempTableOptions> configureOptions)
     {
         _options = new TempTableOptions();
@@ -87,7 +95,7 @@ public class TempTableBuilder<T>
     public string Execute()
     {
         var tempTableName = $"[#{GetTableName()}]";
-        var dataTable = _data.ToDataTable(_columnNames);
+        var dataTable = _data.ToDataTable(_columnNames, valueConverters: _valueConverters);
         var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings, _columnTypeMappings);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
@@ -117,7 +125,7 @@ public class TempTableBuilder<T>
     public async Task<string> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         var tempTableName = $"[#{GetTableName()}]";
-        var dataTable = await _data.ToDataTableAsync(_columnNames, cancellationToken: cancellationToken);
+        var dataTable = await _data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, cancellationToken: cancellationToken);
         var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings, _columnTypeMappings);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");

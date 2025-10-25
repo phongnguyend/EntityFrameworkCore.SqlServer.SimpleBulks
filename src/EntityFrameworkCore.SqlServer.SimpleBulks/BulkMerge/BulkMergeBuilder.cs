@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _insertColumnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private string _outputIdColumn;
     private BulkMergeOptions _options;
     private readonly SqlConnection _connection;
@@ -42,7 +44,7 @@ public class BulkMergeBuilder<T>
 
     public BulkMergeBuilder<T> WithId(string idColumn)
     {
-        _idColumns = [ idColumn ];
+        _idColumns = [idColumn];
         return this;
     }
 
@@ -107,6 +109,12 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
+    public BulkMergeBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
+        return this;
+    }
+
     public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkMergeOptions> configureOptions)
     {
         _options = new BulkMergeOptions();
@@ -143,7 +151,7 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = data.ToDataTable(propertyNames, addIndexNumberColumn: returnDbGeneratedId);
+        var dataTable = data.ToDataTable(propertyNames, valueConverters: _valueConverters, addIndexNumberColumn: returnDbGeneratedId);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
@@ -300,7 +308,7 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = await data.ToDataTableAsync(propertyNames, addIndexNumberColumn: returnDbGeneratedId, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _valueConverters, addIndexNumberColumn: returnDbGeneratedId, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();

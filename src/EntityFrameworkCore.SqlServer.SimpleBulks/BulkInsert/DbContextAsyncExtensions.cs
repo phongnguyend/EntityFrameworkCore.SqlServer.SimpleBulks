@@ -12,7 +12,6 @@ public static class DbContextAsyncExtensions
 {
     public static Task BulkInsertAsync<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkInsertOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -21,16 +20,16 @@ public static class DbContextAsyncExtensions
               .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
               .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
               .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-              .ToTable(table)
+              .ToTable(dbContext.GetTableInfor(typeof(T)))
               .WithOutputId(idColumn?.PropertyName)
               .WithOutputIdMode(GetOutputIdMode(idColumn))
+              .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
               .ConfigureBulkOptions(configureOptions)
               .ExecuteAsync(data, cancellationToken);
     }
 
     public static Task BulkInsertAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -39,9 +38,10 @@ public static class DbContextAsyncExtensions
               .WithColumns(columnNamesSelector)
               .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
               .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-              .ToTable(table)
+              .ToTable(dbContext.GetTableInfor(typeof(T)))
               .WithOutputId(idColumn?.PropertyName)
               .WithOutputIdMode(GetOutputIdMode(idColumn))
+              .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
               .ConfigureBulkOptions(configureOptions)
               .ExecuteAsync(data, cancellationToken);
     }

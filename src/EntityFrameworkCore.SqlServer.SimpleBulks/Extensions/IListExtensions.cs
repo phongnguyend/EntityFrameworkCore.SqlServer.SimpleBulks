@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class IListExtensions
 {
-    public static DataTable ToDataTable<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
+    public static DataTable ToDataTable<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -33,7 +33,7 @@ public static class IListExtensions
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            table.Columns.Add(prop.Name, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
+            table.Columns.Add(prop.Name, GetProviderClrType(prop, valueConverters));
         }
 
         if (addIndexNumberColumn)
@@ -52,8 +52,7 @@ public static class IListExtensions
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var value = prop.GetValue(item) ?? DBNull.Value;
-                row[prop.Name] = value;
+                row[prop.Name] = GetProviderValue(prop, item, valueConverters) ?? DBNull.Value;
             }
 
             if (addIndexNumberColumn)
@@ -68,11 +67,11 @@ public static class IListExtensions
         return table;
     }
 
-    public static async Task<DataTable> ToDataTableAsync<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
+    public static async Task<DataTable> ToDataTableAsync<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
     {
         return await Task.Run(() =>
         {
-            return data.ToDataTable(propertyNames, addIndexNumberColumn, cancellationToken);
+            return data.ToDataTable(propertyNames, valueConverters, addIndexNumberColumn, cancellationToken);
         }, cancellationToken);
     }
 

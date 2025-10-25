@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,6 +19,7 @@ public class BulkUpdateBuilder<T>
     private IEnumerable<string> _columnNames;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkUpdateOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -41,7 +43,7 @@ public class BulkUpdateBuilder<T>
 
     public BulkUpdateBuilder<T> WithId(string idColumn)
     {
-        _idColumns = [ idColumn ];
+        _idColumns = [idColumn];
         return this;
     }
 
@@ -82,6 +84,12 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
+    public BulkUpdateBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
+        return this;
+    }
+
     public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkUpdateOptions> configureOptions)
     {
         _options = new BulkUpdateOptions();
@@ -114,7 +122,7 @@ public class BulkUpdateBuilder<T>
         var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
         propertyNamesIncludeId.AddRange(_idColumns);
 
-        var dataTable = data.ToDataTable(propertyNamesIncludeId);
+        var dataTable = data.ToDataTable(propertyNamesIncludeId, valueConverters: _valueConverters);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
@@ -239,7 +247,7 @@ public class BulkUpdateBuilder<T>
         var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
         propertyNamesIncludeId.AddRange(_idColumns);
 
-        var dataTable = await data.ToDataTableAsync(propertyNamesIncludeId, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(propertyNamesIncludeId, valueConverters: _valueConverters, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>

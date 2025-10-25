@@ -1,5 +1,6 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ public class BulkDeleteBuilder<T>
     private IEnumerable<string> _idColumns;
     private IReadOnlyDictionary<string, string> _columnNameMappings;
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkDeleteOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -38,7 +40,7 @@ public class BulkDeleteBuilder<T>
 
     public BulkDeleteBuilder<T> WithId(string idColumn)
     {
-        _idColumns = [ idColumn ];
+        _idColumns = [idColumn];
         return this;
     }
 
@@ -64,6 +66,12 @@ public class BulkDeleteBuilder<T>
     public BulkDeleteBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
     {
         _columnTypeMappings = columnTypeMappings;
+        return this;
+    }
+
+    public BulkDeleteBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        _valueConverters = valueConverters;
         return this;
     }
 
@@ -95,7 +103,7 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = data.ToDataTable(_idColumns);
+        var dataTable = data.ToDataTable(_idColumns, valueConverters: _valueConverters);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
@@ -179,7 +187,7 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = await data.ToDataTableAsync(_idColumns, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(_idColumns, valueConverters: _valueConverters, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _idColumns.Select(x =>

@@ -10,7 +10,6 @@ public static class DbContextExtensions
 {
     public static void DirectInsert<T>(this DbContext dbContext, T data, Action<BulkInsertOptions> configureOptions = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -19,7 +18,8 @@ public static class DbContextExtensions
             .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .ToTable(table)
+            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
+            .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
             .ConfigureBulkOptions(configureOptions)
@@ -28,7 +28,6 @@ public static class DbContextExtensions
 
     public static void DirectInsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -37,7 +36,8 @@ public static class DbContextExtensions
             .WithColumns(columnNamesSelector)
             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .ToTable(table)
+            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
+            .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
             .ConfigureBulkOptions(configureOptions)

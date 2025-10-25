@@ -11,7 +11,6 @@ public static class DbContextAsyncExtensions
 {
     public static Task<BulkDeleteResult> DirectDeleteAsync<T>(this DbContext dbContext, T data, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
 
@@ -19,7 +18,8 @@ public static class DbContextAsyncExtensions
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
              .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .ToTable(table)
+             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
+             .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .SingleDeleteAsync(data, cancellationToken);
     }

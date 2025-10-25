@@ -9,7 +9,6 @@ public static class DbContextExtensions
 {
     public static BulkDeleteResult DirectDelete<T>(this DbContext dbContext, T data, Action<BulkDeleteOptions> configureOptions = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
         var connection = dbContext.GetSqlConnection();
         var transaction = dbContext.GetCurrentSqlTransaction();
 
@@ -17,7 +16,8 @@ public static class DbContextExtensions
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
              .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .ToTable(table)
+             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
+             .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .SingleDelete(data);
     }
