@@ -26,7 +26,9 @@ public class DirectUpdateTests : BaseTest
             {
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -35,15 +37,17 @@ public class DirectUpdateTests : BaseTest
                 Id2 = i + 1,
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
         }
 
         await _context.BulkInsertAsync(rows,
-                row => new { row.Column1, row.Column2, row.Column3 });
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString });
 
         await _context.BulkInsertAsync(compositeKeyRows,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString });
 
         tran.Commit();
     }
@@ -63,20 +67,24 @@ public class DirectUpdateTests : BaseTest
         var row = rows.Skip(index).First();
         row.Column2 = "abc";
         row.Column3 = DateTime.Now;
+        row.Season = Season.Spring;
+        row.SeasonAsString = Season.Spring;
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
         compositeKeyRow.Column3 = DateTime.Now;
+        compositeKeyRow.Season = Season.Spring;
+        compositeKeyRow.SeasonAsString = Season.Spring;
 
         var updateResult1 = await _context.DirectUpdateAsync(row,
-                row => new { row.Column3, row.Column2 },
+                row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
 
         var updateResult2 = await _context.DirectUpdateAsync(compositeKeyRow,
-                row => new { row.Column3, row.Column2 },
+                row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -97,12 +105,16 @@ public class DirectUpdateTests : BaseTest
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
             Assert.Equal(rows[i].Column2, dbRows[i].Column2);
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+            Assert.Equal(rows[i].Season, dbRows[i].Season);
+            Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
             Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
             Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
             Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+            Assert.Equal(compositeKeyRows[i].Season, dbCompositeKeyRows[i].Season);
+            Assert.Equal(compositeKeyRows[i].SeasonAsString, dbCompositeKeyRows[i].SeasonAsString);
         }
     }
 
@@ -121,20 +133,24 @@ public class DirectUpdateTests : BaseTest
         var row = rows.Skip(index).First();
         row.Column2 = "abc";
         row.Column3 = DateTime.Now;
+        row.Season = Season.Summer;
+        row.SeasonAsString = Season.Summer;
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
         compositeKeyRow.Column3 = DateTime.Now;
+        compositeKeyRow.Season = Season.Summer;
+        compositeKeyRow.SeasonAsString = Season.Summer;
 
         var updateResult1 = await _context.DirectUpdateAsync(row,
-              ["Column3", "Column2"],
+              ["Column3", "Column2", "Season", "SeasonAsString"],
               options =>
               {
                   options.LogTo = _output.WriteLine;
               });
 
         var updateResult2 = await _context.DirectUpdateAsync(compositeKeyRow,
-            ["Column3", "Column2"],
+            ["Column3", "Column2", "Season", "SeasonAsString"],
             options =>
             {
                 options.LogTo = _output.WriteLine;
@@ -155,12 +171,16 @@ public class DirectUpdateTests : BaseTest
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
             Assert.Equal(rows[i].Column2, dbRows[i].Column2);
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+            Assert.Equal(rows[i].Season, dbRows[i].Season);
+            Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
             Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
             Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
             Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+            Assert.Equal(compositeKeyRows[i].Season, dbCompositeKeyRows[i].Season);
+            Assert.Equal(compositeKeyRows[i].SeasonAsString, dbCompositeKeyRows[i].SeasonAsString);
         }
     }
 }

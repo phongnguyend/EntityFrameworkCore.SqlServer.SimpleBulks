@@ -19,7 +19,9 @@ public class DirectInsertTests : BaseTest
         {
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -28,18 +30,20 @@ public class DirectInsertTests : BaseTest
             Id2 = 1,
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         _context.DirectInsert(row,
-                row => new { row.Column1, row.Column2, row.Column3 },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
 
         _context.DirectInsert(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -57,12 +61,16 @@ public class DirectInsertTests : BaseTest
         Assert.Equal(row.Column1, dbRows[0].Column1);
         Assert.Equal(row.Column2, dbRows[0].Column2);
         Assert.Equal(row.Column3, dbRows[0].Column3);
+        Assert.Equal(row.Season, dbRows[0].Season);
+        Assert.Equal(row.SeasonAsString, dbRows[0].SeasonAsString);
 
         Assert.Equal(compositeKeyRow.Id1, dbCompositeKeyRows[0].Id1);
         Assert.Equal(compositeKeyRow.Id2, dbCompositeKeyRows[0].Id2);
         Assert.Equal(compositeKeyRow.Column1, dbCompositeKeyRows[0].Column1);
         Assert.Equal(compositeKeyRow.Column2, dbCompositeKeyRows[0].Column2);
         Assert.Equal(compositeKeyRow.Column3, dbCompositeKeyRows[0].Column3);
+        Assert.Equal(compositeKeyRow.Season, dbCompositeKeyRows[0].Season);
+        Assert.Equal(compositeKeyRow.SeasonAsString, dbCompositeKeyRows[0].SeasonAsString);
     }
 
     [Fact]
@@ -74,7 +82,9 @@ public class DirectInsertTests : BaseTest
         {
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Summer,
+            SeasonAsString = Season.Summer
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -83,18 +93,20 @@ public class DirectInsertTests : BaseTest
             Id2 = 1,
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Summer,
+            SeasonAsString = Season.Summer
         };
 
         _context.DirectInsert(row,
-                row => new { row.Column1, row.Column2, row.Column3 },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
 
         _context.DirectInsert(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -113,12 +125,16 @@ public class DirectInsertTests : BaseTest
         Assert.Equal(row.Column1, dbRows[0].Column1);
         Assert.Equal(row.Column2, dbRows[0].Column2);
         Assert.Equal(row.Column3, dbRows[0].Column3);
+        Assert.Equal(row.Season, dbRows[0].Season);
+        Assert.Equal(row.SeasonAsString, dbRows[0].SeasonAsString);
 
         Assert.Equal(compositeKeyRow.Id1, dbCompositeKeyRows[0].Id1);
         Assert.Equal(compositeKeyRow.Id2, dbCompositeKeyRows[0].Id2);
         Assert.Equal(compositeKeyRow.Column1, dbCompositeKeyRows[0].Column1);
         Assert.Equal(compositeKeyRow.Column2, dbCompositeKeyRows[0].Column2);
         Assert.Equal(compositeKeyRow.Column3, dbCompositeKeyRows[0].Column3);
+        Assert.Equal(compositeKeyRow.Season, dbCompositeKeyRows[0].Season);
+        Assert.Equal(compositeKeyRow.SeasonAsString, dbCompositeKeyRows[0].SeasonAsString);
     }
 
     [Fact]
@@ -130,7 +146,9 @@ public class DirectInsertTests : BaseTest
         {
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Autumn,
+            SeasonAsString = Season.Autumn
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -139,18 +157,20 @@ public class DirectInsertTests : BaseTest
             Id2 = 1,
             Column1 = 1,
             Column2 = "" + 1,
-            Column3 = DateTime.Now
+            Column3 = DateTime.Now,
+            Season = Season.Autumn,
+            SeasonAsString = Season.Autumn
         };
 
         _context.DirectInsert(row,
-                row => new { row.Column1, row.Column2, row.Column3 },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
 
         _context.DirectInsert(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;

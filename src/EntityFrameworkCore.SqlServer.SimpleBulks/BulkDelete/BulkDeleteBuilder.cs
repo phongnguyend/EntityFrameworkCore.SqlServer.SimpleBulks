@@ -160,7 +160,7 @@ public class BulkDeleteBuilder<T>
 
         using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement, _options);
 
-        dataToDelete.ToSqlParameters(_idColumns).ForEach(x => deleteCommand.Parameters.Add(x));
+        dataToDelete.ToSqlParameters(_idColumns, valueConverters: _valueConverters).ForEach(x => deleteCommand.Parameters.Add(x));
 
         _connection.EnsureOpen();
 
@@ -243,7 +243,7 @@ public class BulkDeleteBuilder<T>
 
         using var deleteCommand = _connection.CreateTextCommand(_transaction, deleteStatement, _options);
 
-        dataToDelete.ToSqlParameters(_idColumns).ForEach(x => deleteCommand.Parameters.Add(x));
+        dataToDelete.ToSqlParameters(_idColumns, valueConverters: _valueConverters).ForEach(x => deleteCommand.Parameters.Add(x));
 
         await _connection.EnsureOpenAsync(cancellationToken);
 

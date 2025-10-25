@@ -22,7 +22,9 @@ public class BulkDeleteTests : BaseTest
             {
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -31,15 +33,17 @@ public class BulkDeleteTests : BaseTest
                 Id2 = i,
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
         }
 
         _context.BulkInsert(rows,
-                row => new { row.Column1, row.Column2, row.Column3 });
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString });
 
         _context.BulkInsert(compositeKeyRows,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString });
 
         tran.Commit();
     }

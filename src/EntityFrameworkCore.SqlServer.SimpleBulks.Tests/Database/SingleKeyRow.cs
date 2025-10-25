@@ -11,4 +11,6 @@ public class SingleKeyRow<TId>
     public DateTime Column3 { get; set; }
 
     public Season? Season { get; set; }
+
+    public Season? SeasonAsString { get; set; }
 }
