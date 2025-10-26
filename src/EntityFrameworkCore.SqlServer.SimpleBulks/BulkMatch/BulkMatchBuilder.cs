@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -164,7 +165,7 @@ public class BulkMatchBuilder<T>
             {
                 if (!Equals(reader[prop.Name], DBNull.Value))
                 {
-                    prop.SetValue(obj, reader[prop.Name], null);
+                    prop.SetValue(obj, GetValue(prop, reader, _valueConverters), null);
                 }
             }
 
@@ -239,7 +240,7 @@ public class BulkMatchBuilder<T>
             {
                 if (!Equals(reader[prop.Name], DBNull.Value))
                 {
-                    prop.SetValue(obj, reader[prop.Name], null);
+                    prop.SetValue(obj, GetValue(prop, reader, _valueConverters), null);
                 }
             }
 
@@ -249,5 +250,20 @@ public class BulkMatchBuilder<T>
         Log($"End matching.");
 
         return results;
+    }
+
+    private static object GetValue(PropertyInfo property, SqlDataReader reader, IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
+        {
+            return converter.ConvertFromProvider(reader[property.Name]);
+        }
+
+        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+
+        var tempValue = reader[property.Name];
+        var value = type.IsEnum && tempValue != null ? Enum.Parse(type, tempValue.ToString()) : tempValue;
+
+        return value;
     }
 }

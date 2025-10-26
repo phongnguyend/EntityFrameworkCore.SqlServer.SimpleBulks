@@ -27,7 +27,9 @@ public class BulkMatchAsyncTests : BaseTest
                 FirstName = "FirstName " + i,
                 LastName = "LastName " + i,
                 Index = i,
-                CurrentCountryIsoCode = isoCodes[random.Next(isoCodes.Length)]
+                CurrentCountryIsoCode = isoCodes[random.Next(isoCodes.Length)],
+                Season = Season.Spring,
+                SeasonAsString = Season.Spring
             };
 
             customer.Contacts = new List<Contact>();
@@ -39,6 +41,8 @@ public class BulkMatchAsyncTests : BaseTest
                     EmailAddress = $"EmailAddress {i} - {j}",
                     PhoneNumber = $"PhoneNumber {i} - {j}",
                     CountryIsoCode = isoCodes[random.Next(isoCodes.Length)],
+                    Season = Season.Spring,
+                    SeasonAsString = Season.Spring,
                     Index = j,
                 });
             }
@@ -87,6 +91,8 @@ public class BulkMatchAsyncTests : BaseTest
             Assert.Equal(customers[i].FirstName, customersFromDb[i].FirstName);
             Assert.Equal(customers[i].LastName, customersFromDb[i].LastName);
             Assert.Equal(customers[i].Index, customersFromDb[i].Index);
+            Assert.Equal(customers[i].Season, customersFromDb[i].Season);
+            Assert.Equal(customers[i].SeasonAsString, customersFromDb[i].SeasonAsString);
         }
     }
 
@@ -147,6 +153,8 @@ public class BulkMatchAsyncTests : BaseTest
             Assert.Equal(contactsInMemory[i].CountryIsoCode, contactsFromDb[i].CountryIsoCode);
             Assert.Equal(contactsInMemory[i].Index, contactsFromDb[i].Index);
             Assert.Equal(contactsInMemory[i].CustomerId, contactsFromDb[i].CustomerId);
+            Assert.Equal(contactsInMemory[i].Season, contactsFromDb[i].Season);
+            Assert.Equal(contactsInMemory[i].SeasonAsString, contactsFromDb[i].SeasonAsString);
         }
     }
 
@@ -210,6 +218,8 @@ public class BulkMatchAsyncTests : BaseTest
             Assert.Equal(contactsInMemory[i].CountryIsoCode, contactsFromDb[i].CountryIsoCode);
             Assert.Equal(contactsInMemory[i].Index, contactsFromDb[i].Index);
             Assert.Equal(contactsInMemory[i].CustomerId, contactsFromDb[i].CustomerId);
+            Assert.Equal(contactsInMemory[i].Season, contactsFromDb[i].Season);
+            Assert.Equal(contactsInMemory[i].SeasonAsString, contactsFromDb[i].SeasonAsString);
         }
     }
 
