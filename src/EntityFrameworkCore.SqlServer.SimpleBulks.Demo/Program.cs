@@ -4,6 +4,9 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Demo;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -81,6 +84,40 @@ using (var dbct = new DemoDbContext())
     Console.WriteLine($"Updated: {mergeResult.UpdatedRows} row(s)");
     Console.WriteLine($"Inserted: {mergeResult.InsertedRows} row(s)");
     Console.WriteLine($"Affected: {mergeResult.AffectedRows} row(s)");
+
+    var configurationEntry = new ConfigurationEntry
+    {
+        Key = $"Key_DirectInsert",
+        Value = $"Value_DirectInsert",
+        CreatedDateTime = DateTimeOffset.Now,
+        SeasonAsInt = Season.Autumn,
+        SeasonAsString = Season.Autumn,
+    };
+
+    dbct.DirectInsert(configurationEntry,
+        opt =>
+        {
+            opt.LogTo = Console.WriteLine;
+        });
+
+    configurationEntry.Key += "_Updated";
+    configurationEntry.Value += "_Updated";
+    configurationEntry.UpdatedDateTime = DateTimeOffset.Now;
+    configurationEntry.SeasonAsInt = Season.Spring;
+    configurationEntry.SeasonAsString = Season.Spring;
+
+    dbct.DirectUpdate(configurationEntry,
+        x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
+        opt =>
+        {
+            opt.LogTo = Console.WriteLine;
+        });
+
+    dbct.DirectDelete(configurationEntry,
+        opt =>
+        {
+            opt.LogTo = Console.WriteLine;
+        });
 }
 
 Console.WriteLine("Finished!");
