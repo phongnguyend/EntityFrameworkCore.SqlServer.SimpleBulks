@@ -3,12 +3,12 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Databas
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextAsyncExtensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextExtensions;
 
 [Collection("SqlServerCollection")]
-public class DirectInsertTests : BaseTest
+public class DirectInsertAsyncTests : BaseTest
 {
-    public DirectInsertTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.DirectInsert")
+    public DirectInsertAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.DirectInsert")
     {
     }
 

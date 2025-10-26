@@ -4,14 +4,14 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.Databa
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.ConnectionAsyncExtensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.ConnectionExtensions;
 
 [Collection("SqlServerCollection")]
-public class BulkDeleteTests : BaseTest
+public class BulkDeleteAsyncTests : BaseTest
 {
     private string _schema = "";
 
-    public BulkDeleteTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkDelete")
+    public BulkDeleteAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkDelete")
     {
         TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");
@@ -19,7 +19,7 @@ public class BulkDeleteTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < 100; i++)
+        for (var i = 0; i < 100; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {

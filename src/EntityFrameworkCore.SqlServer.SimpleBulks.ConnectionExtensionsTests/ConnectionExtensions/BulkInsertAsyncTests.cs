@@ -3,14 +3,14 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.Databa
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.ConnectionAsyncExtensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.ConnectionExtensions;
 
 [Collection("SqlServerCollection")]
-public class BulkInsertTests : BaseTest
+public class BulkInsertAsyncTests : BaseTest
 {
     private string _schema = "";
 
-    public BulkInsertTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
+    public BulkInsertAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
     {
         TableMapper.Register(typeof(SingleKeyRow<int>), _schema, "SingleKeyRows");
         TableMapper.Register(typeof(CompositeKeyRow<int, int>), _schema, "CompositeKeyRows");
@@ -26,7 +26,7 @@ public class BulkInsertTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < 100; i++)
+        for (var i = 0; i < 100; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
@@ -127,7 +127,7 @@ public class BulkInsertTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (int i = 0; i < 100; i++)
+        for (var i = 0; i < 100; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);

@@ -5,12 +5,12 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Databas
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextAsyncExtensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextExtensions;
 
 [Collection("SqlServerCollection")]
-public class BulkUpdateTests : BaseTest
+public class BulkUpdateAsyncTests : BaseTest
 {
-    public BulkUpdateTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkUpdate")
+    public BulkUpdateAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkUpdate")
     {
     }
 
@@ -21,7 +21,7 @@ public class BulkUpdateTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
@@ -145,7 +145,7 @@ public class BulkUpdateTests : BaseTest
         Assert.Equal(length, updateResult1.AffectedRows);
         Assert.Equal(length, updateResult2.AffectedRows);
 
-        for (int i = 0; i < length + 1; i++)
+        for (var i = 0; i < length + 1; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -255,7 +255,7 @@ public class BulkUpdateTests : BaseTest
         Assert.Equal(length, updateResult1.AffectedRows);
         Assert.Equal(length, updateResult2.AffectedRows);
 
-        for (int i = 0; i < length + 1; i++)
+        for (var i = 0; i < length + 1; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);

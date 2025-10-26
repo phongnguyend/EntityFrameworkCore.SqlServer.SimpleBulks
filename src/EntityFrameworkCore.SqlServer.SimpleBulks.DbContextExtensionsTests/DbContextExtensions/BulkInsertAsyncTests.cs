@@ -3,12 +3,12 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Databas
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextAsyncExtensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.DbContextExtensions;
 
 [Collection("SqlServerCollection")]
-public class BulkInsertTests : BaseTest
+public class BulkInsertAsyncTests : BaseTest
 {
-    public BulkInsertTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
+    public BulkInsertAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
     {
     }
 
@@ -20,7 +20,7 @@ public class BulkInsertTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
@@ -62,7 +62,7 @@ public class BulkInsertTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -91,7 +91,7 @@ public class BulkInsertTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
@@ -126,7 +126,7 @@ public class BulkInsertTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -155,7 +155,7 @@ public class BulkInsertTests : BaseTest
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
@@ -201,7 +201,7 @@ public class BulkInsertTests : BaseTest
     {
         var configurationEntries = new List<ConfigurationEntry>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             configurationEntries.Add(new ConfigurationEntry
             {
@@ -223,7 +223,7 @@ public class BulkInsertTests : BaseTest
         configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
         var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
             Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
@@ -240,7 +240,7 @@ public class BulkInsertTests : BaseTest
     {
         var configurationEntries = new List<ConfigurationEntry>();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             configurationEntries.Add(new ConfigurationEntry
             {
@@ -260,7 +260,7 @@ public class BulkInsertTests : BaseTest
         configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
         var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
 
-        for (int i = 0; i < length; i++)
+        for (var i = 0; i < length; i++)
         {
             Assert.NotEqual(Guid.Empty, configurationEntriesInDb[i].Id);
             Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
