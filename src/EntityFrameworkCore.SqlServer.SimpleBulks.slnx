@@ -9,6 +9,8 @@
     <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests/EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.csproj" Id="fbf7d2b3-76df-4d98-8730-f6976d117704" />
+    <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests/EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.csproj" Id="0f1400fa-7384-4f92-b95d-5e8ad461da08" />
     <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj" />
   </Folder>
 </Solution>

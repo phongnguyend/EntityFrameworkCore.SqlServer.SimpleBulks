@@ -26,9 +26,15 @@ jobs:
       with:
         dotnet-version: 8.0.100
 
-    - name: Test
+    - name: Tests
       run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
+    - name: DbContextExtensionsTests
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests/EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      
+    - name: ConnectionExtensionsTests
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests/EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      
     - name: Build
       run: dotnet build EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj --configuration Release
 
