@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
@@ -24,5 +27,31 @@ public static class TypeExtensions
     {
         var sqlType = _mappings.TryGetValue(type, out string value) ? value : "nvarchar(max)";
         return sqlType;
+    }
+
+    public static Dictionary<string, Type> GetProviderClrTypes(this Type type, IEnumerable<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        var properties = TypeDescriptor.GetProperties(type);
+
+        var updatablePros = new List<PropertyDescriptor>();
+        foreach (PropertyDescriptor prop in properties)
+        {
+            if (propertyNames.Contains(prop.Name))
+            {
+                updatablePros.Add(prop);
+            }
+        }
+
+        return updatablePros.ToDictionary(x => x.Name, x => GetProviderClrType(x, valueConverters));
+    }
+
+    private static Type GetProviderClrType(PropertyDescriptor property, IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    {
+        if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
+        {
+            return converter.ProviderClrType;
+        }
+
+        return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
     }
 }
