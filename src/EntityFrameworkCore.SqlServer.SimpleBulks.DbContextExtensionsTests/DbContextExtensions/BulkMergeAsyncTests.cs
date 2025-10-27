@@ -105,7 +105,7 @@ public class BulkMergeAsyncTests : BaseTest
             });
         }
 
-        await _context.BulkMergeAsync(rows,
+        var result1 = await _context.BulkMergeAsync(rows,
                 row => row.Id,
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
@@ -115,7 +115,7 @@ public class BulkMergeAsyncTests : BaseTest
                     options.ReturnDbGeneratedId = true;
                 });
 
-        await _context.BulkMergeAsync(compositeKeyRows,
+        var result2 = await _context.BulkMergeAsync(compositeKeyRows,
                 row => new { row.Id1, row.Id2 },
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
@@ -129,6 +129,14 @@ public class BulkMergeAsyncTests : BaseTest
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Equal(length + insertLength, result1.AffectedRows);
+        Assert.Equal(insertLength, result1.InsertedRows);
+        Assert.Equal(length, result1.UpdatedRows);
+
+        Assert.Equal(length + insertLength, result2.AffectedRows);
+        Assert.Equal(insertLength, result2.InsertedRows);
+        Assert.Equal(length, result2.UpdatedRows);
 
         for (var i = 0; i < length + insertLength; i++)
         {
@@ -202,7 +210,7 @@ public class BulkMergeAsyncTests : BaseTest
             });
         }
 
-        await _context.BulkMergeAsync(rows,
+        var result1 = await _context.BulkMergeAsync(rows,
             "Id",
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
@@ -211,7 +219,7 @@ public class BulkMergeAsyncTests : BaseTest
                 options.LogTo = _output.WriteLine;
                 options.ReturnDbGeneratedId = true;
             });
-        await _context.BulkMergeAsync(compositeKeyRows,
+        var result2 = await _context.BulkMergeAsync(compositeKeyRows,
             ["Id1", "Id2"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             ["Id1", "Id2", "Column1", "Column2", "Column3", "Season", "SeasonAsString"],
@@ -225,6 +233,14 @@ public class BulkMergeAsyncTests : BaseTest
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Equal(length + insertLength, result1.AffectedRows);
+        Assert.Equal(insertLength, result1.InsertedRows);
+        Assert.Equal(length, result1.UpdatedRows);
+
+        Assert.Equal(length + insertLength, result2.AffectedRows);
+        Assert.Equal(insertLength, result2.InsertedRows);
+        Assert.Equal(length, result2.UpdatedRows);
 
         for (var i = 0; i < length + insertLength; i++)
         {
