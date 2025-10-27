@@ -53,9 +53,11 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(100)]
-    public async Task BulkMerge_Using_Linq_With_Transaction(int length)
+    [InlineData(0, 1)]
+    [InlineData(1, 0)]
+    [InlineData(1, 1)]
+    [InlineData(100, 100)]
+    public async Task BulkMerge_Using_Linq_With_Transaction(int length, int insertLength)
     {
         await SeedData(length);
 
@@ -80,28 +82,28 @@ public class BulkMergeAsyncTests : BaseTest
             row.SeasonAsString = Season.Spring;
         }
 
-        rows.Add(new SingleKeyRow<int>
+        for (int i = length; i < length + insertLength; i++)
         {
-            Column1 = length,
-            Column2 = "Inserted using Merge" + length,
-            Column3 = DateTime.Now,
-            Season = Season.Summer,
-            SeasonAsString = Season.Summer
-        });
+            rows.Add(new SingleKeyRow<int>
+            {
+                Column1 = i,
+                Column2 = "Inserted using Merge" + i,
+                Column3 = DateTime.Now,
+                Season = Season.Summer,
+                SeasonAsString = Season.Summer
+            });
 
-        var newId1 = length;
-        var newId2 = length;
-
-        compositeKeyRows.Add(new CompositeKeyRow<int, int>
-        {
-            Id1 = newId1,
-            Id2 = newId2,
-            Column1 = newId2,
-            Column2 = "Inserted using Merge" + newId2,
-            Column3 = DateTime.Now,
-            Season = Season.Summer,
-            SeasonAsString = Season.Summer
-        });
+            compositeKeyRows.Add(new CompositeKeyRow<int, int>
+            {
+                Id1 = i,
+                Id2 = i,
+                Column1 = i,
+                Column2 = "Inserted using Merge" + i,
+                Column3 = DateTime.Now,
+                Season = Season.Summer,
+                SeasonAsString = Season.Summer
+            });
+        }
 
         await _context.BulkMergeAsync(rows,
                 row => row.Id,
@@ -128,7 +130,7 @@ public class BulkMergeAsyncTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (var i = 0; i < length + 1; i++)
+        for (var i = 0; i < length + insertLength; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -148,9 +150,11 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
-    [InlineData(1)]
-    [InlineData(100)]
-    public async Task BulkMerge_Using_Dynamic_String_With_Transaction(int length)
+    [InlineData(0, 1)]
+    [InlineData(1, 0)]
+    [InlineData(1, 1)]
+    [InlineData(100, 100)]
+    public async Task BulkMerge_Using_Dynamic_String_With_Transaction(int length, int insertLength)
     {
         await SeedData(length);
 
@@ -163,40 +167,40 @@ public class BulkMergeAsyncTests : BaseTest
         {
             row.Column2 = "abc";
             row.Column3 = DateTime.Now;
-            row.Season = Season.Autumn;
-            row.SeasonAsString = Season.Autumn;
+            row.Season = Season.Spring;
+            row.SeasonAsString = Season.Spring;
         }
 
         foreach (var row in compositeKeyRows)
         {
             row.Column2 = "abc";
             row.Column3 = DateTime.Now;
-            row.Season = Season.Autumn;
-            row.SeasonAsString = Season.Autumn;
+            row.Season = Season.Spring;
+            row.SeasonAsString = Season.Spring;
         }
 
-        rows.Add(new SingleKeyRow<int>
+        for (int i = length; i < length + insertLength; i++)
         {
-            Column1 = length,
-            Column2 = "Inserted using Merge" + length,
-            Column3 = DateTime.Now,
-            Season = Season.Summer,
-            SeasonAsString = Season.Summer
-        });
+            rows.Add(new SingleKeyRow<int>
+            {
+                Column1 = i,
+                Column2 = "Inserted using Merge" + i,
+                Column3 = DateTime.Now,
+                Season = Season.Summer,
+                SeasonAsString = Season.Summer
+            });
 
-        var newId1 = length;
-        var newId2 = length;
-
-        compositeKeyRows.Add(new CompositeKeyRow<int, int>
-        {
-            Id1 = newId1,
-            Id2 = newId2,
-            Column1 = newId2,
-            Column2 = "Inserted using Merge" + newId2,
-            Column3 = DateTime.Now,
-            Season = Season.Summer,
-            SeasonAsString = Season.Summer
-        });
+            compositeKeyRows.Add(new CompositeKeyRow<int, int>
+            {
+                Id1 = i,
+                Id2 = i,
+                Column1 = i,
+                Column2 = "Inserted using Merge" + i,
+                Column3 = DateTime.Now,
+                Season = Season.Summer,
+                SeasonAsString = Season.Summer
+            });
+        }
 
         await _context.BulkMergeAsync(rows,
             "Id",
@@ -222,7 +226,7 @@ public class BulkMergeAsyncTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (var i = 0; i < length + 1; i++)
+        for (var i = 0; i < length + insertLength; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
@@ -242,6 +246,7 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
+    [InlineData(0)]
     [InlineData(1)]
     [InlineData(100)]
     public async Task BulkMerge_ReturnDbGeneratedId_True(int length)
@@ -309,6 +314,7 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
+    [InlineData(0)]
     [InlineData(1)]
     [InlineData(100)]
     public async Task BulkMerge_ReturnDbGeneratedId_False(int length)
@@ -388,6 +394,7 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
+    [InlineData(0)]
     [InlineData(1)]
     [InlineData(100)]
     public async Task BulkMerge_UpdateOnly(int length)
@@ -456,6 +463,7 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
+    [InlineData(0)]
     [InlineData(1)]
     [InlineData(100)]
     public async Task BulkMerge_InsertOnly(int length)
@@ -534,6 +542,7 @@ public class BulkMergeAsyncTests : BaseTest
     }
 
     [Theory]
+    [InlineData(0)]
     [InlineData(1)]
     [InlineData(100)]
     public async Task BulkMerge_DoNothing(int length)
