@@ -16,12 +16,9 @@ public static class DbContextExtensions
 
         new BulkInsertBuilder<T>(connection, transaction)
             .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
             .ConfigureBulkOptions(configureOptions)
             .Execute(data);
     }
@@ -34,12 +31,9 @@ public static class DbContextExtensions
 
         new BulkInsertBuilder<T>(connection, transaction)
             .WithColumns(columnNamesSelector)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
             .ConfigureBulkOptions(configureOptions)
             .Execute(data);
     }

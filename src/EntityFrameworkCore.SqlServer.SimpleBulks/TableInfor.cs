@@ -18,6 +18,12 @@ public abstract class TableInfor
 
     public string SchemaQualifiedTableName { get; private set; }
 
+    public IReadOnlyDictionary<string, string> ColumnNameMappings { get; init; }
+
+    public IReadOnlyDictionary<string, string> ColumnTypeMappings { get; init; }
+
+    public IReadOnlyDictionary<string, ValueConverter> ValueConverters { get; init; }
+
     public TableInfor(string schema, string tableName)
     {
         Schema = schema;
@@ -35,12 +41,6 @@ public abstract class TableInfor
 public class DbContextTableInfor : TableInfor
 {
     private readonly DbContext _dbContext;
-
-    public IReadOnlyDictionary<string, string> ColumnNameMappings { get; init; }
-
-    public IReadOnlyDictionary<string, string> ColumnTypeMappings { get; init; }
-
-    public IReadOnlyDictionary<string, ValueConverter> ValueConverters { get; init; }
 
     public DbContextTableInfor(string schema, string tableName, DbContext dbContext) : base(schema, tableName)
     {

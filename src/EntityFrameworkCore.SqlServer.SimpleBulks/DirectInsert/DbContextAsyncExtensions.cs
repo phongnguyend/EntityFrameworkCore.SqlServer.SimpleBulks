@@ -18,9 +18,6 @@ public static class DbContextAsyncExtensions
 
         return new BulkInsertBuilder<T>(connection, transaction)
               .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
-              .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-              .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-              .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
               .ToTable(dbContext.GetTableInfor(typeof(T)))
               .WithOutputId(idColumn?.PropertyName)
               .WithOutputIdMode(GetOutputIdMode(idColumn))
@@ -36,9 +33,6 @@ public static class DbContextAsyncExtensions
 
         return new BulkInsertBuilder<T>(connection, transaction)
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .WithOutputId(idColumn?.PropertyName)
              .WithOutputIdMode(GetOutputIdMode(idColumn))

@@ -17,9 +17,6 @@ public static class DbContextExtensions
         return new BulkUpdateBuilder<T>(connection, transaction)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .SingleUpdate(data);
@@ -31,13 +28,10 @@ public static class DbContextExtensions
         var transaction = dbContext.GetCurrentSqlTransaction();
 
         return new BulkUpdateBuilder<T>(connection, transaction)
-            .WithId(dbContext.GetPrimaryKeys(typeof(T)))
-            .WithColumns(columnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
-            .ConfigureBulkOptions(configureOptions)
-            .SingleUpdate(data);
+             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+             .WithColumns(columnNames)
+             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ConfigureBulkOptions(configureOptions)
+             .SingleUpdate(data);
     }
 }

@@ -21,10 +21,7 @@ public static class DbContextAsyncExtensions
              .WithId(idSelector)
              .WithUpdateColumns(updateColumnNamesSelector)
              .WithInsertColumns(insertColumnNamesSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
              .WithOutputId(outputIdColumn)
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .SingleMergeAsync(data, cancellationToken);
@@ -37,16 +34,13 @@ public static class DbContextAsyncExtensions
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
         return new BulkMergeBuilder<T>(connection, transaction)
-            .WithId(idColumn)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithOutputId(outputIdColumn)
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
-            .ConfigureBulkOptions(configureOptions)
-            .SingleMergeAsync(data, cancellationToken);
+             .WithId(idColumn)
+             .WithUpdateColumns(updateColumnNames)
+             .WithInsertColumns(insertColumnNames)
+             .WithOutputId(outputIdColumn)
+             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ConfigureBulkOptions(configureOptions)
+             .SingleMergeAsync(data, cancellationToken);
     }
 
     public static Task<BulkMergeResult> UpsertAsync<T>(this DbContext dbContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
@@ -56,15 +50,12 @@ public static class DbContextAsyncExtensions
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
         return new BulkMergeBuilder<T>(connection, transaction)
-            .WithId(idColumns)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithOutputId(outputIdColumn)
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
-            .ConfigureBulkOptions(configureOptions)
-            .SingleMergeAsync(data, cancellationToken);
+             .WithId(idColumns)
+             .WithUpdateColumns(updateColumnNames)
+             .WithInsertColumns(insertColumnNames)
+             .WithOutputId(outputIdColumn)
+             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ConfigureBulkOptions(configureOptions)
+             .SingleMergeAsync(data, cancellationToken);
     }
 }

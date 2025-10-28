@@ -18,9 +18,6 @@ public static class DbContextAsyncExtensions
         return new BulkUpdateBuilder<T>(connection, transaction)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNamesSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .ExecuteAsync(data, cancellationToken);
@@ -34,9 +31,6 @@ public static class DbContextAsyncExtensions
         return new BulkUpdateBuilder<T>(connection, transaction)
             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
             .WithColumns(columnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .ConfigureBulkOptions(configureOptions)
             .ExecuteAsync(data, cancellationToken);

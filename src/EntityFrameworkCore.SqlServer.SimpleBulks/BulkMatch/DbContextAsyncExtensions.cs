@@ -17,9 +17,6 @@ public static class DbContextAsyncExtensions
 
         return new BulkMatchBuilder<T>(connection, transaction)
              .WithReturnedColumns(dbContext.GetAllPropertyNames(typeof(T)))
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .WithTable(dbContext.GetTableInfor(typeof(T)))
              .WithMatchedColumns(matchedColumnsSelector)
              .ConfigureBulkOptions(configureOptions)
@@ -33,9 +30,6 @@ public static class DbContextAsyncExtensions
 
         return new BulkMatchBuilder<T>(connection, transaction)
              .WithReturnedColumns(returnedColumnsSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .WithTable(dbContext.GetTableInfor(typeof(T)))
              .WithMatchedColumns(matchedColumnsSelector)
              .ConfigureBulkOptions(configureOptions)

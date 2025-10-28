@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +16,6 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _updateColumnNames;
     private IEnumerable<string> _insertColumnNames;
-    private IReadOnlyDictionary<string, string> _columnNameMappings;
-    private IReadOnlyDictionary<string, string> _columnTypeMappings;
-    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private string _outputIdColumn;
     private BulkMergeOptions _options;
     private readonly SqlConnection _connection;
@@ -85,18 +81,6 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
-    {
-        _columnNameMappings = columnNameMappings;
-        return this;
-    }
-
-    public BulkMergeBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
-    {
-        _columnTypeMappings = columnTypeMappings;
-        return this;
-    }
-
     public BulkMergeBuilder<T> WithOutputId(string idColumn)
     {
         _outputIdColumn = idColumn;
@@ -106,12 +90,6 @@ public class BulkMergeBuilder<T>
     public BulkMergeBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
     {
         _outputIdColumn = idSelector.Body.GetMemberName();
-        return this;
-    }
-
-    public BulkMergeBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        _valueConverters = valueConverters;
         return this;
     }
 
@@ -127,12 +105,12 @@ public class BulkMergeBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_columnNameMappings == null)
+        if (_table.ColumnNameMappings == null)
         {
             return columnName;
         }
 
-        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public BulkMergeResult Execute(IEnumerable<T> data)
@@ -156,8 +134,8 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = data.ToDataTable(propertyNames, valueConverters: _valueConverters, addIndexNumberColumn: returnDbGeneratedId);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        var dataTable = data.ToDataTable(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
 
@@ -287,7 +265,7 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _valueConverters);
+        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _table.ValueConverters);
 
         var mergeStatementBuilder = new StringBuilder();
 
@@ -426,8 +404,8 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _valueConverters, addIndexNumberColumn: returnDbGeneratedId, cancellationToken: cancellationToken);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, cancellationToken: cancellationToken);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
 
@@ -557,7 +535,7 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _valueConverters);
+        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _table.ValueConverters);
 
         var mergeStatementBuilder = new StringBuilder();
 

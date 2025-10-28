@@ -12,57 +12,48 @@ public static class DbContextExtensions
     public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
     {
         var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+     var transaction = dbContext.GetCurrentSqlTransaction();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
         return new BulkMergeBuilder<T>(connection, transaction)
-             .WithId(idSelector)
-             .WithUpdateColumns(updateColumnNamesSelector)
-             .WithInsertColumns(insertColumnNamesSelector)
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithOutputId(outputIdColumn)
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-             .ToTable(dbContext.GetTableInfor(typeof(T)))
-             .ConfigureBulkOptions(configureOptions)
-             .SingleMerge(data);
-    }
+   .WithId(idSelector)
+  .WithUpdateColumns(updateColumnNamesSelector)
+       .WithInsertColumns(insertColumnNamesSelector)
+   .WithOutputId(outputIdColumn)
+      .ToTable(dbContext.GetTableInfor(typeof(T)))
+      .ConfigureBulkOptions(configureOptions)
+       .SingleMerge(data);
+  }
 
-    public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
+  public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
         var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+      var transaction = dbContext.GetCurrentSqlTransaction();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
-        return new BulkMergeBuilder<T>(connection, transaction)
-            .WithId(idColumn)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithOutputId(outputIdColumn)
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
-            .ConfigureBulkOptions(configureOptions)
-            .SingleMerge(data);
-    }
+   return new BulkMergeBuilder<T>(connection, transaction)
+   .WithId(idColumn)
+      .WithUpdateColumns(updateColumnNames)
+      .WithInsertColumns(insertColumnNames)
+       .WithOutputId(outputIdColumn)
+      .ToTable(dbContext.GetTableInfor(typeof(T)))
+     .ConfigureBulkOptions(configureOptions)
+      .SingleMerge(data);
+}
 
     public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
-        var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
+   var connection = dbContext.GetSqlConnection();
+    var transaction = dbContext.GetCurrentSqlTransaction();
+     var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
         return new BulkMergeBuilder<T>(connection, transaction)
-            .WithId(idColumns)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
-            .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-            .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-            .WithOutputId(outputIdColumn)
-            .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
-            .ConfigureBulkOptions(configureOptions)
-            .SingleMerge(data);
+      .WithId(idColumns)
+     .WithUpdateColumns(updateColumnNames)
+      .WithInsertColumns(insertColumnNames)
+   .WithOutputId(outputIdColumn)
+ .ToTable(dbContext.GetTableInfor(typeof(T)))
+     .ConfigureBulkOptions(configureOptions)
+        .SingleMerge(data);
     }
 }

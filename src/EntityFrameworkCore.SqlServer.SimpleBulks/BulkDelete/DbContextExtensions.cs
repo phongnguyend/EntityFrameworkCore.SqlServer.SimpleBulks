@@ -14,9 +14,6 @@ public static class DbContextExtensions
 
         return new BulkDeleteBuilder<T>(connection, transaction)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
-             .WithDbColumnMappings(dbContext.GetColumnNames(typeof(T)))
-             .WithDbColumnTypeMappings(dbContext.GetColumnTypes(typeof(T)))
-             .WithValueConverters(dbContext.GetValueConverters(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)
              .Execute(data);

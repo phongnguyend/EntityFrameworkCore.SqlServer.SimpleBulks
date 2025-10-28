@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,9 +13,6 @@ public class BulkDeleteBuilder<T>
 {
     private TableInfor _table;
     private IEnumerable<string> _idColumns;
-    private IReadOnlyDictionary<string, string> _columnNameMappings;
-    private IReadOnlyDictionary<string, string> _columnTypeMappings;
-    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkDeleteOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -57,24 +53,6 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
-    {
-        _columnNameMappings = columnNameMappings;
-        return this;
-    }
-
-    public BulkDeleteBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
-    {
-        _columnTypeMappings = columnTypeMappings;
-        return this;
-    }
-
-    public BulkDeleteBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        _valueConverters = valueConverters;
-        return this;
-    }
-
     public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkDeleteOptions> configureOptions)
     {
         _options = new BulkDeleteOptions();
@@ -87,12 +65,12 @@ public class BulkDeleteBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_columnNameMappings == null)
+        if (_table.ColumnNameMappings == null)
         {
             return columnName;
         }
 
-        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     public BulkDeleteResult Execute(IEnumerable<T> data)
@@ -103,8 +81,8 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = data.ToDataTable(_idColumns, valueConverters: _valueConverters);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        var dataTable = data.ToDataTable(_idColumns, valueConverters: _table.ValueConverters);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
@@ -187,8 +165,8 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = await data.ToDataTableAsync(_idColumns, valueConverters: _valueConverters, cancellationToken: cancellationToken);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        var dataTable = await data.ToDataTableAsync(_idColumns, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = string.Join(" AND ", _idColumns.Select(x =>
         {

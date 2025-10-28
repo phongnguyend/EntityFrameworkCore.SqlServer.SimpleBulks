@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -19,9 +18,6 @@ public class BulkInsertBuilder<T>
     private string _outputIdColumn;
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
-    private IReadOnlyDictionary<string, string> _columnNameMappings;
-    private IReadOnlyDictionary<string, string> _columnTypeMappings;
-    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
     private BulkInsertOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -85,24 +81,6 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
-    public BulkInsertBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
-    {
-        _columnNameMappings = columnNameMappings;
-        return this;
-    }
-
-    public BulkInsertBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
-    {
-        _columnTypeMappings = columnTypeMappings;
-        return this;
-    }
-
-    public BulkInsertBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        _valueConverters = valueConverters;
-        return this;
-    }
-
     public BulkInsertBuilder<T> ConfigureBulkOptions(Action<BulkInsertOptions> configureOptions)
     {
         _options = new BulkInsertOptions();
@@ -115,12 +93,12 @@ public class BulkInsertBuilder<T>
 
     private string GetDbColumnName(string columnName)
     {
-        if (_columnNameMappings == null)
+        if (_table.ColumnNameMappings == null)
         {
             return columnName;
         }
 
-        return _columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
+        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
     }
 
     private bool ReturnGeneratedId => !string.IsNullOrWhiteSpace(_outputIdColumn);
@@ -146,12 +124,12 @@ public class BulkInsertBuilder<T>
         DataTable dataTable;
         if (!ReturnGeneratedId)
         {
-            dataTable = data.ToDataTable(_columnNames, valueConverters: _valueConverters);
+            dataTable = data.ToDataTable(_columnNames, valueConverters: _table.ValueConverters);
 
             _connection.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -164,12 +142,12 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _valueConverters);
+            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _table.ValueConverters);
 
             _connection.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -191,19 +169,19 @@ public class BulkInsertBuilder<T>
                 setId(row, SequentialGuidGenerator.Next());
             }
 
-            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _valueConverters);
+            dataTable = data.ToDataTable(columnsToInsert, valueConverters: _table.ValueConverters);
 
             _connection.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options);
+            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        dataTable = data.ToDataTable(_columnNames, valueConverters: _valueConverters, addIndexNumberColumn: true);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        dataTable = data.ToDataTable(_columnNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: true);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
         mergeStatementBuilder.AppendLine($"MERGE INTO {_table.SchemaQualifiedTableName}");
@@ -345,12 +323,12 @@ public class BulkInsertBuilder<T>
         DataTable dataTable;
         if (!ReturnGeneratedId)
         {
-            dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options, cancellationToken);
+            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -363,12 +341,12 @@ public class BulkInsertBuilder<T>
                 columnsToInsert.Add(_outputIdColumn);
             }
 
-            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _valueConverters, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options, cancellationToken);
+            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -390,19 +368,19 @@ public class BulkInsertBuilder<T>
                 setId(row, SequentialGuidGenerator.Next());
             }
 
-            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _valueConverters, cancellationToken: cancellationToken);
+            dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
 
             await _connection.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _columnNameMappings, _connection, _transaction, _options, cancellationToken);
+            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connection, _transaction, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, addIndexNumberColumn: true, cancellationToken: cancellationToken);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _columnTypeMappings);
+        dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: true, cancellationToken: cancellationToken);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
         mergeStatementBuilder.AppendLine($"MERGE INTO {_table.SchemaQualifiedTableName}");
