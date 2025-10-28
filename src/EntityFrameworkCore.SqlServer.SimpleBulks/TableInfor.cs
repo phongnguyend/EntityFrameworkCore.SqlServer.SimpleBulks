@@ -77,33 +77,10 @@ public class DbContextTableInfor : TableInfor
                 var para = (SqlParameter)mapping.CreateParameter(command, prop.Name, GetProviderValue(prop, data) ?? DBNull.Value);
                 parameters.Add(para);
             }
-            else
-            {
-                var type = GetProviderClrType(prop);
-
-                var para = new SqlParameter($"@{prop.Name}", GetProviderValue(prop, data) ?? DBNull.Value);
-
-                if (type == typeof(DateTime))
-                {
-                    para.DbType = System.Data.DbType.DateTime2;
-                }
-
-                parameters.Add(para);
-            }
         }
 
         return parameters;
 
-    }
-
-    private Type GetProviderClrType(PropertyDescriptor property)
-    {
-        if (ValueConverters != null && ValueConverters.TryGetValue(property.Name, out var converter))
-        {
-            return converter.ProviderClrType;
-        }
-
-        return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
     }
 
     private object GetProviderValue<T>(PropertyDescriptor property, T item)
