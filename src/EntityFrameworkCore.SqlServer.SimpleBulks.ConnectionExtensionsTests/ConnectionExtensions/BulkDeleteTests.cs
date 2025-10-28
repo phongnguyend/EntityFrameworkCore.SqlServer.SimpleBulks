@@ -72,12 +72,12 @@ public class BulkDeleteTests : BaseTest
             }
             else
             {
-                _connection.BulkDelete(rows, new TableInfor(_schema, "SingleKeyRows"), row => row.Id,
+                _connection.BulkDelete(rows, new SqlTableInfor(_schema, "SingleKeyRows"), row => row.Id,
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), row => new { row.Id1, row.Id2 },
+                _connection.BulkDelete(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"), row => new { row.Id1, row.Id2 },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -101,12 +101,12 @@ public class BulkDeleteTests : BaseTest
             }
             else
             {
-                _connection.BulkDelete(rows, new TableInfor(_schema, "SingleKeyRows"), "Id",
+                _connection.BulkDelete(rows, new SqlTableInfor(_schema, "SingleKeyRows"), "Id",
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                _connection.BulkDelete(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), ["Id1", "Id2"],
+                _connection.BulkDelete(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"), ["Id1", "Id2"],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;

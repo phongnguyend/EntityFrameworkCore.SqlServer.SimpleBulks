@@ -72,12 +72,12 @@ public class BulkDeleteAsyncTests : BaseTest
             }
             else
             {
-                await _connection.BulkDeleteAsync(rows, new TableInfor(_schema, "SingleKeyRows"), row => row.Id,
+                await _connection.BulkDeleteAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"), row => row.Id,
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                await _connection.BulkDeleteAsync(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), row => new { row.Id1, row.Id2 },
+                await _connection.BulkDeleteAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"), row => new { row.Id1, row.Id2 },
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
@@ -101,12 +101,12 @@ public class BulkDeleteAsyncTests : BaseTest
             }
             else
             {
-                await _connection.BulkDeleteAsync(rows, new TableInfor(_schema, "SingleKeyRows"), "Id",
+                await _connection.BulkDeleteAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"), "Id",
                 options =>
                 {
                     options.LogTo = _output.WriteLine;
                 });
-                await _connection.BulkDeleteAsync(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"), ["Id1", "Id2"],
+                await _connection.BulkDeleteAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"), ["Id1", "Id2"],
                 options =>
                 {
                     options.LogTo = _output.WriteLine;

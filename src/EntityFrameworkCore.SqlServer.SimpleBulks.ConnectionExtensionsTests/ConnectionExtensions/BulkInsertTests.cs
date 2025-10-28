@@ -66,7 +66,7 @@ public class BulkInsertTests : BaseTest
             }
             else
             {
-                _connection.BulkInsert(rows, new TableInfor(_schema, "SingleKeyRows"),
+                _connection.BulkInsert(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
                     options =>
@@ -74,7 +74,7 @@ public class BulkInsertTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkInsert(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
+                _connection.BulkInsert(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
                     options =>
                     {
@@ -104,7 +104,7 @@ public class BulkInsertTests : BaseTest
             }
             else
             {
-                _connection.BulkInsert(rows, new TableInfor(_schema, "SingleKeyRows"),
+                _connection.BulkInsert(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
                     ["Column1", "Column2", "Column3"],
                     "Id",
                     options =>
@@ -112,7 +112,7 @@ public class BulkInsertTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                _connection.BulkInsert(compositeKeyRows, new TableInfor(_schema, "CompositeKeyRows"),
+                _connection.BulkInsert(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {

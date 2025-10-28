@@ -17,7 +17,7 @@ public static class TableMapper
     {
         lock (_lock)
         {
-            _mappings[type] = new TableInfor(schema, tableName);
+            _mappings[type] = new SqlTableInfor(schema, tableName);
         }
     }
 

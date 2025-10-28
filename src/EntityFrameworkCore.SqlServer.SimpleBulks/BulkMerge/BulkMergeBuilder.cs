@@ -348,8 +348,8 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
         {
-            data.ToSqlParameters(propertyNames, valueConverters: _valueConverters)
-                .ForEach(x => updateCommand.Parameters.Add(x));
+            _table.CreateSqlParameters(updateCommand, data, propertyNames)
+                 .ForEach(x => updateCommand.Parameters.Add(x));
 
             using var reader = updateCommand.ExecuteReader();
 
@@ -618,7 +618,7 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
         {
-            data.ToSqlParameters(propertyNames, valueConverters: _valueConverters)
+            _table.CreateSqlParameters(updateCommand, data, propertyNames)
                 .ForEach(x => updateCommand.Parameters.Add(x));
 
             using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);

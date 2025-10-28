@@ -37,7 +37,12 @@ public static class DbContextExtensions
             var schema = entityType.GetSchema();
             var tableName = entityType.GetTableName();
 
-            var tableInfo = new TableInfor(schema, tableName);
+            var tableInfo = new DbContextTableInfor(schema, tableName, dbContext)
+            {
+                ColumnNameMappings = dbContext.GetColumnNames(key.EntityType),
+                ColumnTypeMappings = dbContext.GetColumnTypes(key.EntityType),
+                ValueConverters = dbContext.GetValueConverters(key.EntityType)
+            };
             return tableInfo;
         });
     }
