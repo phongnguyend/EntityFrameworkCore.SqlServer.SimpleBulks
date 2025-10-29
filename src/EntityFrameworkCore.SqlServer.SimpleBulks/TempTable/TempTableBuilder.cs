@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -11,11 +10,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 
 public class TempTableBuilder<T>
 {
-    private IEnumerable<T> _data;
     private IEnumerable<string> _columnNames;
-    private IReadOnlyDictionary<string, string> _columnNameMappings;
-    private IReadOnlyDictionary<string, string> _columnTypeMappings;
-    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
+    private MappingContext _mappingContext;
     private TempTableOptions _options;
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
@@ -31,12 +27,6 @@ public class TempTableBuilder<T>
         _transaction = transaction;
     }
 
-    public TempTableBuilder<T> WithData(IEnumerable<T> data)
-    {
-        _data = data;
-        return this;
-    }
-
     public TempTableBuilder<T> WithColumns(IEnumerable<string> columnNames)
     {
         _columnNames = columnNames;
@@ -49,21 +39,9 @@ public class TempTableBuilder<T>
         return this;
     }
 
-    public TempTableBuilder<T> WithDbColumnMappings(IReadOnlyDictionary<string, string> columnNameMappings)
+    public TempTableBuilder<T> WithMappingContext(MappingContext mappingContext)
     {
-        _columnNameMappings = columnNameMappings;
-        return this;
-    }
-
-    public TempTableBuilder<T> WithDbColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
-    {
-        _columnTypeMappings = columnTypeMappings;
-        return this;
-    }
-
-    public TempTableBuilder<T> WithValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        _valueConverters = valueConverters;
+        _mappingContext = mappingContext;
         return this;
     }
 
@@ -79,12 +57,12 @@ public class TempTableBuilder<T>
 
     private string GetTableName()
     {
-        if (!string.IsNullOrWhiteSpace(_options.TableName))
+        if (!string.IsNullOrWhiteSpace(_options?.TableName))
         {
             return _options.TableName;
         }
 
-        if (!string.IsNullOrWhiteSpace(_options.PrefixName))
+        if (!string.IsNullOrWhiteSpace(_options?.PrefixName))
         {
             return _options.PrefixName + "-" + Guid.NewGuid();
         }
@@ -92,11 +70,11 @@ public class TempTableBuilder<T>
         return Guid.NewGuid().ToString();
     }
 
-    public string Execute()
+    public string Execute(IEnumerable<T> data)
     {
         var tempTableName = $"[#{GetTableName()}]";
-        var dataTable = _data.ToDataTable(_columnNames, valueConverters: _valueConverters);
-        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings, _columnTypeMappings);
+        var dataTable = data.ToDataTable(_columnNames, valueConverters: _mappingContext?.ValueConverters);
+        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _mappingContext?.ColumnNameMappings, _mappingContext?.ColumnTypeMappings);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
@@ -110,7 +88,7 @@ public class TempTableBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {tempTableName}");
 
-        dataTable.SqlBulkCopy(tempTableName, _columnNameMappings, _connection, _transaction);
+        dataTable.SqlBulkCopy(tempTableName, _mappingContext?.ColumnNameMappings, _connection, _transaction);
 
         Log("End executing SqlBulkCopy.");
 
@@ -122,15 +100,15 @@ public class TempTableBuilder<T>
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [TempTable]: {message}");
     }
 
-    public async Task<string> ExecuteAsync(CancellationToken cancellationToken = default)
+    public async Task<string> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
     {
         var tempTableName = $"[#{GetTableName()}]";
-        var dataTable = await _data.ToDataTableAsync(_columnNames, valueConverters: _valueConverters, cancellationToken: cancellationToken);
-        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _columnNameMappings, _columnTypeMappings);
+        var dataTable = await data.ToDataTableAsync(_columnNames, valueConverters: _mappingContext?.ValueConverters, cancellationToken: cancellationToken);
+        var sqlCreateTempTable = dataTable.GenerateTableDefinition(tempTableName, _mappingContext?.ColumnNameMappings, _mappingContext?.ColumnTypeMappings);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
-        _connection.EnsureOpen();
+        await _connection.EnsureOpenAsync(cancellationToken);
         using (var createTempTableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTempTable))
         {
             await createTempTableCommand.ExecuteNonQueryAsync(cancellationToken);
@@ -140,7 +118,7 @@ public class TempTableBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {tempTableName}");
 
-        await dataTable.SqlBulkCopyAsync(tempTableName, _columnNameMappings, _connection, _transaction, cancellationToken: cancellationToken);
+        await dataTable.SqlBulkCopyAsync(tempTableName, _mappingContext?.ColumnNameMappings, _connection, _transaction, cancellationToken: cancellationToken);
 
         Log("End executing SqlBulkCopy.");
 
