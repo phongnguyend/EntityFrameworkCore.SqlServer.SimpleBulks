@@ -22,11 +22,6 @@ public class BulkInsertBuilder<T>
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
 
-    public BulkInsertBuilder(SqlConnection connection)
-    {
-        _connection = connection;
-    }
-
     public BulkInsertBuilder(SqlConnection connection, SqlTransaction transaction)
     {
         _connection = connection;

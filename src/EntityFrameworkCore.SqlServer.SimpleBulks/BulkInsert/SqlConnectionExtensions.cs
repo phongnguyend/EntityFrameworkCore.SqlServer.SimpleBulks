@@ -11,7 +11,7 @@ public static class SqlConnectionExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNamesSelector)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
@@ -22,7 +22,7 @@ public static class SqlConnectionExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNamesSelector)
             .ToTable(table)
             .WithOutputId(idSelector)
@@ -34,7 +34,7 @@ public static class SqlConnectionExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNames)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
@@ -45,7 +45,7 @@ public static class SqlConnectionExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNames)
             .ToTable(table)
             .WithOutputId(idColumnName)
@@ -55,7 +55,7 @@ public static class SqlConnectionExtensions
 
     public static void BulkInsert<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
     {
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNamesSelector)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
@@ -64,7 +64,7 @@ public static class SqlConnectionExtensions
 
     public static void BulkInsert<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> columnNamesSelector, Expression<Func<T, object>> idSelector, Action<BulkInsertOptions> configureOptions = null)
     {
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNamesSelector)
             .ToTable(table)
             .WithOutputId(idSelector)
@@ -74,7 +74,7 @@ public static class SqlConnectionExtensions
 
     public static void BulkInsert<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> columnNames, Action<BulkInsertOptions> configureOptions = null)
     {
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNames)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
@@ -83,7 +83,7 @@ public static class SqlConnectionExtensions
 
     public static void BulkInsert<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> columnNames, string idColumnName, Action<BulkInsertOptions> configureOptions = null)
     {
-        new BulkInsertBuilder<T>(connectionContext.Connection)
+        new BulkInsertBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithColumns(columnNames)
             .ToTable(table)
             .WithOutputId(idColumnName)

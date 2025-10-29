@@ -21,11 +21,6 @@ public class BulkMergeBuilder<T>
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
 
-    public BulkMergeBuilder(SqlConnection connection)
-    {
-        _connection = connection;
-    }
-
     public BulkMergeBuilder(SqlConnection connection, SqlTransaction transaction)
     {
         _connection = connection;

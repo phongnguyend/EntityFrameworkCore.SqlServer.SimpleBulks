@@ -20,11 +20,6 @@ public class BulkUpdateBuilder<T>
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
 
-    public BulkUpdateBuilder(SqlConnection connection)
-    {
-        _connection = connection;
-    }
-
     public BulkUpdateBuilder(SqlConnection connection, SqlTransaction transaction)
     {
         _connection = connection;

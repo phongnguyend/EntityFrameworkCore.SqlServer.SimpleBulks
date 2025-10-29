@@ -14,7 +14,7 @@ public static class SqlConnectionAsyncExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
             .WithInsertColumns(insertColumnNamesSelector)
@@ -27,7 +27,7 @@ public static class SqlConnectionAsyncExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idColumn)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -40,7 +40,7 @@ public static class SqlConnectionAsyncExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idColumns)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -51,7 +51,7 @@ public static class SqlConnectionAsyncExtensions
 
     public static Task<BulkMergeResult> UpsertAsync<T>(this ConnectionContext connectionContext, T data, TableInfor table, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
             .WithInsertColumns(insertColumnNamesSelector)
@@ -62,7 +62,7 @@ public static class SqlConnectionAsyncExtensions
 
     public static Task<BulkMergeResult> UpsertAsync<T>(this ConnectionContext connectionContext, T data, TableInfor table, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idColumn)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -73,7 +73,7 @@ public static class SqlConnectionAsyncExtensions
 
     public static Task<BulkMergeResult> UpsertAsync<T>(this ConnectionContext connectionContext, T data, TableInfor table, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMergeBuilder<T>(connectionContext.Connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
             .WithId(idColumns)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)

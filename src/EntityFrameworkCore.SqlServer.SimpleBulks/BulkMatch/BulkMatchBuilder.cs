@@ -22,11 +22,6 @@ public class BulkMatchBuilder<T>
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
 
-    public BulkMatchBuilder(SqlConnection connection)
-    {
-        _connection = connection;
-    }
-
     public BulkMatchBuilder(SqlConnection connection, SqlTransaction transaction)
     {
         _connection = connection;

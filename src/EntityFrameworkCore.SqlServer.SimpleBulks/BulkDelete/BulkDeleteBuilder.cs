@@ -17,11 +17,6 @@ public class BulkDeleteBuilder<T>
     private readonly SqlConnection _connection;
     private readonly SqlTransaction _transaction;
 
-    public BulkDeleteBuilder(SqlConnection connection)
-    {
-        _connection = connection;
-    }
-
     public BulkDeleteBuilder(SqlConnection connection, SqlTransaction transaction)
     {
         _connection = connection;
