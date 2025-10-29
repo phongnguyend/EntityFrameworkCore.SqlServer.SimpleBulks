@@ -8,11 +8,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Upsert;
 
 public static class SqlConnectionExtensions
 {
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
             .WithInsertColumns(insertColumnNamesSelector)
@@ -21,11 +21,11 @@ public static class SqlConnectionExtensions
             .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idColumn)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -34,11 +34,11 @@ public static class SqlConnectionExtensions
             .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idColumns)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -47,9 +47,9 @@ public static class SqlConnectionExtensions
             .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, TableInfor table, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, TableInfor table, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null)
     {
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
             .WithInsertColumns(insertColumnNamesSelector)
@@ -58,9 +58,9 @@ public static class SqlConnectionExtensions
             .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, TableInfor table, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, TableInfor table, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idColumn)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
@@ -69,9 +69,9 @@ public static class SqlConnectionExtensions
             .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this SqlConnection connection, T data, TableInfor table, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, TableInfor table, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null)
     {
-        return new BulkMergeBuilder<T>(connection)
+        return new BulkMergeBuilder<T>(connectionContext.Connection)
             .WithId(idColumns)
             .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)

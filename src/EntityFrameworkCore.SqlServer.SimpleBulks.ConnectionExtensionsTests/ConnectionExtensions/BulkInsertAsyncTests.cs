@@ -23,6 +23,8 @@ public class BulkInsertAsyncTests : BaseTest
     [InlineData(false, false)]
     public async Task Bulk_Insert_Without_Transaction(bool useLinq, bool omitTableName)
     {
+        var connectionContext = new ConnectionContext(_connection, null);
+
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
@@ -49,7 +51,7 @@ public class BulkInsertAsyncTests : BaseTest
         {
             if (omitTableName)
             {
-                await _connection.BulkInsertAsync(rows,
+                await connectionContext.BulkInsertAsync(rows,
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
                     options =>
@@ -57,7 +59,7 @@ public class BulkInsertAsyncTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                await _connection.BulkInsertAsync(compositeKeyRows,
+                await connectionContext.BulkInsertAsync(compositeKeyRows,
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
                     options =>
                     {
@@ -66,7 +68,7 @@ public class BulkInsertAsyncTests : BaseTest
             }
             else
             {
-                await _connection.BulkInsertAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                await connectionContext.BulkInsertAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
                     options =>
@@ -74,7 +76,7 @@ public class BulkInsertAsyncTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                await _connection.BulkInsertAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                await connectionContext.BulkInsertAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
                     options =>
                     {
@@ -87,7 +89,7 @@ public class BulkInsertAsyncTests : BaseTest
         {
             if (omitTableName)
             {
-                await _connection.BulkInsertAsync(rows,
+                await connectionContext.BulkInsertAsync(rows,
                     ["Column1", "Column2", "Column3"],
                     "Id",
                     options =>
@@ -95,7 +97,7 @@ public class BulkInsertAsyncTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                await _connection.BulkInsertAsync(compositeKeyRows,
+                await connectionContext.BulkInsertAsync(compositeKeyRows,
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {
@@ -104,7 +106,7 @@ public class BulkInsertAsyncTests : BaseTest
             }
             else
             {
-                await _connection.BulkInsertAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                await connectionContext.BulkInsertAsync(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
                     ["Column1", "Column2", "Column3"],
                     "Id",
                     options =>
@@ -112,7 +114,7 @@ public class BulkInsertAsyncTests : BaseTest
                         options.LogTo = _output.WriteLine;
                     });
 
-                await _connection.BulkInsertAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                await connectionContext.BulkInsertAsync(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     options =>
                     {

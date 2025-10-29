@@ -9,11 +9,11 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public static class SqlConnectionAsyncExtensions
 {
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
              .WithReturnedColumns(returnedColumnsSelector)
              .WithTable(table)
              .WithMatchedColumns(matchedColumnsSelector)
@@ -21,11 +21,11 @@ public static class SqlConnectionAsyncExtensions
              .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
             .WithReturnedColumns(returnedColumns)
             .WithTable(table)
             .WithMatchedColumn(matchedColumn)
@@ -33,11 +33,11 @@ public static class SqlConnectionAsyncExtensions
             .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
             .WithReturnedColumns(returnedColumns)
             .WithTable(table)
             .WithMatchedColumns(matchedColumns)
@@ -45,9 +45,9 @@ public static class SqlConnectionAsyncExtensions
             .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, TableInfor table, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
              .WithReturnedColumns(returnedColumnsSelector)
              .WithTable(table)
              .WithMatchedColumns(matchedColumnsSelector)
@@ -55,9 +55,9 @@ public static class SqlConnectionAsyncExtensions
              .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, TableInfor table, string matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, string matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
             .WithReturnedColumns(returnedColumns)
             .WithTable(table)
             .WithMatchedColumn(matchedColumns)
@@ -65,9 +65,9 @@ public static class SqlConnectionAsyncExtensions
             .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this SqlConnection connection, IEnumerable<T> machedValues, TableInfor table, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, Action<BulkMatchOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMatchBuilder<T>(connection)
+        return new BulkMatchBuilder<T>(connectionContext.Connection)
             .WithReturnedColumns(returnedColumns)
             .WithTable(table)
             .WithMatchedColumns(matchedColumns)
