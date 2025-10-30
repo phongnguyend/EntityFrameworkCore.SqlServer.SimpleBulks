@@ -26,21 +26,6 @@ public static class DbContextAsyncExtensions
   .SingleMergeAsync(data, cancellationToken);
     }
 
-    public static Task<BulkMergeResult> UpsertAsync<T>(this DbContext dbContext, T data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
-    {
-        var connectionContext = dbContext.GetConnectionContext();
-        var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
-
-        return new BulkMergeBuilder<T>(connectionContext)
-   .WithId(idColumn)
-    .WithUpdateColumns(updateColumnNames)
-       .WithInsertColumns(insertColumnNames)
-  .WithOutputId(outputIdColumn)
-   .ToTable(dbContext.GetTableInfor(typeof(T)))
-  .ConfigureBulkOptions(configureOptions)
-          .SingleMergeAsync(data, cancellationToken);
-    }
-
     public static Task<BulkMergeResult> UpsertAsync<T>(this DbContext dbContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var connectionContext = dbContext.GetConnectionContext();

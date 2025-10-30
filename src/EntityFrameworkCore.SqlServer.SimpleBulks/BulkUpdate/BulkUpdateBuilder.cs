@@ -29,12 +29,6 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateBuilder<T> WithId(string idColumn)
-    {
-        _idColumns = [idColumn];
-        return this;
-    }
-
     public BulkUpdateBuilder<T> WithId(IEnumerable<string> idColumns)
     {
         _idColumns = idColumns;

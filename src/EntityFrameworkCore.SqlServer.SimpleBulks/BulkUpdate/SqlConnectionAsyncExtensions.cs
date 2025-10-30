@@ -20,18 +20,6 @@ public static class SqlConnectionAsyncExtensions
             .ExecuteAsync(data, cancellationToken);
     }
 
-    public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null, CancellationToken cancellationToken = default)
-    {
-        var table = TableMapper.Resolve(typeof(T));
-
-        return new BulkUpdateBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithColumns(columnNames)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
-    }
-
     public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
@@ -49,16 +37,6 @@ public static class SqlConnectionAsyncExtensions
         return new BulkUpdateBuilder<T>(connectionContext)
             .WithId(idSelector)
             .WithColumns(columnNamesSelector)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
-    }
-
-    public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, string idColumn, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null, CancellationToken cancellationToken = default)
-    {
-        return new BulkUpdateBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithColumns(columnNames)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
             .ExecuteAsync(data, cancellationToken);

@@ -253,7 +253,7 @@ public class UpsertTests : BaseTest
         existingCompositeKeyRows.SeasonAsString = Season.Spring;
 
         var result1 = _context.Upsert(existingRow,
-            "Id",
+            ["Id"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             options =>
@@ -341,7 +341,7 @@ public class UpsertTests : BaseTest
         };
 
         var result1 = _context.Upsert(newRow,
-            "Id",
+            ["Id"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             options =>

@@ -230,7 +230,7 @@ public class BulkUpdateTests : BaseTest
         });
 
         _context.BulkMerge(rows,
-            "Id",
+            ["Id"],
             ["Column1", "Column2", "Season", "SeasonAsString"],
             ["Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             options =>

@@ -79,7 +79,7 @@ await dbct.BulkUpdateAsync(compositeKeyRows,
     [ "Column3", "Column2" ]);
 
 await dbct.BulkMergeAsync(rows,
-    "Id",
+    ["Id"],
     [ "Column1", "Column2" ],
     [ "Column1", "Column2", "Column3" ]);
 await dbct.BulkMergeAsync(compositeKeyRows,
@@ -150,14 +150,14 @@ await connection.BulkInsertAsync(compositeKeyRows,
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
 await connection.BulkUpdateAsync(rows,
-           "Id",
+           ["Id"],
            [ "Column3", "Column2" ]);
 await connection.BulkUpdateAsync(compositeKeyRows,
            [ "Id1", "Id2" ],
            [ "Column3", "Column2" ]);
 
 await connection.BulkMergeAsync(rows,
-           "Id",
+           ["Id"],
            [ "Column1", "Column2" ],
            [ "Column1", "Column2", "Column3" ]);
 await connection.BulkMergeAsync(compositeKeyRows,
@@ -165,7 +165,7 @@ await connection.BulkMergeAsync(compositeKeyRows,
            [ "Column1", "Column2", "Column3" ],
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
-await connection.BulkDeleteAsync(rows, "Id");
+await connection.BulkDeleteAsync(rows, ["Id"]);
 await connection.BulkDeleteAsync(compositeKeyRows, [ "Id1", "Id2" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression

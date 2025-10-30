@@ -17,17 +17,6 @@ public static class SqlConnectionExtensions
       .Execute(data);
     }
 
-    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IEnumerable<T> data, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
-    {
-        var table = TableMapper.Resolve(typeof(T));
-
-        return new BulkDeleteBuilder<T>(connectionContext)
- .WithId(idColumn)
-        .ToTable(table)
-  .ConfigureBulkOptions(configureOptions)
-            .Execute(data);
-    }
-
     public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)
     {
         var table = TableMapper.Resolve(typeof(T));
@@ -46,15 +35,6 @@ public static class SqlConnectionExtensions
          .ToTable(table)
        .ConfigureBulkOptions(configureOptions)
            .Execute(data);
-    }
-
-    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, string idColumn, Action<BulkDeleteOptions> configureOptions = null)
-    {
-        return new BulkDeleteBuilder<T>(connectionContext)
-        .WithId(idColumn)
-                 .ToTable(table)
-       .ConfigureBulkOptions(configureOptions)
-                 .Execute(data);
     }
 
     public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null)

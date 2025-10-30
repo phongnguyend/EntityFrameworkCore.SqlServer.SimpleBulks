@@ -18,18 +18,6 @@ public static class SqlConnectionExtensions
             .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, string idColumn, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
-    {
-        var table = TableMapper.Resolve(typeof(T));
-
-        return new BulkUpdateBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithColumns(columnNames)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .Execute(data);
-    }
-
     public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
     {
         var table = TableMapper.Resolve(typeof(T));
@@ -47,16 +35,6 @@ public static class SqlConnectionExtensions
         return new BulkUpdateBuilder<T>(connectionContext)
             .WithId(idSelector)
             .WithColumns(columnNamesSelector)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .Execute(data);
-    }
-
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, string idColumn, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
-    {
-        return new BulkUpdateBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithColumns(columnNames)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
             .Execute(data);

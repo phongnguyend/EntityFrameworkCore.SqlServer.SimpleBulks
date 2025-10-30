@@ -21,19 +21,6 @@ public static class SqlConnectionAsyncExtensions
             .ExecuteAsync(data, cancellationToken);
     }
 
-    public static Task<BulkMergeResult> BulkMergeAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
-    {
-        var table = TableMapper.Resolve(typeof(T));
-
-        return new BulkMergeBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
-    }
-
     public static Task<BulkMergeResult> BulkMergeAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
@@ -53,17 +40,6 @@ public static class SqlConnectionAsyncExtensions
             .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
             .WithInsertColumns(insertColumnNamesSelector)
-            .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
-    }
-
-    public static Task<BulkMergeResult> BulkMergeAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, string idColumn, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
-    {
-        return new BulkMergeBuilder<T>(connectionContext)
-            .WithId(idColumn)
-            .WithUpdateColumns(updateColumnNames)
-            .WithInsertColumns(insertColumnNames)
             .ToTable(table)
             .ConfigureBulkOptions(configureOptions)
             .ExecuteAsync(data, cancellationToken);

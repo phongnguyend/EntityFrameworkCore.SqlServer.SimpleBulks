@@ -26,12 +26,6 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteBuilder<T> WithId(string idColumn)
-    {
-        _idColumns = [idColumn];
-        return this;
-    }
-
     public BulkDeleteBuilder<T> WithId(IEnumerable<string> idColumns)
     {
         _idColumns = idColumns;

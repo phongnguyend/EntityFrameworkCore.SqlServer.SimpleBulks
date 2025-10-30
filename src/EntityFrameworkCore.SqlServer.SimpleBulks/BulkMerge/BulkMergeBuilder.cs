@@ -30,12 +30,6 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithId(string idColumn)
-    {
-        _idColumns = [idColumn];
-        return this;
-    }
-
     public BulkMergeBuilder<T> WithId(IEnumerable<string> idColumns)
     {
         _idColumns = idColumns;
