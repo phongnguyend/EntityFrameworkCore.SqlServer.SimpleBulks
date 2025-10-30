@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
@@ -13,21 +12,21 @@ public static class SqlConnectionAsyncExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-     return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
-      .WithId(idSelector)
-       .ToTable(table)
-        .ConfigureBulkOptions(configureOptions)
-.ExecuteAsync(data, cancellationToken);
+        return new BulkDeleteBuilder<T>(connectionContext)
+         .WithId(idSelector)
+          .ToTable(table)
+           .ConfigureBulkOptions(configureOptions)
+   .ExecuteAsync(data, cancellationToken);
     }
 
     public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, string idColumn, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
         var table = TableMapper.Resolve(typeof(T));
 
-    return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
- .WithId(idColumn)
-     .ToTable(table)
- .ConfigureBulkOptions(configureOptions)
+        return new BulkDeleteBuilder<T>(connectionContext)
+     .WithId(idColumn)
+         .ToTable(table)
+     .ConfigureBulkOptions(configureOptions)
             .ExecuteAsync(data, cancellationToken);
     }
 
@@ -35,37 +34,37 @@ public static class SqlConnectionAsyncExtensions
     {
         var table = TableMapper.Resolve(typeof(T));
 
-    return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
-        .WithId(idColumns)
-       .ToTable(table)
-    .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
-  }
+        return new BulkDeleteBuilder<T>(connectionContext)
+     .WithId(idColumns)
+           .ToTable(table)
+        .ConfigureBulkOptions(configureOptions)
+      .ExecuteAsync(data, cancellationToken);
+    }
 
     public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> idSelector, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-    return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
-            .WithId(idSelector)
-   .ToTable(table)
-            .ConfigureBulkOptions(configureOptions)
-    .ExecuteAsync(data, cancellationToken);
+        return new BulkDeleteBuilder<T>(connectionContext)
+              .WithId(idSelector)
+       .ToTable(table)
+                .ConfigureBulkOptions(configureOptions)
+        .ExecuteAsync(data, cancellationToken);
     }
 
     public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, string idColumn, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-     return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
-         .WithId(idColumn)
-            .ToTable(table)
-   .ConfigureBulkOptions(configureOptions)
-          .ExecuteAsync(data, cancellationToken);
+        return new BulkDeleteBuilder<T>(connectionContext)
+            .WithId(idColumn)
+        .ToTable(table)
+      .ConfigureBulkOptions(configureOptions)
+      .ExecuteAsync(data, cancellationToken);
     }
 
-  public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, Action<BulkDeleteOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        return new BulkDeleteBuilder<T>(connectionContext.Connection, connectionContext.Transaction)
+        return new BulkDeleteBuilder<T>(connectionContext)
      .WithId(idColumns)
   .ToTable(table)
     .ConfigureBulkOptions(configureOptions)
-            .ExecuteAsync(data, cancellationToken);
+  .ExecuteAsync(data, cancellationToken);
     }
 }

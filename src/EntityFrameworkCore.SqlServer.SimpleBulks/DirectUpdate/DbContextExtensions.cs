@@ -11,10 +11,9 @@ public static class DbContextExtensions
 {
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, Action<BulkUpdateOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new BulkUpdateBuilder<T>(connection, transaction)
+        return new BulkUpdateBuilder<T>(connectionContext)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNamesSelector)
              .ToTable(dbContext.GetTableInfor(typeof(T)))
@@ -24,10 +23,9 @@ public static class DbContextExtensions
 
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new BulkUpdateBuilder<T>(connection, transaction)
+        return new BulkUpdateBuilder<T>(connectionContext)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNames)
              .ToTable(dbContext.GetTableInfor(typeof(T)))

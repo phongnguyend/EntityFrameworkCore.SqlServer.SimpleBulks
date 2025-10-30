@@ -63,6 +63,11 @@ public static class DbContextExtensions
         return transaction == null ? null : transaction.GetDbTransaction() as SqlTransaction;
     }
 
+    public static ConnectionContext GetConnectionContext(this DbContext dbContext)
+    {
+        return new ConnectionContext(dbContext.GetSqlConnection(), dbContext.GetCurrentSqlTransaction());
+    }
+
     public static IReadOnlyList<ColumnInfor> GetProperties(this DbContext dbContext, Type type)
     {
         var cacheKey = new CacheKey(dbContext.GetType(), type);

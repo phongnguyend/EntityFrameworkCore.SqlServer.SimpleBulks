@@ -1,5 +1,4 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,13 +17,11 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _insertColumnNames;
     private string _outputIdColumn;
     private BulkMergeOptions _options;
-    private readonly SqlConnection _connection;
-    private readonly SqlTransaction _transaction;
+    private readonly ConnectionContext _connectionContext;
 
-    public BulkMergeBuilder(SqlConnection connection, SqlTransaction transaction)
+    public BulkMergeBuilder(ConnectionContext connectionContext)
     {
-        _connection = connection;
-        _transaction = transaction;
+        _connectionContext = connectionContext;
     }
 
     public BulkMergeBuilder<T> ToTable(TableInfor table)
@@ -135,11 +132,11 @@ public class BulkMergeBuilder<T>
         var mergeStatementBuilder = new StringBuilder();
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-            $" collate {_options.Collation}" : string.Empty;
-            return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
-        }));
+           {
+               string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
+     $" collate {_options.Collation}" : string.Empty;
+               return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
+           }));
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
@@ -172,17 +169,17 @@ public class BulkMergeBuilder<T>
 
         mergeStatementBuilder.AppendLine(";");
 
-        _connection.EnsureOpen();
+        _connectionContext.Connection.EnsureOpen();
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             createTemptableCommand.ExecuteNonQuery();
         }
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+        dataTable.SqlBulkCopy(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options);
         Log("End executing SqlBulkCopy.");
 
         var sqlMergeStatement = mergeStatementBuilder.ToString();
@@ -199,7 +196,7 @@ public class BulkMergeBuilder<T>
             outputIdDbColumnName = GetDbColumnName(_outputIdColumn);
         }
 
-        using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
+        using (var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlMergeStatement, _options))
         {
             using var reader = updateCommand.ExecuteReader();
 
@@ -265,11 +262,11 @@ public class BulkMergeBuilder<T>
         var mergeStatementBuilder = new StringBuilder();
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
-            $" collate {_options.Collation}" : string.Empty;
-            return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
-        }));
+             {
+                 string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
+                 $" collate {_options.Collation}" : string.Empty;
+                 return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
+             }));
 
         var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
@@ -305,7 +302,7 @@ public class BulkMergeBuilder<T>
 
         mergeStatementBuilder.AppendLine(";");
 
-        _connection.EnsureOpen();
+        _connectionContext.Connection.EnsureOpen();
 
         var sqlMergeStatement = mergeStatementBuilder.ToString();
 
@@ -319,10 +316,10 @@ public class BulkMergeBuilder<T>
             outputIdDbColumnName = GetDbColumnName(_outputIdColumn);
         }
 
-        using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
+        using (var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlMergeStatement, _options))
         {
             _table.CreateSqlParameters(updateCommand, data, propertyNames)
-                 .ForEach(x => updateCommand.Parameters.Add(x));
+                .ForEach(x => updateCommand.Parameters.Add(x));
 
             using var reader = updateCommand.ExecuteReader();
 
@@ -442,17 +439,17 @@ public class BulkMergeBuilder<T>
 
         mergeStatementBuilder.AppendLine(";");
 
-        await _connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        await dataTable.SqlBulkCopyAsync(temptableName, null, _connection, _transaction, _options, cancellationToken);
+        await dataTable.SqlBulkCopyAsync(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options, cancellationToken);
         Log("End executing SqlBulkCopy.");
 
         var sqlMergeStatement = mergeStatementBuilder.ToString();
@@ -469,7 +466,7 @@ public class BulkMergeBuilder<T>
             outputIdDbColumnName = GetDbColumnName(_outputIdColumn);
         }
 
-        using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
+        using (var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlMergeStatement, _options))
         {
             using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
 
@@ -535,11 +532,11 @@ public class BulkMergeBuilder<T>
         var mergeStatementBuilder = new StringBuilder();
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
-            $" collate {_options.Collation}" : string.Empty;
-            return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
-        }));
+     {
+         string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
+       $" collate {_options.Collation}" : string.Empty;
+         return $"s.[{x}]{collation} = t.[{GetDbColumnName(x)}]{collation}";
+     }));
 
         var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
@@ -575,7 +572,7 @@ public class BulkMergeBuilder<T>
 
         mergeStatementBuilder.AppendLine(";");
 
-        await _connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
 
         var sqlMergeStatement = mergeStatementBuilder.ToString();
 
@@ -589,10 +586,10 @@ public class BulkMergeBuilder<T>
             outputIdDbColumnName = GetDbColumnName(_outputIdColumn);
         }
 
-        using (var updateCommand = _connection.CreateTextCommand(_transaction, sqlMergeStatement, _options))
+        using (var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlMergeStatement, _options))
         {
             _table.CreateSqlParameters(updateCommand, data, propertyNames)
-                .ForEach(x => updateCommand.Parameters.Add(x));
+            .ForEach(x => updateCommand.Parameters.Add(x));
 
             using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
 

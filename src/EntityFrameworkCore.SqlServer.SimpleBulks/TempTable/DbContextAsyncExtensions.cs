@@ -12,25 +12,23 @@ public static class DbContextAsyncExtensions
 {
     public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, Action<TempTableOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new TempTableBuilder<T>(connection, transaction)
-             .WithColumns(columnNamesSelector)
-             .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
-             .ConfigureTempTableOptions(configureOptions)
-             .ExecuteAsync(data, cancellationToken);
+        return new TempTableBuilder<T>(connectionContext)
+           .WithColumns(columnNamesSelector)
+  .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+          .ConfigureTempTableOptions(configureOptions)
+      .ExecuteAsync(data, cancellationToken);
     }
 
     public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, Action<TempTableOptions> configureOptions = null, CancellationToken cancellationToken = default)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new TempTableBuilder<T>(connection, transaction)
-             .WithColumns(columnNames)
-             .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
-             .ConfigureTempTableOptions(configureOptions)
-             .ExecuteAsync(data, cancellationToken);
+        return new TempTableBuilder<T>(connectionContext)
+           .WithColumns(columnNames)
+               .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+            .ConfigureTempTableOptions(configureOptions)
+        .ExecuteAsync(data, cancellationToken);
     }
 }

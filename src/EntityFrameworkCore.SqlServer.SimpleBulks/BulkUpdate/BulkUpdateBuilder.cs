@@ -1,5 +1,4 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,13 +16,11 @@ public class BulkUpdateBuilder<T>
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _columnNames;
     private BulkUpdateOptions _options;
-    private readonly SqlConnection _connection;
-    private readonly SqlTransaction _transaction;
+    private readonly ConnectionContext _connectionContext;
 
-    public BulkUpdateBuilder(SqlConnection connection, SqlTransaction transaction)
+    public BulkUpdateBuilder(ConnectionContext connectionContext)
     {
-        _connection = connection;
-        _transaction = transaction;
+        _connectionContext = connectionContext;
     }
 
     public BulkUpdateBuilder<T> ToTable(TableInfor table)
@@ -110,23 +107,23 @@ public class BulkUpdateBuilder<T>
         updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
         updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        _connection.EnsureOpen();
+        _connectionContext.Connection.EnsureOpen();
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             createTemptableCommand.ExecuteNonQuery();
         }
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+        dataTable.SqlBulkCopy(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options);
         Log("End executing SqlBulkCopy.");
 
         var sqlUpdateStatement = updateStatementBuilder.ToString();
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-        using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
         var affectedRows = updateCommand.ExecuteNonQuery();
         Log("End updating.");
 
@@ -155,11 +152,11 @@ public class BulkUpdateBuilder<T>
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
 
-        using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
 
         _table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
 
-        _connection.EnsureOpen();
+        _connectionContext.Connection.EnsureOpen();
 
         var affectedRow = updateCommand.ExecuteNonQuery();
 
@@ -235,23 +232,23 @@ public class BulkUpdateBuilder<T>
         updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
         updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        await _connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        await dataTable.SqlBulkCopyAsync(temptableName, null, _connection, _transaction, _options, cancellationToken);
+        await dataTable.SqlBulkCopyAsync(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options, cancellationToken);
         Log("End executing SqlBulkCopy.");
 
         var sqlUpdateStatement = updateStatementBuilder.ToString();
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-        using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
         var affectedRows = await updateCommand.ExecuteNonQueryAsync(cancellationToken);
         Log("End updating.");
 
@@ -280,11 +277,11 @@ public class BulkUpdateBuilder<T>
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
 
-        using var updateCommand = _connection.CreateTextCommand(_transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
 
         _table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
 
-        await _connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
 
         var affectedRow = await updateCommand.ExecuteNonQueryAsync(cancellationToken);
 

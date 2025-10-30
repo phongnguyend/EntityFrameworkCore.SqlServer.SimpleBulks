@@ -1,5 +1,4 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
-using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -13,13 +12,11 @@ public class TempTableBuilder<T>
     private IEnumerable<string> _columnNames;
     private MappingContext _mappingContext;
     private TempTableOptions _options;
-    private readonly SqlConnection _connection;
-    private readonly SqlTransaction _transaction;
+    private readonly ConnectionContext _connectionContext;
 
-    public TempTableBuilder(SqlConnection connection, SqlTransaction transaction)
+    public TempTableBuilder(ConnectionContext connectionContext)
     {
-        _connection = connection;
-        _transaction = transaction;
+        _connectionContext = connectionContext;
     }
 
     public TempTableBuilder<T> WithColumns(IEnumerable<string> columnNames)
@@ -73,8 +70,8 @@ public class TempTableBuilder<T>
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
-        _connection.EnsureOpen();
-        using (var createTempTableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTempTable))
+        _connectionContext.Connection.EnsureOpen();
+        using (var createTempTableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTempTable))
         {
             createTempTableCommand.ExecuteNonQuery();
         }
@@ -83,7 +80,7 @@ public class TempTableBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {tempTableName}");
 
-        dataTable.SqlBulkCopy(tempTableName, _mappingContext?.ColumnNameMappings, _connection, _transaction);
+        dataTable.SqlBulkCopy(tempTableName, _mappingContext?.ColumnNameMappings, _connectionContext.Connection, _connectionContext.Transaction);
 
         Log("End executing SqlBulkCopy.");
 
@@ -103,8 +100,8 @@ public class TempTableBuilder<T>
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
-        await _connection.EnsureOpenAsync(cancellationToken);
-        using (var createTempTableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTempTable))
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
+        using (var createTempTableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTempTable))
         {
             await createTempTableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
@@ -113,7 +110,7 @@ public class TempTableBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {tempTableName}");
 
-        await dataTable.SqlBulkCopyAsync(tempTableName, _mappingContext?.ColumnNameMappings, _connection, _transaction, cancellationToken: cancellationToken);
+        await dataTable.SqlBulkCopyAsync(tempTableName, _mappingContext?.ColumnNameMappings, _connectionContext.Connection, _connectionContext.Transaction, cancellationToken: cancellationToken);
 
         Log("End executing SqlBulkCopy.");
 

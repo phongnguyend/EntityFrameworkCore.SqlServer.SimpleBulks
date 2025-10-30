@@ -19,13 +19,11 @@ public class BulkMatchBuilder<T>
     private IEnumerable<string> _matchedColumns;
     private IEnumerable<string> _returnedColumns;
     private BulkMatchOptions _options;
-    private readonly SqlConnection _connection;
-    private readonly SqlTransaction _transaction;
+    private readonly ConnectionContext _connectionContext;
 
-    public BulkMatchBuilder(SqlConnection connection, SqlTransaction transaction)
+    public BulkMatchBuilder(ConnectionContext connectionContext)
     {
-        _connection = connection;
-        _transaction = transaction;
+        _connectionContext = connectionContext;
     }
 
     public BulkMatchBuilder<T> WithTable(TableInfor table)
@@ -103,11 +101,11 @@ public class BulkMatchBuilder<T>
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
         selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        _connection.EnsureOpen();
+        _connectionContext.Connection.EnsureOpen();
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
 
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             createTemptableCommand.ExecuteNonQuery();
         }
@@ -117,7 +115,7 @@ public class BulkMatchBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
 
-        dataTable.SqlBulkCopy(temptableName, null, _connection, _transaction, _options);
+        dataTable.SqlBulkCopy(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options);
 
         Log("End executing SqlBulkCopy.");
 
@@ -129,7 +127,7 @@ public class BulkMatchBuilder<T>
 
         var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
 
-        using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, selectQuery, _options);
         using var reader = updateCommand.ExecuteReader();
         while (reader.Read())
         {
@@ -179,11 +177,11 @@ public class BulkMatchBuilder<T>
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
         selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        await _connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
 
-        using (var createTemptableCommand = _connection.CreateTextCommand(_transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
         {
             await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
@@ -192,7 +190,7 @@ public class BulkMatchBuilder<T>
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
 
-        await dataTable.SqlBulkCopyAsync(temptableName, null, _connection, _transaction, _options, cancellationToken);
+        await dataTable.SqlBulkCopyAsync(temptableName, null, _connectionContext.Connection, _connectionContext.Transaction, _options, cancellationToken);
 
         Log("End executing SqlBulkCopy.");
 
@@ -204,7 +202,7 @@ public class BulkMatchBuilder<T>
 
         var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
 
-        using var updateCommand = _connection.CreateTextCommand(_transaction, selectQuery, _options);
+        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, selectQuery, _options);
         using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {

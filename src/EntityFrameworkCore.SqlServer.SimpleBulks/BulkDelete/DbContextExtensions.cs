@@ -9,10 +9,9 @@ public static class DbContextExtensions
 {
     public static BulkDeleteResult BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, Action<BulkDeleteOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new BulkDeleteBuilder<T>(connection, transaction)
+        return new BulkDeleteBuilder<T>(connectionContext)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
              .ConfigureBulkOptions(configureOptions)

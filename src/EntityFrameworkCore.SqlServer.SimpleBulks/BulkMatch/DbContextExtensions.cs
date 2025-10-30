@@ -10,10 +10,9 @@ public static class DbContextExtensions
 {
     public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new BulkMatchBuilder<T>(connection, transaction)
+        return new BulkMatchBuilder<T>(connectionContext)
              .WithReturnedColumns(dbContext.GetAllPropertyNames(typeof(T)))
              .WithTable(dbContext.GetTableInfor(typeof(T)))
              .WithMatchedColumns(matchedColumnsSelector)
@@ -23,10 +22,9 @@ public static class DbContextExtensions
 
     public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, Action<BulkMatchOptions> configureOptions = null)
     {
-        var connection = dbContext.GetSqlConnection();
-        var transaction = dbContext.GetCurrentSqlTransaction();
+        var connectionContext = dbContext.GetConnectionContext();
 
-        return new BulkMatchBuilder<T>(connection, transaction)
+        return new BulkMatchBuilder<T>(connectionContext)
              .WithReturnedColumns(returnedColumnsSelector)
              .WithTable(dbContext.GetTableInfor(typeof(T)))
              .WithMatchedColumns(matchedColumnsSelector)
