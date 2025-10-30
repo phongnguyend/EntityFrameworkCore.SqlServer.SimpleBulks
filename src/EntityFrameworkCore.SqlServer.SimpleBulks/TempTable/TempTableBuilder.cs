@@ -11,7 +11,7 @@ public class TempTableBuilder<T>
 {
     private IEnumerable<string> _columnNames;
     private MappingContext _mappingContext;
-    private TempTableOptions _options;
+    private TempTableOptions _options = TempTableOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public TempTableBuilder(ConnectionContext connectionContext)

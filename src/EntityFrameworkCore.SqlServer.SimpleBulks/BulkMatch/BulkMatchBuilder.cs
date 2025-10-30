@@ -18,7 +18,7 @@ public class BulkMatchBuilder<T>
     private TableInfor _table;
     private IEnumerable<string> _matchedColumns;
     private IEnumerable<string> _returnedColumns;
-    private BulkMatchOptions _options;
+    private BulkMatchOptions _options = BulkMatchOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public BulkMatchBuilder(ConnectionContext connectionContext)

@@ -12,7 +12,7 @@ public class BulkDeleteBuilder<T>
 {
     private TableInfor _table;
     private IEnumerable<string> _idColumns;
-    private BulkDeleteOptions _options;
+    private BulkDeleteOptions _options = BulkDeleteOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public BulkDeleteBuilder(ConnectionContext connectionContext)

@@ -15,7 +15,7 @@ public class BulkUpdateBuilder<T>
     private TableInfor _table;
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _columnNames;
-    private BulkUpdateOptions _options;
+    private BulkUpdateOptions _options = BulkUpdateOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public BulkUpdateBuilder(ConnectionContext connectionContext)

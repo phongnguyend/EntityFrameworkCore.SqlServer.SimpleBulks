@@ -16,7 +16,7 @@ public class BulkMergeBuilder<T>
     private IEnumerable<string> _updateColumnNames;
     private IEnumerable<string> _insertColumnNames;
     private string _outputIdColumn;
-    private BulkMergeOptions _options;
+    private BulkMergeOptions _options = BulkMergeOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public BulkMergeBuilder(ConnectionContext connectionContext)

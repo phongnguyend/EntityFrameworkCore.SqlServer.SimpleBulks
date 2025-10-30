@@ -17,7 +17,7 @@ public class BulkInsertBuilder<T>
     private string _outputIdColumn;
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
-    private BulkInsertOptions _options;
+    private BulkInsertOptions _options = BulkInsertOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
     public BulkInsertBuilder(ConnectionContext connectionContext)
