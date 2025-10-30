@@ -36,11 +36,11 @@ public static class DataTableExtensions
         return sql.ToString();
     }
 
-    public static void SqlBulkCopy(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null)
+    public static void SqlBulkCopy(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, ConnectionContext connectionContext, BulkOptions options = null)
     {
         options ??= DefaultBulkOptions;
 
-        using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
+        using var bulkCopy = new SqlBulkCopy(connectionContext.Connection, SqlBulkCopyOptions.Default, connectionContext.Transaction)
         {
             BatchSize = options.BatchSize,
             BulkCopyTimeout = options.Timeout,
@@ -55,11 +55,11 @@ public static class DataTableExtensions
         bulkCopy.WriteToServer(dataTable);
     }
 
-    public static async Task SqlBulkCopyAsync(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null, CancellationToken cancellationToken = default)
+    public static async Task SqlBulkCopyAsync(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, ConnectionContext connectionContext, BulkOptions options = null, CancellationToken cancellationToken = default)
     {
         options ??= DefaultBulkOptions;
 
-        using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
+        using var bulkCopy = new SqlBulkCopy(connectionContext.Connection, SqlBulkCopyOptions.Default, connectionContext.Transaction)
         {
             BatchSize = options.BatchSize,
             BulkCopyTimeout = options.Timeout,
