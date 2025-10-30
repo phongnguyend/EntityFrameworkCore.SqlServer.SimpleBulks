@@ -9,6 +9,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DataTableExtensions
 {
+    private static readonly BulkOptions DefaultBulkOptions = new BulkOptions()
+    {
+        BatchSize = 0,
+        Timeout = 30,
+    };
+
     public static string GenerateTableDefinition(this DataTable table, string tableName,
         IReadOnlyDictionary<string, string> columnNameMappings,
         IReadOnlyDictionary<string, string> columnTypeMappings)
@@ -32,11 +38,7 @@ public static class DataTableExtensions
 
     public static void SqlBulkCopy(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null)
     {
-        options ??= new BulkOptions()
-        {
-            BatchSize = 0,
-            Timeout = 30,
-        };
+        options ??= DefaultBulkOptions;
 
         using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
         {
@@ -55,11 +57,7 @@ public static class DataTableExtensions
 
     public static async Task SqlBulkCopyAsync(this DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, SqlConnection connection, SqlTransaction transaction, BulkOptions options = null, CancellationToken cancellationToken = default)
     {
-        options ??= new BulkOptions()
-        {
-            BatchSize = 0,
-            Timeout = 30,
-        };
+        options ??= DefaultBulkOptions;
 
         using var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction)
         {

@@ -7,6 +7,12 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class ConnectionContextExtensions
 {
+    private static readonly BulkOptions DefaultBulkOptions = new BulkOptions()
+    {
+        BatchSize = 0,
+        Timeout = 30,
+    };
+
     public static void EnsureOpen(this ConnectionContext connection)
     {
         var connectionState = connection.Connection.State;
@@ -39,11 +45,7 @@ public static class ConnectionContextExtensions
 
     public static SqlCommand CreateTextCommand(this ConnectionContext connection, string commandText, BulkOptions options = null)
     {
-        options ??= new BulkOptions()
-        {
-            BatchSize = 0,
-            Timeout = 30,
-        };
+        options ??= DefaultBulkOptions;
 
         var command = connection.Connection.CreateCommand();
         command.Transaction = connection.Transaction;
