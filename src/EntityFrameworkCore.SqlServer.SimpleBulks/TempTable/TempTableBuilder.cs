@@ -70,8 +70,8 @@ public class TempTableBuilder<T>
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
-        _connectionContext.Connection.EnsureOpen();
-        using (var createTempTableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTempTable))
+        _connectionContext.EnsureOpen();
+        using (var createTempTableCommand = _connectionContext.CreateTextCommand(sqlCreateTempTable))
         {
             createTempTableCommand.ExecuteNonQuery();
         }
@@ -100,8 +100,8 @@ public class TempTableBuilder<T>
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTempTable}");
 
-        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
-        using (var createTempTableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTempTable))
+        await _connectionContext.EnsureOpenAsync(cancellationToken);
+        using (var createTempTableCommand = _connectionContext.CreateTextCommand(sqlCreateTempTable))
         {
             await createTempTableCommand.ExecuteNonQueryAsync(cancellationToken);
         }

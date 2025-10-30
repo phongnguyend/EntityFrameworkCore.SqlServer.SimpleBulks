@@ -178,7 +178,7 @@ public static class DbContextExtensions
 
     public static IDbCommand CreateTextCommand(this DbContext dbContext, string commandText, BulkOptions options = null)
     {
-        return dbContext.GetSqlConnection().CreateTextCommand(dbContext.GetCurrentSqlTransaction(), commandText, options);
+        return dbContext.GetConnectionContext().CreateTextCommand(commandText, options);
     }
 
     public static void ExecuteReader(this DbContext dbContext, string commandText, Action<IDataReader> action, BulkOptions options = null)

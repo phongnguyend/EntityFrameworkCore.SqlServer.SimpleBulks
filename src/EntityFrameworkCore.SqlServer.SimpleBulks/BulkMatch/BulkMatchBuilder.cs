@@ -101,11 +101,11 @@ public class BulkMatchBuilder<T>
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
         selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        _connectionContext.Connection.EnsureOpen();
+        _connectionContext.EnsureOpen();
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
 
-        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
         {
             createTemptableCommand.ExecuteNonQuery();
         }
@@ -127,7 +127,7 @@ public class BulkMatchBuilder<T>
 
         var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
 
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, selectQuery, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(selectQuery, _options);
         using var reader = updateCommand.ExecuteReader();
         while (reader.Read())
         {
@@ -177,11 +177,11 @@ public class BulkMatchBuilder<T>
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
         selectQueryBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.EnsureOpenAsync(cancellationToken);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
 
-        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
         {
             await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
@@ -202,7 +202,7 @@ public class BulkMatchBuilder<T>
 
         var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
 
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, selectQuery, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(selectQuery, _options);
         using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {

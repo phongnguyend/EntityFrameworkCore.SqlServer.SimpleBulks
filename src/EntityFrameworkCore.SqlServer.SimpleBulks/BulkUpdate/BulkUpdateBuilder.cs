@@ -107,10 +107,10 @@ public class BulkUpdateBuilder<T>
         updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
         updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        _connectionContext.Connection.EnsureOpen();
+        _connectionContext.EnsureOpen();
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
         {
             createTemptableCommand.ExecuteNonQuery();
         }
@@ -123,7 +123,7 @@ public class BulkUpdateBuilder<T>
         var sqlUpdateStatement = updateStatementBuilder.ToString();
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
         var affectedRows = updateCommand.ExecuteNonQuery();
         Log("End updating.");
 
@@ -152,11 +152,11 @@ public class BulkUpdateBuilder<T>
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
 
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
 
         _table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
 
-        _connectionContext.Connection.EnsureOpen();
+        _connectionContext.EnsureOpen();
 
         var affectedRow = updateCommand.ExecuteNonQuery();
 
@@ -232,10 +232,10 @@ public class BulkUpdateBuilder<T>
         updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
         updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
 
-        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.EnsureOpenAsync(cancellationToken);
 
         Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlCreateTemptable, _options))
+        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
         {
             await createTemptableCommand.ExecuteNonQueryAsync(cancellationToken);
         }
@@ -248,7 +248,7 @@ public class BulkUpdateBuilder<T>
         var sqlUpdateStatement = updateStatementBuilder.ToString();
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
         var affectedRows = await updateCommand.ExecuteNonQueryAsync(cancellationToken);
         Log("End updating.");
 
@@ -277,11 +277,11 @@ public class BulkUpdateBuilder<T>
 
         Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
 
-        using var updateCommand = _connectionContext.Connection.CreateTextCommand(_connectionContext.Transaction, sqlUpdateStatement, _options);
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
 
         _table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId).ForEach(x => updateCommand.Parameters.Add(x));
 
-        await _connectionContext.Connection.EnsureOpenAsync(cancellationToken);
+        await _connectionContext.EnsureOpenAsync(cancellationToken);
 
         var affectedRow = await updateCommand.ExecuteNonQueryAsync(cancellationToken);
 
