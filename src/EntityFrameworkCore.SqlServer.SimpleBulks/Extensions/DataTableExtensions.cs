@@ -1,20 +1,11 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class DataTableExtensions
 {
-    private static readonly BulkOptions DefaultBulkOptions = new BulkOptions()
-    {
-        BatchSize = 0,
-        Timeout = 30,
-    };
-
     public static string GenerateTableDefinition(this DataTable table, string tableName,
         IReadOnlyDictionary<string, string> columnNameMappings,
         IReadOnlyDictionary<string, string> columnTypeMappings)
@@ -34,44 +25,6 @@ public static class DataTableExtensions
         sql.Append("\n);");
 
         return sql.ToString();
-    }
-
-    public static void SqlBulkCopy(this ConnectionContext connectionContext, DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, BulkOptions options = null)
-    {
-        options ??= DefaultBulkOptions;
-
-        using var bulkCopy = new SqlBulkCopy(connectionContext.Connection, SqlBulkCopyOptions.Default, connectionContext.Transaction)
-        {
-            BatchSize = options.BatchSize,
-            BulkCopyTimeout = options.Timeout,
-            DestinationTableName = $"{tableName}"
-        };
-
-        foreach (DataColumn dtColum in dataTable.Columns)
-        {
-            bulkCopy.ColumnMappings.Add(dtColum.ColumnName, GetDbColumnName(dtColum.ColumnName, columnNameMappings));
-        }
-
-        bulkCopy.WriteToServer(dataTable);
-    }
-
-    public static async Task SqlBulkCopyAsync(this ConnectionContext connectionContext, DataTable dataTable, string tableName, IReadOnlyDictionary<string, string> columnNameMappings, BulkOptions options = null, CancellationToken cancellationToken = default)
-    {
-        options ??= DefaultBulkOptions;
-
-        using var bulkCopy = new SqlBulkCopy(connectionContext.Connection, SqlBulkCopyOptions.Default, connectionContext.Transaction)
-        {
-            BatchSize = options.BatchSize,
-            BulkCopyTimeout = options.Timeout,
-            DestinationTableName = $"{tableName}"
-        };
-
-        foreach (DataColumn dtColum in dataTable.Columns)
-        {
-            bulkCopy.ColumnMappings.Add(dtColum.ColumnName, GetDbColumnName(dtColum.ColumnName, columnNameMappings));
-        }
-
-        await bulkCopy.WriteToServerAsync(dataTable, cancellationToken);
     }
 
     private static string GetDbColumnName(string columnName, IReadOnlyDictionary<string, string> columnNameMappings)
