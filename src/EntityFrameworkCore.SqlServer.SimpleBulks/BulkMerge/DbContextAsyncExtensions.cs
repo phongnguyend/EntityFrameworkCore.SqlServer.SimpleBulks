@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 
 public static class DbContextAsyncExtensions
 {
-    public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
     {
         var connectionContext = dbContext.GetConnectionContext();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
@@ -21,11 +21,11 @@ public static class DbContextAsyncExtensions
         .WithInsertColumns(insertColumnNamesSelector)
       .WithOutputId(outputIdColumn)
       .ToTable(dbContext.GetTableInfor(typeof(T)))
-        .ConfigureBulkOptions(configureOptions)
+        .WithBulkOptions(options)
         .ExecuteAsync(data, cancellationToken);
     }
 
-    public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, Action<BulkMergeOptions> configureOptions = null, CancellationToken cancellationToken = default)
+    public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
     {
         var connectionContext = dbContext.GetConnectionContext();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
@@ -36,7 +36,7 @@ public static class DbContextAsyncExtensions
           .WithInsertColumns(insertColumnNames)
      .WithOutputId(outputIdColumn)
      .ToTable(dbContext.GetTableInfor(typeof(T)))
-         .ConfigureBulkOptions(configureOptions)
+       .WithBulkOptions(options)
          .ExecuteAsync(data, cancellationToken);
     }
 }

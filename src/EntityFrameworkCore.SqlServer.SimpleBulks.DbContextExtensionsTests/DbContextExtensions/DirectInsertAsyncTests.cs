@@ -1,5 +1,6 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -37,16 +38,16 @@ public class DirectInsertAsyncTests : BaseTest
 
         await _context.DirectInsertAsync(row,
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         await _context.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
 
@@ -100,16 +101,16 @@ public class DirectInsertAsyncTests : BaseTest
 
         await _context.DirectInsertAsync(row,
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         await _context.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         tran.Commit();
@@ -164,16 +165,16 @@ public class DirectInsertAsyncTests : BaseTest
 
         await _context.DirectInsertAsync(row,
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         await _context.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         tran.Rollback();
@@ -198,11 +199,12 @@ public class DirectInsertAsyncTests : BaseTest
             CreatedDateTime = DateTimeOffset.Now,
         };
 
-        await _context.DirectInsertAsync(configurationEntry, options =>
-        {
-            options.KeepIdentity = true;
-            options.LogTo = _output.WriteLine;
-        });
+        await _context.DirectInsertAsync(configurationEntry,
+                new BulkInsertOptions()
+                {
+                    KeepIdentity = true,
+                    LogTo = _output.WriteLine
+                });
 
         // Assert
         var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();
@@ -225,10 +227,11 @@ public class DirectInsertAsyncTests : BaseTest
             CreatedDateTime = DateTimeOffset.Now,
         };
 
-        await _context.DirectInsertAsync(configurationEntry, options =>
-        {
-            options.LogTo = _output.WriteLine;
-        });
+        await _context.DirectInsertAsync(configurationEntry,
+                new BulkInsertOptions()
+                {
+                    LogTo = _output.WriteLine
+                });
 
         // Assert
         var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList();

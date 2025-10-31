@@ -54,13 +54,9 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateBuilder<T> ConfigureBulkOptions(Action<BulkUpdateOptions> configureOptions)
+    public BulkUpdateBuilder<T> WithBulkOptions(BulkUpdateOptions options)
     {
-        _options = new BulkUpdateOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? BulkUpdateOptions.DefaultOptions;
         return this;
     }
 

@@ -7,14 +7,14 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 
 public static class DbContextExtensions
 {
-    public static BulkDeleteResult DirectDelete<T>(this DbContext dbContext, T data, Action<BulkDeleteOptions> configureOptions = null)
+    public static BulkDeleteResult DirectDelete<T>(this DbContext dbContext, T data, BulkDeleteOptions options = null)
     {
         var connectionContext = dbContext.GetConnectionContext();
 
         return new BulkDeleteBuilder<T>(connectionContext)
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .ToTable(dbContext.GetTableInfor(typeof(T)))
-             .ConfigureBulkOptions(configureOptions)
+             .WithBulkOptions(options)
              .SingleDelete(data);
     }
 }

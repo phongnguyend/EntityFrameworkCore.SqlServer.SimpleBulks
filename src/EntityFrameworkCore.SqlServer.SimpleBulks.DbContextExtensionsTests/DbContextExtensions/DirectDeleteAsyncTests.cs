@@ -1,6 +1,7 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
-using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -59,16 +60,16 @@ public class DirectDeleteAsyncTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = await _context.DirectDeleteAsync(row,
-                  options =>
-                  {
-                      options.LogTo = _output.WriteLine;
-                  });
+      new BulkDeleteOptions()
+      {
+          LogTo = _output.WriteLine
+      });
 
         var deleteResult2 = await _context.DirectDeleteAsync(compositeKeyRow,
-                options =>
-                {
-                    options.LogTo = _output.WriteLine;
-                });
+               new BulkDeleteOptions()
+               {
+                   LogTo = _output.WriteLine
+               });
 
         tran.Commit();
 
@@ -95,16 +96,16 @@ public class DirectDeleteAsyncTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = await _context.DirectDeleteAsync(row,
-                  options =>
-                  {
-                      options.LogTo = _output.WriteLine;
-                  });
+               new BulkDeleteOptions()
+               {
+                   LogTo = _output.WriteLine
+               });
 
         var deleteResult2 = await _context.DirectDeleteAsync(compositeKeyRow,
-                options =>
-                {
-                    options.LogTo = _output.WriteLine;
-                });
+        new BulkDeleteOptions()
+        {
+            LogTo = _output.WriteLine
+        });
 
         tran.Rollback();
 

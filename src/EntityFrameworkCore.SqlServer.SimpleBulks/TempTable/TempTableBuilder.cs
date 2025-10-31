@@ -37,13 +37,9 @@ public class TempTableBuilder<T>
         return this;
     }
 
-    public TempTableBuilder<T> ConfigureTempTableOptions(Action<TempTableOptions> configureOptions)
+    public TempTableBuilder<T> WithTempTableOptions(TempTableOptions options)
     {
-        _options = new TempTableOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? TempTableOptions.DefaultOptions;
         return this;
     }
 

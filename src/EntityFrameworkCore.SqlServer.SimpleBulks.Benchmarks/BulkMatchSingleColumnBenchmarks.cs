@@ -86,9 +86,9 @@ public class BulkMatchSingleColumnBenchmarks1
 
         var customers = _context.BulkMatch(matchedCustomers,
             x => x.Id,
-            opt =>
+            new BulkMatchOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }
@@ -162,9 +162,9 @@ public class BulkMatchSingleColumnBenchmarks2
 
         var customers = _context.BulkMatch(matchedCustomers,
             x => x.Id,
-            opt =>
+            new BulkMatchOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }

@@ -31,22 +31,10 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
-    [Obsolete("Typo Issue, Shoud use WithOutputId")]
-    public BulkInsertBuilder<T> WithOuputId(string idColumn)
-    {
-        return WithOutputId(idColumn);
-    }
-
     public BulkInsertBuilder<T> WithOutputId(string idColumn)
     {
         _outputIdColumn = idColumn;
         return this;
-    }
-
-    [Obsolete("Typo Issue, Shoud use WithOutputId")]
-    public BulkInsertBuilder<T> WithOuputId(Expression<Func<T, object>> idSelector)
-    {
-        return WithOutputId(idSelector);
     }
 
     public BulkInsertBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
@@ -73,13 +61,9 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
-    public BulkInsertBuilder<T> ConfigureBulkOptions(Action<BulkInsertOptions> configureOptions)
+    public BulkInsertBuilder<T> WithBulkOptions(BulkInsertOptions options)
     {
-        _options = new BulkInsertOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? BulkInsertOptions.DefaultOptions;
         return this;
     }
 

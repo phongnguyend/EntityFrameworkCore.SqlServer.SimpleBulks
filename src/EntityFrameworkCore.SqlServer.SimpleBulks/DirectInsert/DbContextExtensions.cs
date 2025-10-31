@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 
 public static class DbContextExtensions
 {
-    public static void DirectInsert<T>(this DbContext dbContext, T data, Action<BulkInsertOptions> configureOptions = null)
+    public static void DirectInsert<T>(this DbContext dbContext, T data, BulkInsertOptions options = null)
     {
         var connectionContext = dbContext.GetConnectionContext();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -18,11 +18,11 @@ public static class DbContextExtensions
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
-            .ConfigureBulkOptions(configureOptions)
+            .WithBulkOptions(options)
             .SingleInsert(data);
     }
 
-    public static void DirectInsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, Action<BulkInsertOptions> configureOptions = null)
+    public static void DirectInsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
     {
         var connectionContext = dbContext.GetConnectionContext();
         var idColumn = dbContext.GetOutputId(typeof(T));
@@ -32,7 +32,7 @@ public static class DbContextExtensions
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
             .WithOutputIdMode(GetOutputIdMode(idColumn))
-            .ConfigureBulkOptions(configureOptions)
+            .WithBulkOptions(options)
             .SingleInsert(data);
     }
 

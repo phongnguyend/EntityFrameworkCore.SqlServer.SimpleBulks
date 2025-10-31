@@ -79,13 +79,9 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> ConfigureBulkOptions(Action<BulkMergeOptions> configureOptions)
+    public BulkMergeBuilder<T> WithBulkOptions(BulkMergeOptions options)
     {
-        _options = new BulkMergeOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? BulkMergeOptions.DefaultOptions;
         return this;
     }
 

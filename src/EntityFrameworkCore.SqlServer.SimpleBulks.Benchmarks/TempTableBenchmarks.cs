@@ -54,9 +54,9 @@ public class TempTableBenchmarks
                 x.CurrentCountryIsoCode,
                 x.Index
             },
-            opt =>
+            new TempTableOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }

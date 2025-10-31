@@ -105,9 +105,9 @@ public class BulkMergeBenchmarks
             x => x.Id,
             x => new { x.FirstName },
             x => new { x.FirstName, x.LastName, x.Index },
-            opt =>
+            new BulkMergeOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }

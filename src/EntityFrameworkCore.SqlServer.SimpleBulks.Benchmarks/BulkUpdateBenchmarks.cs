@@ -88,9 +88,9 @@ public class BulkUpdateBenchmarks1
         {
             _context.BulkUpdate(page,
             x => new { x.FirstName },
-            opt =>
+            new BulkUpdateOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
         }
     }
@@ -157,9 +157,9 @@ public class BulkUpdateBenchmarks2
         {
             _context.BulkUpdate(page,
             x => new { x.FirstName },
-            opt =>
+            new BulkUpdateOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
         }
     }

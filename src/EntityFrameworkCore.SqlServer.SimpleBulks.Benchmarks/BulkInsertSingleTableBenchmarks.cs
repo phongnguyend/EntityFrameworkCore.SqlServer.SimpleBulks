@@ -52,9 +52,9 @@ public class BulkInsertSingleTableBenchmarks
     [Benchmark]
     public void BulkInsert()
     {
-        _context.BulkInsert(_customers, opt =>
+        _context.BulkInsert(_customers, new BulkInsertOptions()
         {
-            opt.Timeout = 0;
+            Timeout = 0
         });
     }
 }

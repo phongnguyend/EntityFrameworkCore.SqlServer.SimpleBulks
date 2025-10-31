@@ -78,9 +78,9 @@ public class BulkMatchAsyncTests : BaseTest
         // Act
         var customersFromDb = await _context.BulkMatchAsync(matchedCustommers,
             x => x.Id,
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             });
 
         // Assert
@@ -108,9 +108,9 @@ public class BulkMatchAsyncTests : BaseTest
         var customersFromDb = await _context.BulkMatchAsync(matchedCustommers,
             x => x.Id,
             x => new { x.Id, x.FirstName },
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             });
 
         // Assert
@@ -135,9 +135,9 @@ public class BulkMatchAsyncTests : BaseTest
         // Act
         var contactsFromDb = (await _context.BulkMatchAsync(matchedContacts,
             x => x.CustomerId,
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             }))
             .OrderBy(x => x.Id).ToList();
 
@@ -170,9 +170,9 @@ public class BulkMatchAsyncTests : BaseTest
         var contactsFromDb = (await _context.BulkMatchAsync(matchedContacts,
             x => x.CustomerId,
             x => new { x.Id, x.PhoneNumber },
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             }))
             .OrderBy(x => x.Id).ToList();
 
@@ -200,9 +200,9 @@ public class BulkMatchAsyncTests : BaseTest
         // Act
         var contactsFromDb = (await _context.BulkMatchAsync(matchedContacts,
             x => new { x.CustomerId, x.CountryIsoCode },
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             }))
             .OrderBy(x => x.Id).ToList();
 
@@ -234,9 +234,9 @@ public class BulkMatchAsyncTests : BaseTest
         var contactsFromDb = (await _context.BulkMatchAsync(matchedContacts,
             x => new { x.CustomerId, x.CountryIsoCode },
             x => new { x.Id, x.PhoneNumber },
-            options =>
+            new BulkMatchOptions()
             {
-                options.LogTo = _output.WriteLine;
+                LogTo = _output.WriteLine
             }))
             .OrderBy(x => x.Id).ToList();
 

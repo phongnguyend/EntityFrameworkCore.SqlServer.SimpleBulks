@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.Database;
-using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using Microsoft.EntityFrameworkCore;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks;
@@ -65,9 +65,9 @@ public class BulkDeleteBenchmarks1
     public void BulkDelete()
     {
         _context.BulkDelete(_customersToDelete,
-            opt =>
+            new BulkDeleteOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }
@@ -123,9 +123,9 @@ public class BulkDeleteBenchmarks2
     public void BulkDelete()
     {
         _context.BulkDelete(_customersToDelete,
-            opt =>
+            new BulkDeleteOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
     }
 }

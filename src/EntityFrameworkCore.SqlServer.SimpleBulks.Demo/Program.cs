@@ -17,10 +17,10 @@ using (var dbct = new DemoDbContext())
     dbct.Database.Migrate();
 
     var deleteResult = await dbct.BulkDeleteAsync(dbct.Set<ConfigurationEntry>().AsNoTracking(),
-          opt =>
-          {
-              opt.LogTo = Console.WriteLine;
-          });
+        new BulkDeleteOptions()
+        {
+            LogTo = Console.WriteLine
+        });
 
     Console.WriteLine($"Deleted: {deleteResult.AffectedRows} row(s)");
 
@@ -39,10 +39,10 @@ using (var dbct = new DemoDbContext())
     }
 
     await dbct.BulkInsertAsync(configurationEntries,
-        opt =>
-        {
-            opt.LogTo = Console.WriteLine;
-        });
+   new BulkInsertOptions()
+   {
+       LogTo = Console.WriteLine
+   });
 
     foreach (var row in configurationEntries)
     {
@@ -55,10 +55,10 @@ using (var dbct = new DemoDbContext())
     }
 
     var updateResult = await dbct.BulkUpdateAsync(configurationEntries,
-        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
-        opt =>
+  x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
+        new BulkUpdateOptions()
         {
-            opt.LogTo = Console.WriteLine;
+            LogTo = Console.WriteLine
         });
 
     Console.WriteLine($"Updated: {updateResult.AffectedRows} row(s)");
@@ -73,12 +73,12 @@ using (var dbct = new DemoDbContext())
     });
 
     var mergeResult = await dbct.BulkMergeAsync(configurationEntries,
-        x => x.Id,
-        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+     x => x.Id,
+      x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
         x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime, x.SeasonAsInt, x.SeasonAsString },
-        opt =>
+        new BulkMergeOptions()
         {
-            opt.LogTo = Console.WriteLine;
+            LogTo = Console.WriteLine
         });
 
     Console.WriteLine($"Updated: {mergeResult.UpdatedRows} row(s)");
@@ -95,10 +95,10 @@ using (var dbct = new DemoDbContext())
     };
 
     dbct.DirectInsert(configurationEntry,
-        opt =>
-        {
-            opt.LogTo = Console.WriteLine;
-        });
+   new BulkInsertOptions()
+   {
+       LogTo = Console.WriteLine
+   });
 
     configurationEntry.Key += "_Updated";
     configurationEntry.Value += "_Updated";
@@ -107,16 +107,16 @@ using (var dbct = new DemoDbContext())
     configurationEntry.SeasonAsString = Season.Spring;
 
     dbct.DirectUpdate(configurationEntry,
-        x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
-        opt =>
+    x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
+        new BulkUpdateOptions()
         {
-            opt.LogTo = Console.WriteLine;
+            LogTo = Console.WriteLine
         });
 
     dbct.DirectDelete(configurationEntry,
-        opt =>
+        new BulkDeleteOptions()
         {
-            opt.LogTo = Console.WriteLine;
+            LogTo = Console.WriteLine
         });
 }
 

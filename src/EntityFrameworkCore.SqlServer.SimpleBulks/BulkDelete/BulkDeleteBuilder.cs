@@ -39,13 +39,9 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteBuilder<T> ConfigureBulkOptions(Action<BulkDeleteOptions> configureOptions)
+    public BulkDeleteBuilder<T> WithBulkOptions(BulkDeleteOptions options)
     {
-        _options = new BulkDeleteOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? BulkDeleteOptions.DefaultOptions;
         return this;
     }
 

@@ -6,7 +6,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkUpdateOptions> configureOptions = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
         var table = TableMapper.Resolve(typeof(T));
 
@@ -14,11 +14,11 @@ public static class ConnectionContextExtensions
        .WithId(idSelector)
         .WithColumns(columnNamesSelector)
    .ToTable(table)
-       .ConfigureBulkOptions(configureOptions)
+      .WithBulkOptions(options)
         .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
     {
         var table = TableMapper.Resolve(typeof(T));
 
@@ -26,27 +26,27 @@ public static class ConnectionContextExtensions
            .WithId(idColumns)
                  .WithColumns(columnNames)
               .ToTable(table)
-          .ConfigureBulkOptions(configureOptions)
+      .WithBulkOptions(options)
        .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, Action<BulkUpdateOptions> configureOptions = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
         return new BulkUpdateBuilder<T>(connectionContext)
  .WithId(idSelector)
     .WithColumns(columnNamesSelector)
      .ToTable(table)
- .ConfigureBulkOptions(configureOptions)
+.WithBulkOptions(options)
     .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, IEnumerable<string> columnNames, Action<BulkUpdateOptions> configureOptions = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IEnumerable<T> data, TableInfor table, IEnumerable<string> idColumns, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
     {
         return new BulkUpdateBuilder<T>(connectionContext)
-                    .WithId(idColumns)
-              .WithColumns(columnNames)
-            .ToTable(table)
-              .ConfigureBulkOptions(configureOptions)
-          .Execute(data);
+          .WithId(idColumns)
+       .WithColumns(columnNames)
+        .ToTable(table)
+           .WithBulkOptions(options)
+               .Execute(data);
     }
 }

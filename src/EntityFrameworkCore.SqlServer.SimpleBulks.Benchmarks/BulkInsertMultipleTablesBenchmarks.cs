@@ -68,9 +68,9 @@ public class BulkInsertMultipleTablesBenchmarks
     [Benchmark]
     public void BulkInsert()
     {
-        _context.BulkInsert(_customers, opt =>
+        _context.BulkInsert(_customers, new BulkInsertOptions()
         {
-            opt.Timeout = 0;
+            Timeout = 0
         });
 
         foreach (var customer in _customers)
@@ -81,9 +81,9 @@ public class BulkInsertMultipleTablesBenchmarks
             }
         }
 
-        _context.BulkInsert(_contacts, opt =>
+        _context.BulkInsert(_contacts, new BulkInsertOptions()
         {
-            opt.Timeout = 0;
+            Timeout = 0
         });
     }
 }

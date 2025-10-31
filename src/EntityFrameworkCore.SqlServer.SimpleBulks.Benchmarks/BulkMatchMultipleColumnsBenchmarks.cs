@@ -59,9 +59,9 @@ public class BulkMatchMultipleColumnsBenchmarks1
         }
 
         _context.BulkInsert(_customers,
-            opt =>
+            new BulkInsertOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         foreach (var customer in _customers)
@@ -75,9 +75,9 @@ public class BulkMatchMultipleColumnsBenchmarks1
         _contacts = _customers.SelectMany(x => x.Contacts).ToList();
 
         _context.BulkInsert(_contacts,
-            opt =>
+            new BulkInsertOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         _contactsToMatch = _customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode }).ToList();
@@ -107,9 +107,9 @@ public class BulkMatchMultipleColumnsBenchmarks1
     {
         var contacts = _context.BulkMatch(_contactsToMatch,
             x => new { x.CustomerId, x.CountryIsoCode },
-            opt =>
+            new BulkMatchOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         // Console.WriteLine(contacts.Count);
@@ -169,9 +169,9 @@ public class BulkMatchMultipleColumnsBenchmarks2
         }
 
         _context.BulkInsert(_customers,
-            opt =>
+            new BulkInsertOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         foreach (var customer in _customers)
@@ -185,9 +185,9 @@ public class BulkMatchMultipleColumnsBenchmarks2
         _contacts = _customers.SelectMany(x => x.Contacts).ToList();
 
         _context.BulkInsert(_contacts,
-            opt =>
+            new BulkInsertOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         _contactsToMatch = _customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode }).ToList();
@@ -204,9 +204,9 @@ public class BulkMatchMultipleColumnsBenchmarks2
     {
         var contacts = _context.BulkMatch(_contactsToMatch,
             x => new { x.CustomerId, x.CountryIsoCode },
-            opt =>
+            new BulkMatchOptions()
             {
-                opt.Timeout = 0;
+                Timeout = 0
             });
 
         // Console.WriteLine(contacts.Count);

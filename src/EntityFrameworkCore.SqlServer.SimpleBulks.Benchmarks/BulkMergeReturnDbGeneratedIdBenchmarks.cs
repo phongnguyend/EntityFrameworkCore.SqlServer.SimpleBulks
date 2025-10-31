@@ -78,28 +78,28 @@ public class BulkMergeReturnDbGeneratedIdBenchmarks1
     public void ReturnDbGeneratedId()
     {
         _context.BulkMerge(_allCustomers,
-            x => x.Id,
-            x => new { x.FirstName },
+      x => x.Id,
+   x => new { x.FirstName },
             x => new { x.FirstName, x.LastName, x.Index },
-            opt =>
-            {
-                opt.Timeout = 0;
-                opt.ReturnDbGeneratedId = true;
-            });
+       new BulkMergeOptions()
+       {
+           Timeout = 0,
+           ReturnDbGeneratedId = true
+       });
     }
 
     [Benchmark]
     public void NotReturnDbGeneratedId()
     {
         _context.BulkMerge(_allCustomers,
-            x => x.Id,
-            x => new { x.FirstName },
+        x => x.Id,
+x => new { x.FirstName },
             x => new { x.FirstName, x.LastName, x.Index },
-            opt =>
-            {
-                opt.Timeout = 0;
-                opt.ReturnDbGeneratedId = false;
-            });
+  new BulkMergeOptions()
+  {
+      Timeout = 0,
+      ReturnDbGeneratedId = false
+  });
     }
 }
 
@@ -176,26 +176,26 @@ public class BulkMergeReturnDbGeneratedIdBenchmarks2
     {
         _context.BulkMerge(_allCustomers,
             x => x.Id,
-            x => new { x.FirstName },
-            x => new { x.FirstName, x.LastName, x.Index },
-            opt =>
-            {
-                opt.Timeout = 0;
-                opt.ReturnDbGeneratedId = true;
-            });
+ x => new { x.FirstName },
+x => new { x.FirstName, x.LastName, x.Index },
+      new BulkMergeOptions()
+      {
+          Timeout = 0,
+          ReturnDbGeneratedId = true
+      });
     }
 
     [Benchmark]
     public void NotReturnDbGeneratedId()
     {
         _context.BulkMerge(_allCustomers,
-            x => x.Id,
+ x => x.Id,
             x => new { x.FirstName },
-            x => new { x.FirstName, x.LastName, x.Index },
-            opt =>
-            {
-                opt.Timeout = 0;
-                opt.ReturnDbGeneratedId = false;
-            });
+x => new { x.FirstName, x.LastName, x.Index },
+          new BulkMergeOptions()
+          {
+              Timeout = 0,
+              ReturnDbGeneratedId = false
+          });
     }
 }

@@ -45,16 +45,16 @@ public class BulkInsertTests : BaseTest
 
         _context.BulkInsert(rows,
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         _context.BulkInsert(compositeKeyRows,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
-                options =>
+                new BulkInsertOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
 
@@ -213,11 +213,12 @@ public class BulkInsertTests : BaseTest
             });
         }
 
-        _context.BulkInsert(configurationEntries, options =>
-        {
-            options.KeepIdentity = true;
-            options.LogTo = _output.WriteLine;
-        });
+        _context.BulkInsert(configurationEntries,
+    new BulkInsertOptions()
+    {
+        KeepIdentity = true,
+        LogTo = _output.WriteLine
+    });
 
         // Assert
         configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
@@ -251,10 +252,11 @@ public class BulkInsertTests : BaseTest
             });
         }
 
-        _context.BulkInsert(configurationEntries, options =>
-        {
-            options.LogTo = _output.WriteLine;
-        });
+        _context.BulkInsert(configurationEntries,
+              new BulkInsertOptions()
+              {
+                  LogTo = _output.WriteLine
+              });
 
         // Assert
         configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();

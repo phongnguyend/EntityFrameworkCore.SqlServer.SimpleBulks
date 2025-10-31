@@ -31,7 +31,7 @@ public class TestDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        if(!string.IsNullOrEmpty(_schema))
+        if (!string.IsNullOrEmpty(_schema))
         {
             modelBuilder.HasDefaultSchema(_schema);
         }

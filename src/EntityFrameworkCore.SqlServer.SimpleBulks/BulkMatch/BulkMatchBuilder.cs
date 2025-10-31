@@ -63,13 +63,9 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public BulkMatchBuilder<T> ConfigureBulkOptions(Action<BulkMatchOptions> configureOptions)
+    public BulkMatchBuilder<T> WithBulkOptions(BulkMatchOptions options)
     {
-        _options = new BulkMatchOptions();
-        if (configureOptions != null)
-        {
-            configureOptions(_options);
-        }
+        _options = options ?? BulkMatchOptions.DefaultOptions;
         return this;
     }
 

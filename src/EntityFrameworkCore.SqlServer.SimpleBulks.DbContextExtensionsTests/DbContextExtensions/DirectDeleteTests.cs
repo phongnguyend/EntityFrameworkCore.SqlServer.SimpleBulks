@@ -1,6 +1,7 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
-using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.Database;
+using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using Microsoft.EntityFrameworkCore;
 using Xunit.Abstractions;
 
@@ -59,15 +60,15 @@ public class DirectDeleteTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = _context.DirectDelete(row,
-                  options =>
+                  new BulkDeleteOptions()
                   {
-                      options.LogTo = _output.WriteLine;
+                      LogTo = _output.WriteLine
                   });
 
         var deleteResult2 = _context.DirectDelete(compositeKeyRow,
-                options =>
+                new BulkDeleteOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         tran.Commit();
@@ -95,15 +96,15 @@ public class DirectDeleteTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = _context.DirectDelete(row,
-                  options =>
+                  new BulkDeleteOptions()
                   {
-                      options.LogTo = _output.WriteLine;
+                      LogTo = _output.WriteLine
                   });
 
         var deleteResult2 = _context.DirectDelete(compositeKeyRow,
-                options =>
+                new BulkDeleteOptions()
                 {
-                    options.LogTo = _output.WriteLine;
+                    LogTo = _output.WriteLine
                 });
 
         tran.Rollback();

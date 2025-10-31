@@ -184,33 +184,33 @@ await new BulkInsertBuilder<Row>(connection)
 ```c#
 await _context.BulkInsertAsync(rows,
     row => new { row.Column1, row.Column2, row.Column3 },
-    options =>
+    new BulkInsertOptions
     {
-        options.KeepIdentity = false;
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        KeepIdentity = false,
+        BatchSize = 0,
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### BulkUpdate
 ```c#
 await _context.BulkUpdateAsync(rows,
     row => new { row.Column3, row.Column2 },
-    options =>
+    new BulkUpdateOptions
     {
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        BatchSize = 0,
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### BulkDelete
 ```c#
 await _context.BulkDeleteAsync(rows,
-    options =>
+    new BulkDeleteOptions
     {
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        BatchSize = 0,
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### BulkMerge
@@ -219,24 +219,23 @@ await _context.BulkMergeAsync(rows,
     row => row.Id,
     row => new { row.Column1, row.Column2 },
     row => new { row.Column1, row.Column2, row.Column3 },
-    options =>
+    new BulkMergeOptions
     {
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.WithHoldLock = false;
-        options.ReturnDbGeneratedId = true;
-        options.LogTo = Console.WriteLine;
+        BatchSize = 0,
+        Timeout = 30,
+        ReturnDbGeneratedId = true,
+        LogTo = Console.WriteLine
     });
 ```
 ### BulkMatch
 ```c#
 var contactsFromDb = await _context.BulkMatchAsync(matchedContacts,
     x => new { x.CustomerId, x.CountryIsoCode },
-    options =>
+    new BulkMatchOptions
     {
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        BatchSize = 0,
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### TempTable
@@ -249,40 +248,40 @@ var customerTableName = await _context.CreateTempTableAsync(customers,
         x.LastName,
         x.CurrentCountryIsoCode
     },
-    options =>
+    new TempTableOptions
     {
-        options.BatchSize = 0;
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        BatchSize = 0,
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### DirectInsert
 ```c#
 await _context.DirectInsertAsync(row,
     row => new { row.Column1, row.Column2, row.Column3 },
-    options =>
+    new BulkInsertOptions
     {
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### DirectUpdate
 ```c#
 await _context.DirectUpdateAsync(row,
     row => new { row.Column3, row.Column2 },
-    options =>
+    new BulkUpdateOptions
     {
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 ### DirectDelete
 ```c#
 await _context.DirectDeleteAsync(row,
-    options =>
+    new BulkDeleteOptions
     {
-        options.Timeout = 30;
-        options.LogTo = Console.WriteLine;
+        Timeout = 30,
+        LogTo = Console.WriteLine
     });
 ```
 
