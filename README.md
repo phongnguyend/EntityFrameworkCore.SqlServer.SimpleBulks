@@ -108,8 +108,8 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 // Register Type - Table Name globaly
-TableMapper.Register(typeof(Row), "Rows");
-TableMapper.Register(typeof(CompositeKeyRow), "CompositeKeyRows");
+TableMapper.Register(typeof(Row), new SqlTableInfor("Rows"));
+TableMapper.Register(typeof(CompositeKeyRow), new SqlTableInfor("CompositeKeyRows"));
 
 await connection.BulkInsertAsync(rows,
            row => new { row.Column1, row.Column2, row.Column3 });
