@@ -121,7 +121,7 @@ public class BulkInsertBuilder<T>
             _connectionContext.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options);
+            _connectionContext.SqlBulkCopy(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -139,7 +139,7 @@ public class BulkInsertBuilder<T>
             _connectionContext.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options);
+            _connectionContext.SqlBulkCopy(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -166,7 +166,7 @@ public class BulkInsertBuilder<T>
             _connectionContext.EnsureOpen();
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            dataTable.SqlBulkCopy(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options);
+            _connectionContext.SqlBulkCopy(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -198,7 +198,7 @@ public class BulkInsertBuilder<T>
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        dataTable.SqlBulkCopy(temptableName, null, _connectionContext, _options);
+        _connectionContext.SqlBulkCopy(dataTable, temptableName, null, _options);
         Log("End executing SqlBulkCopy.");
 
         var returnedIds = new Dictionary<long, object>();
@@ -320,7 +320,7 @@ public class BulkInsertBuilder<T>
             await _connectionContext.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options, cancellationToken);
+            await _connectionContext.SqlBulkCopyAsync(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -338,7 +338,7 @@ public class BulkInsertBuilder<T>
             await _connectionContext.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options, cancellationToken);
+            await _connectionContext.SqlBulkCopyAsync(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -365,7 +365,7 @@ public class BulkInsertBuilder<T>
             await _connectionContext.EnsureOpenAsync(cancellationToken);
 
             Log($"Begin executing SqlBulkCopy. TableName: {_table.SchemaQualifiedTableName}");
-            await dataTable.SqlBulkCopyAsync(_table.SchemaQualifiedTableName, _table.ColumnNameMappings, _connectionContext, _options, cancellationToken);
+            await _connectionContext.SqlBulkCopyAsync(dataTable, _table.SchemaQualifiedTableName, _table.ColumnNameMappings, _options, cancellationToken);
             Log("End executing SqlBulkCopy.");
             return;
         }
@@ -397,7 +397,7 @@ public class BulkInsertBuilder<T>
         Log("End creating temp table.");
 
         Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        await dataTable.SqlBulkCopyAsync(temptableName, null, _connectionContext, _options, cancellationToken);
+        await _connectionContext.SqlBulkCopyAsync(dataTable, temptableName, null, _options, cancellationToken);
         Log("End executing SqlBulkCopy.");
 
         var returnedIds = new Dictionary<long, object>();
