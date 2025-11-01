@@ -89,13 +89,12 @@ await dbct.BulkMergeAsync(compositeKeyRows,
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
-await new BulkInsertBuilder<Row>(dbct.GetSqlConnection())
+await new BulkInsertBuilder<Row>(dbct.GetConnectionContext())
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
-	.ToTable(dbct.GetTableName(typeof(Row)))
-	// or .ToTable("Rows")
+	.ToTable(dbct.GetTableInfor(typeof(Row)))
 	.ExecuteAsync(rows);
 ```
 
@@ -144,8 +143,6 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 await connection.BulkInsertAsync(rows,
            [ "Column1", "Column2", "Column3" ]);
-await connection.BulkInsertAsync(rows.Take(1000),
-           typeof(Row).GetDbColumnNames("Id"));
 await connection.BulkInsertAsync(compositeKeyRows,
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
@@ -175,7 +172,7 @@ await new BulkInsertBuilder<Row>(connection)
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
 	// or .WithOutputId("Id")
-	.ToTable("Rows")
+	.ToTable(new SqlTableInfor("Rows"))
 	.ExecuteAsync(rows);
 ```
 
