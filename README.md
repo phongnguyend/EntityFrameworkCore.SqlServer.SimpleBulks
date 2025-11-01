@@ -110,6 +110,8 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 TableMapper.Register(typeof(Row), new SqlTableInfor("Rows"));
 TableMapper.Register(typeof(CompositeKeyRow), new SqlTableInfor("CompositeKeyRows"));
 
+var connection = new ConnectionContext(new SqlConnection(connectionString), null);
+
 await connection.BulkInsertAsync(rows,
            row => new { row.Column1, row.Column2, row.Column3 });
 await connection.BulkInsertAsync(compositeKeyRows,
@@ -140,6 +142,8 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
+
+var connection = new ConnectionContext(new SqlConnection(connectionString), null);
 
 await connection.BulkInsertAsync(rows,
            [ "Column1", "Column2", "Column3" ]);
@@ -220,6 +224,7 @@ await _context.BulkMergeAsync(rows,
     {
         BatchSize = 0,
         Timeout = 30,
+        WithHoldLock = false,
         ReturnDbGeneratedId = true,
         LogTo = Console.WriteLine
     });
