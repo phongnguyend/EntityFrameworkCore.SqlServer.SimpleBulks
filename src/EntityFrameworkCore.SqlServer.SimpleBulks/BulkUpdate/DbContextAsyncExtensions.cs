@@ -12,9 +12,7 @@ public static class DbContextAsyncExtensions
 {
     public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
-        var connectionContext = dbContext.GetConnectionContext();
-
-        return new BulkUpdateBuilder<T>(connectionContext)
+        return new BulkUpdateBuilder<T>(dbContext.GetConnectionContext())
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNamesSelector)
              .ToTable(dbContext.GetTableInfor(typeof(T)))
@@ -24,9 +22,7 @@ public static class DbContextAsyncExtensions
 
     public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
-        var connectionContext = dbContext.GetConnectionContext();
-
-        return new BulkUpdateBuilder<T>(connectionContext)
+        return new BulkUpdateBuilder<T>(dbContext.GetConnectionContext())
              .WithId(dbContext.GetPrimaryKeys(typeof(T)))
              .WithColumns(columnNames)
              .ToTable(dbContext.GetTableInfor(typeof(T)))

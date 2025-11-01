@@ -10,10 +10,9 @@ public static class DbContextExtensions
 {
     public static void DirectInsert<T>(this DbContext dbContext, T data, BulkInsertOptions options = null)
     {
-        var connectionContext = dbContext.GetConnectionContext();
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext)
+        new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
             .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
@@ -24,10 +23,9 @@ public static class DbContextExtensions
 
     public static void DirectInsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
     {
-        var connectionContext = dbContext.GetConnectionContext();
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        new BulkInsertBuilder<T>(connectionContext)
+        new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
             .WithColumns(columnNamesSelector)
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)

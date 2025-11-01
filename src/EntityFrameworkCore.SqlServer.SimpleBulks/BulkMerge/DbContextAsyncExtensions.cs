@@ -12,10 +12,9 @@ public static class DbContextAsyncExtensions
 {
     public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
     {
-        var connectionContext = dbContext.GetConnectionContext();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
-        return new BulkMergeBuilder<T>(connectionContext)
+        return new BulkMergeBuilder<T>(dbContext.GetConnectionContext())
        .WithId(idSelector)
      .WithUpdateColumns(updateColumnNamesSelector)
         .WithInsertColumns(insertColumnNamesSelector)
@@ -27,10 +26,9 @@ public static class DbContextAsyncExtensions
 
     public static Task<BulkMergeResult> BulkMergeAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
     {
-        var connectionContext = dbContext.GetConnectionContext();
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
-        return new BulkMergeBuilder<T>(connectionContext)
+        return new BulkMergeBuilder<T>(dbContext.GetConnectionContext())
        .WithId(idColumns)
       .WithUpdateColumns(updateColumnNames)
           .WithInsertColumns(insertColumnNames)
