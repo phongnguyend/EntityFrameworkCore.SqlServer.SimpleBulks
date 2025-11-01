@@ -12,7 +12,7 @@ public static class DbContextExtensions
     {
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
+        dbContext.CreateBulkInsertBuilder<T>()
             .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)
@@ -25,7 +25,7 @@ public static class DbContextExtensions
     {
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
+        dbContext.CreateBulkInsertBuilder<T>()
             .WithColumns(columnNamesSelector)
             .ToTable(dbContext.GetTableInfor(typeof(T)))
             .WithOutputId(idColumn?.PropertyName)

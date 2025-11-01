@@ -89,7 +89,7 @@ await dbct.BulkMergeAsync(compositeKeyRows,
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
-await new BulkInsertBuilder<Row>(dbct.GetConnectionContext())
+await dbct.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)
@@ -171,7 +171,7 @@ await connection.BulkDeleteAsync(compositeKeyRows, [ "Id1", "Id2" ]);
 ```
 ### Using Builder Approach in case you need to mix both Dynamic & Lambda Expression
 ```c#
-await new BulkInsertBuilder<Row>(connection)
+await connection.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
 	.WithOutputId(row => row.Id)

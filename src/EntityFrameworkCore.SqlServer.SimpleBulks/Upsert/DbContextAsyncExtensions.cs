@@ -15,7 +15,7 @@ public static class DbContextAsyncExtensions
     {
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
-        return new BulkMergeBuilder<T>(dbContext.GetConnectionContext())
+        return dbContext.CreateBulkMergeBuilder<T>()
              .WithId(idSelector)
        .WithUpdateColumns(updateColumnNamesSelector)
            .WithInsertColumns(insertColumnNamesSelector)
@@ -29,7 +29,7 @@ public static class DbContextAsyncExtensions
     {
         var outputIdColumn = dbContext.GetOutputId(typeof(T))?.PropertyName;
 
-        return new BulkMergeBuilder<T>(dbContext.GetConnectionContext())
+        return dbContext.CreateBulkMergeBuilder<T>()
      .WithId(idColumns)
    .WithUpdateColumns(updateColumnNames)
         .WithInsertColumns(insertColumnNames)

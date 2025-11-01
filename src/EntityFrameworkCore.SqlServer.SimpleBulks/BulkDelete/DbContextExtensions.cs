@@ -8,10 +8,10 @@ public static class DbContextExtensions
 {
     public static BulkDeleteResult BulkDelete<T>(this DbContext dbContext, IEnumerable<T> data, BulkDeleteOptions options = null)
     {
-        return new BulkDeleteBuilder<T>(dbContext.GetConnectionContext())
-       .WithId(dbContext.GetPrimaryKeys(typeof(T)))
-    .ToTable(dbContext.GetTableInfor(typeof(T)))
-  .WithBulkOptions(options)
-        .Execute(data);
+        return dbContext.CreateBulkDeleteBuilder<T>()
+         .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+      .ToTable(dbContext.GetTableInfor(typeof(T)))
+    .WithBulkOptions(options)
+          .Execute(data);
     }
 }

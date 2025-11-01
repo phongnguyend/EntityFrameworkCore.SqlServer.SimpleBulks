@@ -12,21 +12,21 @@ public static class DbContextAsyncExtensions
 {
     public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMatchBuilder<T>(dbContext.GetConnectionContext())
-         .WithReturnedColumns(dbContext.GetAllPropertyNames(typeof(T)))
-       .WithTable(dbContext.GetTableInfor(typeof(T)))
-           .WithMatchedColumns(matchedColumnsSelector)
-            .WithBulkOptions(options)
-       .ExecuteAsync(machedValues, cancellationToken);
+        return dbContext.CreateBulkMatchBuilder<T>()
+       .WithReturnedColumns(dbContext.GetAllPropertyNames(typeof(T)))
+         .WithTable(dbContext.GetTableInfor(typeof(T)))
+     .WithMatchedColumns(matchedColumnsSelector)
+      .WithBulkOptions(options)
+      .ExecuteAsync(machedValues, cancellationToken);
     }
 
     public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
-        return new BulkMatchBuilder<T>(dbContext.GetConnectionContext())
-       .WithReturnedColumns(returnedColumnsSelector)
+        return dbContext.CreateBulkMatchBuilder<T>()
+     .WithReturnedColumns(returnedColumnsSelector)
         .WithTable(dbContext.GetTableInfor(typeof(T)))
-       .WithMatchedColumns(matchedColumnsSelector)
-        .WithBulkOptions(options)
-      .ExecuteAsync(machedValues, cancellationToken);
+    .WithMatchedColumns(matchedColumnsSelector)
+    .WithBulkOptions(options)
+   .ExecuteAsync(machedValues, cancellationToken);
     }
 }

@@ -8,7 +8,7 @@ public static class DbContextExtensions
 {
     public static BulkDeleteResult DirectDelete<T>(this DbContext dbContext, T data, BulkDeleteOptions options = null)
     {
-        return new BulkDeleteBuilder<T>(dbContext.GetConnectionContext())
+        return dbContext.CreateBulkDeleteBuilder<T>()
            .WithId(dbContext.GetPrimaryKeys(typeof(T)))
    .ToTable(dbContext.GetTableInfor(typeof(T)))
              .WithBulkOptions(options)

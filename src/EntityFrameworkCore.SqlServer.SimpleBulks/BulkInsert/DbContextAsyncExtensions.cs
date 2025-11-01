@@ -14,7 +14,7 @@ public static class DbContextAsyncExtensions
     {
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        return new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
+        return dbContext.CreateBulkInsertBuilder<T>()
               .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
               .ToTable(dbContext.GetTableInfor(typeof(T)))
               .WithOutputId(idColumn?.PropertyName)
@@ -27,7 +27,7 @@ public static class DbContextAsyncExtensions
     {
         var idColumn = dbContext.GetOutputId(typeof(T));
 
-        return new BulkInsertBuilder<T>(dbContext.GetConnectionContext())
+        return dbContext.CreateBulkInsertBuilder<T>()
               .WithColumns(columnNamesSelector)
               .ToTable(dbContext.GetTableInfor(typeof(T)))
               .WithOutputId(idColumn?.PropertyName)
