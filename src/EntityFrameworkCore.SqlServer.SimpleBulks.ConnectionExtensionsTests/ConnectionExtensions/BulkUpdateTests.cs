@@ -81,7 +81,7 @@ public class BulkUpdateTests : BaseTest
                 connectionContext.BulkUpdate(rows,
       row => row.Id,
         row => new { row.Column3, row.Column2 },
-             new BulkUpdateOptions()
+             options: new BulkUpdateOptions()
              {
                  LogTo = _output.WriteLine
              });
@@ -89,25 +89,27 @@ public class BulkUpdateTests : BaseTest
                 connectionContext.BulkUpdate(compositeKeyRows,
                  row => new { row.Id1, row.Id2 },
                   row => new { row.Column3, row.Column2 },
-                 new BulkUpdateOptions()
+                 options: new BulkUpdateOptions()
                  {
                      LogTo = _output.WriteLine
                  });
             }
             else
             {
-                connectionContext.BulkUpdate(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkUpdate(rows,
               row => row.Id,
               row => new { row.Column3, row.Column2 },
-                 new BulkUpdateOptions()
+              new SqlTableInfor(_schema, "SingleKeyRows"),
+                 options: new BulkUpdateOptions()
                  {
                      LogTo = _output.WriteLine
                  });
 
-                connectionContext.BulkUpdate(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkUpdate(compositeKeyRows,
                        row => new { row.Id1, row.Id2 },
                         row => new { row.Column3, row.Column2 },
-                         new BulkUpdateOptions()
+                        new SqlTableInfor(_schema, "CompositeKeyRows"),
+                         options: new BulkUpdateOptions()
                          {
                              LogTo = _output.WriteLine
                          });
@@ -141,7 +143,7 @@ public class BulkUpdateTests : BaseTest
                      row => row.Id,
                 row => new { row.Column1, row.Column2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
-                 new BulkMergeOptions()
+                 options: new BulkMergeOptions()
                  {
                      LogTo = _output.WriteLine
                  });
@@ -150,27 +152,29 @@ public class BulkUpdateTests : BaseTest
                     row => new { row.Id1, row.Id2 },
                   row => new { row.Column1, row.Column2, row.Column3 },
                  row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                  new BulkMergeOptions()
+                  options: new BulkMergeOptions()
                   {
                       LogTo = _output.WriteLine
                   });
             }
             else
             {
-                connectionContext.BulkMerge(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkMerge(rows,
                row => row.Id,
                         row => new { row.Column1, row.Column2 },
                   row => new { row.Column1, row.Column2, row.Column3 },
-         new BulkMergeOptions()
+                  new SqlTableInfor(_schema, "SingleKeyRows"),
+         options: new BulkMergeOptions()
          {
              LogTo = _output.WriteLine
          });
 
-                connectionContext.BulkMerge(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkMerge(compositeKeyRows,
                  row => new { row.Id1, row.Id2 },
             row => new { row.Column1, row.Column2, row.Column3 },
              row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-            new BulkMergeOptions()
+             new SqlTableInfor(_schema, "CompositeKeyRows"),
+            options: new BulkMergeOptions()
             {
                 LogTo = _output.WriteLine
             });
@@ -184,7 +188,7 @@ public class BulkUpdateTests : BaseTest
                 connectionContext.BulkUpdate(rows,
               ["Id"],
                       ["Column3", "Column2"],
-             new BulkUpdateOptions()
+             options: new BulkUpdateOptions()
              {
                  LogTo = _output.WriteLine
              });
@@ -192,25 +196,27 @@ public class BulkUpdateTests : BaseTest
                 connectionContext.BulkUpdate(compositeKeyRows,
                 ["Id1", "Id2"],
                 ["Column3", "Column2"],
-      new BulkUpdateOptions()
+      options: new BulkUpdateOptions()
       {
           LogTo = _output.WriteLine
       });
             }
             else
             {
-                connectionContext.BulkUpdate(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkUpdate(rows,
                  ["Id"],
                     ["Column3", "Column2"],
-                new BulkUpdateOptions()
+                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                options: new BulkUpdateOptions()
                 {
                     LogTo = _output.WriteLine
                 });
 
-                connectionContext.BulkUpdate(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkUpdate(compositeKeyRows,
                       ["Id1", "Id2"],
                             ["Column3", "Column2"],
-           new BulkUpdateOptions()
+                            new SqlTableInfor(_schema, "CompositeKeyRows"),
+           options: new BulkUpdateOptions()
            {
                LogTo = _output.WriteLine
            });
@@ -244,7 +250,7 @@ public class BulkUpdateTests : BaseTest
                 ["Id"],
               ["Column1", "Column2"],
             ["Column1", "Column2", "Column3"],
-                           new BulkMergeOptions()
+                           options: new BulkMergeOptions()
                            {
                                LogTo = _output.WriteLine
                            });
@@ -253,27 +259,29 @@ public class BulkUpdateTests : BaseTest
                      ["Id1", "Id2"],
               ["Column1", "Column2", "Column3"],
                   ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                     new BulkMergeOptions()
+                     options: new BulkMergeOptions()
                      {
                          LogTo = _output.WriteLine
                      });
             }
             else
             {
-                connectionContext.BulkMerge(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkMerge(rows,
                          ["Id"],
-                       ["Column1", "Column2"],
+                         ["Column1", "Column2"],
                          ["Column1", "Column2", "Column3"],
-                       new BulkMergeOptions()
-                       {
-                           LogTo = _output.WriteLine
-                       });
+                         new SqlTableInfor(_schema, "SingleKeyRows"),
+                         options: new BulkMergeOptions()
+                         {
+                             LogTo = _output.WriteLine
+                         });
 
-                connectionContext.BulkMerge(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkMerge(compositeKeyRows,
               ["Id1", "Id2"],
               ["Column1", "Column2", "Column3"],
          ["Id1", "Id2", "Column1", "Column2", "Column3"],
-     new BulkMergeOptions()
+         table: new SqlTableInfor(_schema, "CompositeKeyRows"),
+     options: new BulkMergeOptions()
      {
          LogTo = _output.WriteLine
      });

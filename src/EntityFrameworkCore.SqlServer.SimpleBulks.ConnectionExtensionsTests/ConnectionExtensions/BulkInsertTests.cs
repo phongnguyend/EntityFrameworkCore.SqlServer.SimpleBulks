@@ -54,30 +54,32 @@ public class BulkInsertTests : BaseTest
                 connectionContext.BulkInsert(rows,
                       row => new { row.Column1, row.Column2, row.Column3 },
                      row => row.Id,
-                     new BulkInsertOptions()
+                     options: new BulkInsertOptions()
                      {
                          LogTo = _output.WriteLine
                      });
 
                 connectionContext.BulkInsert(compositeKeyRows,
                      row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                     new BulkInsertOptions()
+                     options: new BulkInsertOptions()
                      {
                          LogTo = _output.WriteLine
                      });
             }
             else
             {
-                connectionContext.BulkInsert(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkInsert(rows, 
         row => new { row.Column1, row.Column2, row.Column3 },
                 row => row.Id,
-              new BulkInsertOptions()
+                new SqlTableInfor(_schema, "SingleKeyRows"),
+              options: new BulkInsertOptions()
               {
                   LogTo = _output.WriteLine
               });
 
-                connectionContext.BulkInsert(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkInsert(compositeKeyRows, 
                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+               new SqlTableInfor(_schema, "CompositeKeyRows"),
                 new BulkInsertOptions()
                 {
                     LogTo = _output.WriteLine
@@ -92,31 +94,33 @@ public class BulkInsertTests : BaseTest
                 connectionContext.BulkInsert(rows,
         ["Column1", "Column2", "Column3"],
           "Id",
-           new BulkInsertOptions()
+           options: new BulkInsertOptions()
            {
                LogTo = _output.WriteLine
            });
 
                 connectionContext.BulkInsert(compositeKeyRows,
                      ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                  new BulkInsertOptions()
+                  options: new BulkInsertOptions()
                   {
                       LogTo = _output.WriteLine
                   });
             }
             else
             {
-                connectionContext.BulkInsert(rows, new SqlTableInfor(_schema, "SingleKeyRows"),
+                connectionContext.BulkInsert(rows, 
            ["Column1", "Column2", "Column3"],
                "Id",
-             new BulkInsertOptions()
+               new SqlTableInfor(_schema, "SingleKeyRows"),
+             options: new BulkInsertOptions()
              {
                  LogTo = _output.WriteLine
              });
 
-                connectionContext.BulkInsert(compositeKeyRows, new SqlTableInfor(_schema, "CompositeKeyRows"),
+                connectionContext.BulkInsert(compositeKeyRows, 
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                new BulkInsertOptions()
+                    new SqlTableInfor(_schema, "CompositeKeyRows"),
+                options: new BulkInsertOptions()
                 {
                     LogTo = _output.WriteLine
                 });

@@ -7,63 +7,33 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public static class ConnectionContextExtensions
 {
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, SqlTableInfor table = null, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
                 .WithReturnedColumns(returnedColumnsSelector)
-        .WithTable(TableMapper.Resolve<T>())
+        .WithTable(table ?? TableMapper.Resolve<T>())
            .WithMatchedColumns(matchedColumnsSelector)
                       .WithBulkOptions(options)
                       .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
       .WithReturnedColumns(returnedColumns)
-      .WithTable(TableMapper.Resolve<T>())
+      .WithTable(table ?? TableMapper.Resolve<T>())
 .WithMatchedColumn(matchedColumn)
         .WithBulkOptions(options)
       .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
    .WithReturnedColumns(returnedColumns)
-    .WithTable(TableMapper.Resolve<T>())
+    .WithTable(table ?? TableMapper.Resolve<T>())
  .WithMatchedColumns(matchedColumns)
      .WithBulkOptions(options)
  .Execute(machedValues);
-    }
-
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null)
-    {
-        return connectionContext.CreateBulkMatchBuilder<T>()
-     .WithReturnedColumns(returnedColumnsSelector)
-         .WithTable(table)
-    .WithMatchedColumns(matchedColumnsSelector)
-   .WithBulkOptions(options)
-    .Execute(machedValues);
-    }
-
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, string matchedColumns, IEnumerable<string> returnedColumns, BulkMatchOptions options = null)
-    {
-        return connectionContext.CreateBulkMatchBuilder<T>()
-   .WithReturnedColumns(returnedColumns)
-     .WithTable(table)
-     .WithMatchedColumn(matchedColumns)
-     .WithBulkOptions(options)
-      .Execute(machedValues);
-    }
-
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, TableInfor table, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, BulkMatchOptions options = null)
-    {
-        return connectionContext.CreateBulkMatchBuilder<T>()
-         .WithReturnedColumns(returnedColumns)
-             .WithTable(table)
-         .WithMatchedColumns(matchedColumns)
-           .WithBulkOptions(options)
-            .Execute(machedValues);
     }
 }
