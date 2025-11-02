@@ -15,7 +15,7 @@ public static class ConnectionContextAsyncExtensions
      .WithId(idSelector)
       .WithUpdateColumns(updateColumnNamesSelector)
          .WithInsertColumns(insertColumnNamesSelector)
-    .ToTable(TableMapper.Resolve(typeof(T)))
+    .ToTable(TableMapper.Resolve<T>())
      .WithBulkOptions(options)
            .ExecuteAsync(data, cancellationToken);
     }
@@ -26,7 +26,7 @@ public static class ConnectionContextAsyncExtensions
           .WithId(idColumns)
        .WithUpdateColumns(updateColumnNames)
    .WithInsertColumns(insertColumnNames)
-   .ToTable(TableMapper.Resolve(typeof(T)))
+   .ToTable(TableMapper.Resolve<T>())
            .WithBulkOptions(options)
         .ExecuteAsync(data, cancellationToken);
     }

@@ -11,7 +11,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
                 .WithReturnedColumns(returnedColumnsSelector)
-        .WithTable(TableMapper.Resolve(typeof(T)))
+        .WithTable(TableMapper.Resolve<T>())
            .WithMatchedColumns(matchedColumnsSelector)
                       .WithBulkOptions(options)
                       .Execute(machedValues);
@@ -21,7 +21,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
       .WithReturnedColumns(returnedColumns)
-      .WithTable(TableMapper.Resolve(typeof(T)))
+      .WithTable(TableMapper.Resolve<T>())
 .WithMatchedColumn(matchedColumn)
         .WithBulkOptions(options)
       .Execute(machedValues);
@@ -31,7 +31,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
    .WithReturnedColumns(returnedColumns)
-    .WithTable(TableMapper.Resolve(typeof(T)))
+    .WithTable(TableMapper.Resolve<T>())
  .WithMatchedColumns(matchedColumns)
      .WithBulkOptions(options)
  .Execute(machedValues);

@@ -14,7 +14,7 @@ public static class ConnectionContextAsyncExtensions
         return connectionContext.CreateBulkUpdateBuilder<T>()
       .WithId(idSelector)
        .WithColumns(columnNamesSelector)
-     .ToTable(TableMapper.Resolve(typeof(T)))
+     .ToTable(TableMapper.Resolve<T>())
  .WithBulkOptions(options)
 .ExecuteAsync(data, cancellationToken);
     }
@@ -24,7 +24,7 @@ public static class ConnectionContextAsyncExtensions
         return connectionContext.CreateBulkUpdateBuilder<T>()
                  .WithId(idColumns)
               .WithColumns(columnNames)
-               .ToTable(TableMapper.Resolve(typeof(T)))
+               .ToTable(TableMapper.Resolve<T>())
             .WithBulkOptions(options)
              .ExecuteAsync(data, cancellationToken);
     }

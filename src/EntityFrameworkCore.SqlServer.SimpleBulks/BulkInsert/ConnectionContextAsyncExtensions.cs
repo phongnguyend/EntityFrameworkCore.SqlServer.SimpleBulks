@@ -13,7 +13,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
   .WithColumns(columnNamesSelector)
-          .ToTable(TableMapper.Resolve(typeof(T)))
+          .ToTable(TableMapper.Resolve<T>())
      .WithBulkOptions(options)
  .ExecuteAsync(data, cancellationToken);
     }
@@ -22,7 +22,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
           .WithColumns(columnNamesSelector)
-             .ToTable(TableMapper.Resolve(typeof(T)))
+             .ToTable(TableMapper.Resolve<T>())
                .WithOutputId(idSelector)
             .WithBulkOptions(options)
          .ExecuteAsync(data, cancellationToken);
@@ -32,7 +32,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
    .WithColumns(columnNames)
-        .ToTable(TableMapper.Resolve(typeof(T)))
+        .ToTable(TableMapper.Resolve<T>())
    .WithBulkOptions(options)
     .ExecuteAsync(data, cancellationToken);
     }
@@ -41,7 +41,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
           .WithColumns(columnNames)
-            .ToTable(TableMapper.Resolve(typeof(T)))
+            .ToTable(TableMapper.Resolve<T>())
          .WithOutputId(idColumnName)
     .WithBulkOptions(options)
         .ExecuteAsync(data, cancellationToken);

@@ -13,7 +13,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkDeleteBuilder<T>()
      .WithId(idSelector)
-        .ToTable(TableMapper.Resolve(typeof(T)))
+        .ToTable(TableMapper.Resolve<T>())
 .WithBulkOptions(options)
   .ExecuteAsync(data, cancellationToken);
     }
@@ -22,7 +22,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkDeleteBuilder<T>()
               .WithId(idColumns)
-    .ToTable(TableMapper.Resolve(typeof(T)))
+    .ToTable(TableMapper.Resolve<T>())
    .WithBulkOptions(options)
    .ExecuteAsync(data, cancellationToken);
     }

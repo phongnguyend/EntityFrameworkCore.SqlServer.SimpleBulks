@@ -11,7 +11,7 @@ public static class ConnectionContextExtensions
     {
         connectionContext.CreateBulkInsertBuilder<T>()
       .WithColumns(columnNamesSelector)
-        .ToTable(TableMapper.Resolve(typeof(T)))
+        .ToTable(TableMapper.Resolve<T>())
 .WithBulkOptions(options)
     .Execute(data);
     }
@@ -20,7 +20,7 @@ public static class ConnectionContextExtensions
     {
         connectionContext.CreateBulkInsertBuilder<T>()
              .WithColumns(columnNamesSelector)
-            .ToTable(TableMapper.Resolve(typeof(T)))
+            .ToTable(TableMapper.Resolve<T>())
            .WithOutputId(idSelector)
  .WithBulkOptions(options)
          .Execute(data);
@@ -30,7 +30,7 @@ public static class ConnectionContextExtensions
     {
         connectionContext.CreateBulkInsertBuilder<T>()
 .WithColumns(columnNames)
-  .ToTable(TableMapper.Resolve(typeof(T)))
+  .ToTable(TableMapper.Resolve<T>())
      .WithBulkOptions(options)
    .Execute(data);
     }
@@ -39,7 +39,7 @@ public static class ConnectionContextExtensions
     {
         connectionContext.CreateBulkInsertBuilder<T>()
           .WithColumns(columnNames)
-         .ToTable(TableMapper.Resolve(typeof(T)))
+         .ToTable(TableMapper.Resolve<T>())
      .WithOutputId(idColumnName)
              .WithBulkOptions(options)
         .Execute(data);

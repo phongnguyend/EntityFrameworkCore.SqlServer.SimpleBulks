@@ -14,7 +14,7 @@ public static class ConnectionContextExtensions
          .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
            .WithInsertColumns(insertColumnNamesSelector)
-           .ToTable(TableMapper.Resolve(typeof(T)))
+           .ToTable(TableMapper.Resolve<T>())
              .WithBulkOptions(options)
              .SingleMerge(data);
     }
@@ -25,7 +25,7 @@ public static class ConnectionContextExtensions
       .WithId(idColumns)
           .WithUpdateColumns(updateColumnNames)
     .WithInsertColumns(insertColumnNames)
-       .ToTable(TableMapper.Resolve(typeof(T)))
+       .ToTable(TableMapper.Resolve<T>())
   .WithBulkOptions(options)
           .SingleMerge(data);
     }

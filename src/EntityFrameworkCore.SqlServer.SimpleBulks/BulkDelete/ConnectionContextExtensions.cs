@@ -11,7 +11,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateBulkDeleteBuilder<T>()
          .WithId(idSelector)
-    .ToTable(TableMapper.Resolve(typeof(T)))
+    .ToTable(TableMapper.Resolve<T>())
          .WithBulkOptions(options)
            .Execute(data);
     }
@@ -20,7 +20,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateBulkDeleteBuilder<T>()
        .WithId(idColumns)
-       .ToTable(TableMapper.Resolve(typeof(T)))
+       .ToTable(TableMapper.Resolve<T>())
               .WithBulkOptions(options)
            .Execute(data);
     }

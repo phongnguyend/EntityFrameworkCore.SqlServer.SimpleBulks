@@ -12,8 +12,8 @@ public class BulkInsertTests : BaseTest
 
     public BulkInsertTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
     {
-        TableMapper.Register(typeof(SingleKeyRow<int>), new SqlTableInfor(_schema, "SingleKeyRows"));
-        TableMapper.Register(typeof(CompositeKeyRow<int, int>), new SqlTableInfor(_schema, "CompositeKeyRows"));
+        TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(_schema, "SingleKeyRows"));
+        TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(_schema, "CompositeKeyRows"));
     }
 
     [Theory]
