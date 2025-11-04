@@ -18,7 +18,7 @@ public abstract class TableInfor
 
     public string SchemaQualifiedTableName { get; private set; }
 
-    public IReadOnlyDictionary<string, Type> PropertyTypes { get; set; }
+    public IReadOnlyDictionary<string, Type> PropertyTypes { get; init; }
 
     public IReadOnlyDictionary<string, string> ColumnNameMappings { get; init; }
 
@@ -47,7 +47,7 @@ public abstract class TableInfor
         return ColumnNameMappings.TryGetValue(propertyName, out string value) ? value : propertyName;
     }
 
-    public Type GetProviderClrType(string propertyName)
+    public Type GetProviderClrType<T>(string propertyName)
     {
         if (ValueConverters != null && ValueConverters.TryGetValue(propertyName, out var converter))
         {
@@ -57,6 +57,12 @@ public abstract class TableInfor
         if (PropertyTypes != null && PropertyTypes.TryGetValue(propertyName, out var type))
         {
             return Nullable.GetUnderlyingType(type) ?? type;
+        }
+
+        var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name == propertyName);
+        if (property != null)
+        {
+            return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
         }
 
         throw new ArgumentException($"Property '{propertyName}' not found.");

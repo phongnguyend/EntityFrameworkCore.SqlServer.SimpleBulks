@@ -241,7 +241,7 @@ public class BulkMergeBuilder<T>
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
              {
-                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
+                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType<T>(x) == typeof(string) ?
                  $" collate {_options.Collation}" : string.Empty;
                  return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
              }));
@@ -509,7 +509,7 @@ public class BulkMergeBuilder<T>
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
      {
-         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
+         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType<T>(x) == typeof(string) ?
        $" collate {_options.Collation}" : string.Empty;
          return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
      }));
