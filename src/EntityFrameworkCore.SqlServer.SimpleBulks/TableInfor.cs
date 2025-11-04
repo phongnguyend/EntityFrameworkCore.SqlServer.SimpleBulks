@@ -18,6 +18,8 @@ public abstract class TableInfor
 
     public string SchemaQualifiedTableName { get; private set; }
 
+    public IReadOnlyDictionary<string, Type> PropertyTypes { get; set; }
+
     public IReadOnlyDictionary<string, string> ColumnNameMappings { get; init; }
 
     public IReadOnlyDictionary<string, string> ColumnTypeMappings { get; init; }
@@ -43,6 +45,21 @@ public abstract class TableInfor
         }
 
         return ColumnNameMappings.TryGetValue(propertyName, out string value) ? value : propertyName;
+    }
+
+    public Type GetProviderClrType(string propertyName)
+    {
+        if (ValueConverters != null && ValueConverters.TryGetValue(propertyName, out var converter))
+        {
+            return Nullable.GetUnderlyingType(converter.ProviderClrType) ?? converter.ProviderClrType;
+        }
+
+        if (PropertyTypes != null && PropertyTypes.TryGetValue(propertyName, out var type))
+        {
+            return Nullable.GetUnderlyingType(type) ?? type;
+        }
+
+        throw new ArgumentException($"Property '{propertyName}' not found.");
     }
 
     public abstract List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames);

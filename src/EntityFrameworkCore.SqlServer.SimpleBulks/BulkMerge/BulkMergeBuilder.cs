@@ -237,13 +237,11 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _table.ValueConverters);
-
         var mergeStatementBuilder = new StringBuilder();
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
              {
-                 string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
+                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
                  $" collate {_options.Collation}" : string.Empty;
                  return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
              }));
@@ -507,13 +505,11 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var clrTypes = typeof(T).GetProviderClrTypes(propertyNames, _table.ValueConverters);
-
         var mergeStatementBuilder = new StringBuilder();
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
      {
-         string collation = !string.IsNullOrEmpty(_options.Collation) && clrTypes[x] == typeof(string) ?
+         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
        $" collate {_options.Collation}" : string.Empty;
          return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
      }));

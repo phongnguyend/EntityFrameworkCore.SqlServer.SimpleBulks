@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
@@ -22,6 +23,12 @@ public static class TableMapper
     {
         lock (_lock)
         {
+            if (tableInfo.PropertyTypes == null)
+            {
+                var properties = type.GetProperties();
+                tableInfo.PropertyTypes = properties.ToDictionary(x => x.Name, x => x.PropertyType);
+            }
+
             _mappings[type] = tableInfo;
         }
     }

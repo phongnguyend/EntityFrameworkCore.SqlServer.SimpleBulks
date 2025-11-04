@@ -22,8 +22,9 @@ public static class DbContextExtensions
 {
     private readonly record struct CacheKey(Type DbContextType, Type EntityType);
 
-    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<ColumnInfor>> _propertiesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, TableInfor> _tableInfoCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<ColumnInfor>> _propertiesCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, Type>> _propertyTypesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, string>> _columnNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, string>> _columnTypesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _primaryKeysCache = [];
@@ -45,6 +46,7 @@ public static class DbContextExtensions
 
             var tableInfo = new DbContextTableInfor(schema, tableName, dbContext)
             {
+                PropertyTypes = dbContext.GetPropertyTypes(key.EntityType),
                 ColumnNameMappings = dbContext.GetColumnNames(key.EntityType),
                 ColumnTypeMappings = dbContext.GetColumnTypes(key.EntityType),
                 ValueConverters = dbContext.GetValueConverters(key.EntityType)
@@ -99,6 +101,16 @@ public static class DbContextExtensions
                     ValueConverter = entityProp.GetValueConverter(),
                 }).ToArray();
             return data;
+        });
+    }
+
+    public static IReadOnlyDictionary<string, Type> GetPropertyTypes(this DbContext dbContext, Type type)
+    {
+        var cacheKey = new CacheKey(dbContext.GetType(), type);
+        return _propertyTypesCache.GetOrAdd(cacheKey, (key) =>
+        {
+            var properties = dbContext.GetProperties(key.EntityType);
+            return properties.ToDictionary(x => x.PropertyName, x => x.PropertyType);
         });
     }
 
