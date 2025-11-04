@@ -45,16 +45,6 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    private string GetDbColumnName(string columnName)
-    {
-        if (_table.ColumnNameMappings == null)
-        {
-            return columnName;
-        }
-
-        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
-    }
-
     public BulkDeleteResult Execute(IEnumerable<T> data)
     {
         if (data.Count() == 1)
@@ -70,7 +60,7 @@ public class BulkDeleteBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var deleteStatement = $"DELETE a FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition;
@@ -111,7 +101,7 @@ public class BulkDeleteBuilder<T>
     {
         var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
-            return $"[{GetDbColumnName(x)}] = @{x}";
+            return $"[{_table.GetDbColumnName(x)}] = @{x}";
         }));
 
         var deleteStatement = $"DELETE FROM {_table.SchemaQualifiedTableName} WHERE " + whereCondition;
@@ -154,7 +144,7 @@ public class BulkDeleteBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var deleteStatement = $"DELETE a FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition;
@@ -194,7 +184,7 @@ public class BulkDeleteBuilder<T>
     {
         var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
-            return $"[{GetDbColumnName(x)}] = @{x}";
+            return $"[{_table.GetDbColumnName(x)}] = @{x}";
         }));
 
         var deleteStatement = $"DELETE FROM {_table.SchemaQualifiedTableName} WHERE " + whereCondition;

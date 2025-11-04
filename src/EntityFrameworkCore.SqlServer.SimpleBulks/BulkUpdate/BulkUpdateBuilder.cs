@@ -60,16 +60,6 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    private string GetDbColumnName(string columnName)
-    {
-        if (_table.ColumnNameMappings == null)
-        {
-            return columnName;
-        }
-
-        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
-    }
-
     public BulkUpdateResult Execute(IEnumerable<T> data)
     {
         if (data.Count() == 1)
@@ -89,7 +79,7 @@ public class BulkUpdateBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var updateStatementBuilder = new StringBuilder();
@@ -168,7 +158,7 @@ public class BulkUpdateBuilder<T>
             sqlOperator = "+=";
         }
 
-        return $"{leftTable}.[{GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
+        return $"{leftTable}.[{_table.GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
     }
 
     private string CreateSetStatement(string prop)
@@ -181,7 +171,7 @@ public class BulkUpdateBuilder<T>
             sqlOperator = "+=";
         }
 
-        return $"[{GetDbColumnName(sqlProp)}] {sqlOperator} @{sqlProp}";
+        return $"[{_table.GetDbColumnName(sqlProp)}] {sqlOperator} @{sqlProp}";
     }
 
     private static string RemoveOperator(string prop)
@@ -214,7 +204,7 @@ public class BulkUpdateBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var updateStatementBuilder = new StringBuilder();

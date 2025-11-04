@@ -69,16 +69,6 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    private string GetDbColumnName(string columnName)
-    {
-        if (_table.ColumnNameMappings == null)
-        {
-            return columnName;
-        }
-
-        return _table.ColumnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
-    }
-
     public List<T> Execute(IEnumerable<T> machedValues)
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
@@ -90,7 +80,7 @@ public class BulkMatchBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var selectQueryBuilder = new StringBuilder();
@@ -147,7 +137,7 @@ public class BulkMatchBuilder<T>
 
     private string CreateSelectStatement(string colunmName)
     {
-        return $"a.[{GetDbColumnName(colunmName)}] as [{colunmName}]";
+        return $"a.[{_table.GetDbColumnName(colunmName)}] as [{colunmName}]";
     }
 
     private void Log(string message)
@@ -166,7 +156,7 @@ public class BulkMatchBuilder<T>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
 
         var selectQueryBuilder = new StringBuilder();

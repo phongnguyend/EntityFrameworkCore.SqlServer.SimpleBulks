@@ -35,6 +35,16 @@ public abstract class TableInfor
     {
     }
 
+    public string GetDbColumnName(string propertyName)
+    {
+        if (ColumnNameMappings == null)
+        {
+            return propertyName;
+        }
+
+        return ColumnNameMappings.TryGetValue(propertyName, out string value) ? value : propertyName;
+    }
+
     public abstract List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames);
 }
 
