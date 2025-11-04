@@ -47,6 +47,11 @@ public class BulkInsertAsyncTests : BaseTest
             });
         }
 
+        var options = new BulkInsertOptions()
+        {
+            LogTo = _output.WriteLine
+        };
+
         if (useLinq)
         {
             if (omitTableName)
@@ -54,36 +59,24 @@ public class BulkInsertAsyncTests : BaseTest
                 await connectionContext.BulkInsertAsync(rows,
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
 
                 await connectionContext.BulkInsertAsync(compositeKeyRows,
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
             else
             {
-                await connectionContext.BulkInsertAsync(rows, 
+                await connectionContext.BulkInsertAsync(rows,
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => row.Id,
                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
 
-                await connectionContext.BulkInsertAsync(compositeKeyRows, 
+                await connectionContext.BulkInsertAsync(compositeKeyRows,
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
 
         }
@@ -94,36 +87,24 @@ public class BulkInsertAsyncTests : BaseTest
                 await connectionContext.BulkInsertAsync(rows,
                     ["Column1", "Column2", "Column3"],
                     "Id",
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
 
                 await connectionContext.BulkInsertAsync(compositeKeyRows,
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
             else
             {
-                await connectionContext.BulkInsertAsync(rows, 
+                await connectionContext.BulkInsertAsync(rows,
                     ["Column1", "Column2", "Column3"],
                     "Id",
                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
 
-                await connectionContext.BulkInsertAsync(compositeKeyRows, 
+                await connectionContext.BulkInsertAsync(compositeKeyRows,
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    options: new BulkInsertOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
 
         }

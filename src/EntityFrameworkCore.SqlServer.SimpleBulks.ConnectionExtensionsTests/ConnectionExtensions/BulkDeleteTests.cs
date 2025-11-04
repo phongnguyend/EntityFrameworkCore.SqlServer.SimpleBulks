@@ -57,66 +57,43 @@ public class BulkDeleteTests : BaseTest
         var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
         var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
 
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = _output.WriteLine
+        };
+
         if (useLinq)
         {
             if (omitTableName)
             {
-                connectionContext.BulkDelete(rows, row => row.Id,
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
-                connectionContext.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 },
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                connectionContext.BulkDelete(rows, row => row.Id, options: options);
+                connectionContext.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 }, options: options);
             }
             else
             {
                 connectionContext.BulkDelete(rows, row => row.Id,
                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
                 connectionContext.BulkDelete(compositeKeyRows, row => new { row.Id1, row.Id2 },
                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
         }
         else
         {
             if (omitTableName)
             {
-                connectionContext.BulkDelete(rows, ["Id"],
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
-                connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"],
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                connectionContext.BulkDelete(rows, ["Id"], options: options);
+                connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"], options: options);
             }
             else
             {
                 connectionContext.BulkDelete(rows, ["Id"],
-                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                    options);
                 connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"],
                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options);
             }
         }
 

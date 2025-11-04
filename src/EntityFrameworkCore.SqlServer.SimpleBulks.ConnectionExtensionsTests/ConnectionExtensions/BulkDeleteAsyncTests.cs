@@ -57,66 +57,43 @@ public class BulkDeleteAsyncTests : BaseTest
         var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
         var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
 
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = _output.WriteLine
+        };
+
         if (useLinq)
         {
             if (omitTableName)
             {
-                await connectionContext.BulkDeleteAsync(rows, row => row.Id,
-                   options: new BulkDeleteOptions()
-                   {
-                       LogTo = _output.WriteLine
-                   });
-                await connectionContext.BulkDeleteAsync(compositeKeyRows, row => new { row.Id1, row.Id2 },
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                await connectionContext.BulkDeleteAsync(rows, row => row.Id, options: options);
+                await connectionContext.BulkDeleteAsync(compositeKeyRows, row => new { row.Id1, row.Id2 }, options: options);
             }
             else
             {
                 await connectionContext.BulkDeleteAsync(rows, row => row.Id,
                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
                 await connectionContext.BulkDeleteAsync(compositeKeyRows, row => new { row.Id1, row.Id2 },
                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options: options);
             }
         }
         else
         {
             if (omitTableName)
             {
-                await connectionContext.BulkDeleteAsync(rows, ["Id"],
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
-                await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"],
-                    options: new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                await connectionContext.BulkDeleteAsync(rows, ["Id"], options: options);
+                await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"], options: options);
             }
             else
             {
                 await connectionContext.BulkDeleteAsync(rows, ["Id"],
                     new SqlTableInfor(_schema, "SingleKeyRows"),
-                    new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    options);
                 await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"],
-                     new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    new BulkDeleteOptions()
-                    {
-                        LogTo = _output.WriteLine
-                    });
+                    new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    options);
             }
         }
 
