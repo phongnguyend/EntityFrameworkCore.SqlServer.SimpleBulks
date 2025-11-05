@@ -13,4 +13,26 @@ public class SingleKeyRow<TId>
     public Season? Season { get; set; }
 
     public Season? SeasonAsString { get; set; }
+
+    public bool? NullableBool { get; set; }
+
+    public DateTime? NullableDateTime { get; set; }
+
+    public DateTimeOffset? NullableDateTimeOffset { get; set; }
+
+    public decimal? NullableDecimal { get; set; }
+
+    public double? NullableDouble { get; set; }
+
+    public Guid? NullableGuid { get; set; }
+
+    public short? NullableShort { get; set; }
+
+    public int? NullableInt { get; set; }
+
+    public long? NullableLong { get; set; }
+
+    public float? NullableFloat { get; set; }
+
+    public string? NullableString { get; set; }
 }

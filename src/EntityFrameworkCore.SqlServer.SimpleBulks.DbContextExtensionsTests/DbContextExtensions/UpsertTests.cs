@@ -82,7 +82,25 @@ public class UpsertTests : BaseTest
 
         var result1 = _context.Upsert(existingRow,
                 row => row.Id,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
+                row => new
+                {
+                    row.Column1,
+                    row.Column2,
+                    row.Column3,
+                    row.Season,
+                    row.SeasonAsString,
+                    row.NullableBool,
+                    row.NullableDateTime,
+                    row.NullableDateTimeOffset,
+                    row.NullableDecimal,
+                    row.NullableDouble,
+                    row.NullableGuid,
+                    row.NullableShort,
+                    row.NullableInt,
+                    row.NullableLong,
+                    row.NullableFloat,
+                    row.NullableString
+                },
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 new BulkMergeOptions()
                 {
@@ -170,7 +188,25 @@ public class UpsertTests : BaseTest
 
         var result1 = _context.Upsert(newRow,
                 row => row.Id,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
+                row => new
+                {
+                    row.Column1,
+                    row.Column2,
+                    row.Column3,
+                    row.Season,
+                    row.SeasonAsString,
+                    row.NullableBool,
+                    row.NullableDateTime,
+                    row.NullableDateTimeOffset,
+                    row.NullableDecimal,
+                    row.NullableDouble,
+                    row.NullableGuid,
+                    row.NullableShort,
+                    row.NullableInt,
+                    row.NullableLong,
+                    row.NullableFloat,
+                    row.NullableString
+                },
                 row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 new BulkMergeOptions()
                 {
