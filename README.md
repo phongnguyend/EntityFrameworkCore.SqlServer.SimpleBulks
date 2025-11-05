@@ -22,6 +22,7 @@ or you can use **ConnectionContextExtensions.cs** to work directly with a **SqlC
 - Direct Insert
 - Direct Update
 - Direct Delete
+- Upsert
 
 ## Examples
 [EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)

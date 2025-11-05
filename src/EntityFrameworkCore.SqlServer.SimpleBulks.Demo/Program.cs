@@ -94,7 +94,7 @@ using (var dbct = new DemoDbContext())
         SeasonAsString = Season.Autumn,
     };
 
-    dbct.DirectInsert(configurationEntry,
+    await dbct.DirectInsertAsync(configurationEntry,
         new BulkInsertOptions()
         {
             LogTo = Console.WriteLine
@@ -106,14 +106,14 @@ using (var dbct = new DemoDbContext())
     configurationEntry.SeasonAsInt = Season.Spring;
     configurationEntry.SeasonAsString = Season.Spring;
 
-    dbct.DirectUpdate(configurationEntry,
+    await dbct.DirectUpdateAsync(configurationEntry,
         x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
         new BulkUpdateOptions()
         {
             LogTo = Console.WriteLine
         });
 
-    dbct.DirectDelete(configurationEntry,
+    await dbct.DirectDeleteAsync(configurationEntry,
         new BulkDeleteOptions()
         {
             LogTo = Console.WriteLine
