@@ -39,10 +39,10 @@ using (var dbct = new DemoDbContext())
     }
 
     await dbct.BulkInsertAsync(configurationEntries,
-   new BulkInsertOptions()
-   {
-       LogTo = Console.WriteLine
-   });
+        new BulkInsertOptions()
+        {
+            LogTo = Console.WriteLine
+        });
 
     foreach (var row in configurationEntries)
     {
@@ -55,7 +55,7 @@ using (var dbct = new DemoDbContext())
     }
 
     var updateResult = await dbct.BulkUpdateAsync(configurationEntries,
-  x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
+        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
         new BulkUpdateOptions()
         {
             LogTo = Console.WriteLine
@@ -73,8 +73,8 @@ using (var dbct = new DemoDbContext())
     });
 
     var mergeResult = await dbct.BulkMergeAsync(configurationEntries,
-     x => x.Id,
-      x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+        x => x.Id,
+        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
         x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime, x.SeasonAsInt, x.SeasonAsString },
         new BulkMergeOptions()
         {
@@ -95,10 +95,10 @@ using (var dbct = new DemoDbContext())
     };
 
     dbct.DirectInsert(configurationEntry,
-   new BulkInsertOptions()
-   {
-       LogTo = Console.WriteLine
-   });
+        new BulkInsertOptions()
+        {
+            LogTo = Console.WriteLine
+        });
 
     configurationEntry.Key += "_Updated";
     configurationEntry.Value += "_Updated";
@@ -107,7 +107,7 @@ using (var dbct = new DemoDbContext())
     configurationEntry.SeasonAsString = Season.Spring;
 
     dbct.DirectUpdate(configurationEntry,
-    x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
+        x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
         new BulkUpdateOptions()
         {
             LogTo = Console.WriteLine

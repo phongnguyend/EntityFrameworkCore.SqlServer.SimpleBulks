@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
 public static class TableMapper
 {
-    private static readonly object _lock = new object();
-    private static readonly Dictionary<Type, TableInfor> _mappings = new Dictionary<Type, TableInfor>();
+    private static readonly ConcurrentDictionary<Type, TableInfor> _mappings = new ConcurrentDictionary<Type, TableInfor>();
 
     public static void Register<T>(TableInfor tableInfo)
     {
@@ -20,10 +19,7 @@ public static class TableMapper
 
     public static void Register(Type type, TableInfor tableInfo)
     {
-        lock (_lock)
-        {
-            _mappings[type] = tableInfo;
-        }
+        _mappings[type] = tableInfo;
     }
 
     public static TableInfor Resolve(Type type)
