@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,23 +15,17 @@ public static class IListExtensions
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var properties = TypeDescriptor.GetProperties(typeof(T));
-
-        var updatablePros = new List<PropertyDescriptor>();
-        foreach (PropertyDescriptor prop in properties)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (propertyNames.Contains(prop.Name))
-            {
-                updatablePros.Add(prop);
-            }
-        }
+        var properties = typeof(T).GetProperties();
 
         var table = new DataTable() { MinimumCapacity = data.Count() };
-        foreach (PropertyDescriptor prop in updatablePros)
+        foreach (var prop in properties)
         {
             cancellationToken.ThrowIfCancellationRequested();
+
+            if (!propertyNames.Contains(prop.Name))
+            {
+                continue;
+            }
 
             table.Columns.Add(prop.Name, GetProviderClrType(prop, valueConverters));
         }
@@ -48,9 +42,14 @@ public static class IListExtensions
             cancellationToken.ThrowIfCancellationRequested();
 
             var row = table.NewRow();
-            foreach (PropertyDescriptor prop in updatablePros)
+            foreach (var prop in properties)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                if (!propertyNames.Contains(prop.Name))
+                {
+                    continue;
+                }
 
                 row[prop.Name] = GetProviderValue(prop, item, valueConverters) ?? DBNull.Value;
             }
@@ -75,7 +74,7 @@ public static class IListExtensions
         }, cancellationToken);
     }
 
-    private static Type GetProviderClrType(PropertyDescriptor property, IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    private static Type GetProviderClrType(PropertyInfo property, IReadOnlyDictionary<string, ValueConverter> valueConverters)
     {
         if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
         {
@@ -85,7 +84,7 @@ public static class IListExtensions
         return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
     }
 
-    private static object GetProviderValue<T>(PropertyDescriptor property, T item, IReadOnlyDictionary<string, ValueConverter> valueConverters)
+    private static object GetProviderValue<T>(PropertyInfo property, T item, IReadOnlyDictionary<string, ValueConverter> valueConverters)
     {
         if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
         {
