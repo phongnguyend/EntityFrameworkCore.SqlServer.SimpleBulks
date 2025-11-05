@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-
 const string connectionString = "Server=.;Database=ConnectionExtensionsExamples;User Id=sa;Password=sqladmin123!@#;Encrypt=False";
 
 TableMapper.Register<ConfigurationEntry>(new SqlTableInfor("ConfigurationEntries"));
