@@ -11,12 +11,12 @@ public static class TypeExtensions
             {typeof(DateTime), "datetime2"},
             {typeof(DateTimeOffset), "datetimeoffset"},
             {typeof(decimal), "decimal(38, 20)"},
-            {typeof(double), "double"},
+            {typeof(double), "float"},
             {typeof(Guid), "uniqueidentifier"},
             {typeof(short), "smallint"},
             {typeof(int), "int"},
             {typeof(long), "bigint"},
-            {typeof(float), "single"},
+            {typeof(float), "real"},
             {typeof(string), "nvarchar(max)"},
         };
 

@@ -17,24 +17,29 @@ public class BulkInsertTests : BaseTest
     }
 
     [Theory]
-    [InlineData(true, true)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    [InlineData(false, false)]
-    public void Bulk_Insert_Without_Transaction(bool useLinq, bool omitTableName)
+    [InlineData(1, true, true)]
+    [InlineData(1, true, false)]
+    [InlineData(1, false, true)]
+    [InlineData(1, false, false)]
+    [InlineData(100, true, true)]
+    [InlineData(100, true, false)]
+    [InlineData(100, false, true)]
+    [InlineData(100, false, false)]
+    public void Bulk_Insert_Without_Transaction(int length, bool useLinq, bool omitTableName)
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
         var rows = new List<SingleKeyRow<int>>();
         var compositeKeyRows = new List<CompositeKeyRow<int, int>>();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < length; i++)
         {
             rows.Add(new SingleKeyRow<int>
             {
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Autumn,
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -43,11 +48,12 @@ public class BulkInsertTests : BaseTest
                 Id2 = i,
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Autumn,
             });
         }
 
-        var options = new BulkInsertOptions()
+        var options = new BulkInsertOptions
         {
             LogTo = _output.WriteLine
         };
@@ -57,7 +63,24 @@ public class BulkInsertTests : BaseTest
             if (omitTableName)
             {
                 connectionContext.BulkInsert(rows,
-                    row => new { row.Column1, row.Column2, row.Column3 },
+                    row => new
+                    {
+                        row.Column1,
+                        row.Column2,
+                        row.Column3,
+                        row.Season,
+                        row.NullableBool,
+                        row.NullableDateTime,
+                        row.NullableDateTimeOffset,
+                        row.NullableDecimal,
+                        row.NullableDouble,
+                        row.NullableGuid,
+                        row.NullableShort,
+                        row.NullableInt,
+                        row.NullableLong,
+                        row.NullableFloat,
+                        row.NullableString
+                    },
                     row => row.Id,
                     options: options);
 
@@ -68,7 +91,24 @@ public class BulkInsertTests : BaseTest
             else
             {
                 connectionContext.BulkInsert(rows,
-                    row => new { row.Column1, row.Column2, row.Column3 },
+                    row => new
+                    {
+                        row.Column1,
+                        row.Column2,
+                        row.Column3,
+                        row.Season,
+                        row.NullableBool,
+                        row.NullableDateTime,
+                        row.NullableDateTimeOffset,
+                        row.NullableDecimal,
+                        row.NullableDouble,
+                        row.NullableGuid,
+                        row.NullableShort,
+                        row.NullableInt,
+                        row.NullableLong,
+                        row.NullableFloat,
+                        row.NullableString
+                    },
                     row => row.Id,
                     new SqlTableInfor(_schema, "SingleKeyRows"),
                     options: options);
@@ -114,7 +154,7 @@ public class BulkInsertTests : BaseTest
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
         var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < length; i++)
         {
             Assert.Equal(rows[i].Id, dbRows[i].Id);
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
