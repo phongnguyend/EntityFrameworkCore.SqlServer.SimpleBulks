@@ -1,4 +1,4 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+﻿namespace DbContextExtensionsExamples.Entities;
 
 public enum Season
 {

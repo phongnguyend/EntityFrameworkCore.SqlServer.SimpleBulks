@@ -2,8 +2,8 @@
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
-using EntityFrameworkCore.SqlServer.SimpleBulks.Demo;
-using EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+using DbContextExtensionsExamples;
+using DbContextExtensionsExamples.Entities;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
@@ -12,7 +12,10 @@ using System;
 using System.Collections.Generic;
 
 
-using (var dbct = new DemoDbContext())
+const string connectionString = "Server=.;Database=EFCoreSimpleBulks;User Id=sa;Password=sqladmin123!@#;Encrypt=False";
+
+
+using (var dbct = new DemoDbContext(connectionString))
 {
     dbct.Database.Migrate();
 

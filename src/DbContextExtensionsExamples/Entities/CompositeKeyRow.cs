@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Entities;
+namespace DbContextExtensionsExamples.Entities;
 
 public class CompositeKeyRow
 {

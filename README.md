@@ -25,10 +25,17 @@ or you can use **ConnectionContextExtensions.cs** to work directly with a **SqlC
 - Upsert
 
 ## Examples
-[EntityFrameworkCore.SqlServer.SimpleBulks.Demo](/src/EntityFrameworkCore.SqlServer.SimpleBulks.Demo/Program.cs)
+[DbContextExtensionsExamples](/src/DbContextExtensionsExamples/Program.cs)
 - Update the connection string:
   ```c#
-  private const string _connectionString = "Server=.;Database=SimpleBulks;User Id=xxx;Password=xxx";
+  const string connectionString = "Server=.;Database=DbContextExtensionsExamples;User Id=xxx;Password=xxx;Encrypt=False";
+  ```
+- Build and run.
+
+[ConnectionExtensionsExamples](/src/ConnectionExtensionsExamples/Program.cs)
+- Update the connection string:
+  ```c#
+  const string connectionString = "Server=.;Database=ConnectionExtensionsExamples;User Id=xxx;Password=xxx;Encrypt=False";
   ```
 - Build and run.
 

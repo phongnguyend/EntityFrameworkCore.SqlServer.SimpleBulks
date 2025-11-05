@@ -3,7 +3,7 @@ using System;
 
 #nullable disable
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Demo.Migrations;
+namespace DbContextExtensionsExamples.Migrations;
 
 /// <inheritdoc />
 public partial class Init : Migration
