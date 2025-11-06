@@ -19,16 +19,6 @@ public static class ConnectionContextAsyncExtensions
         .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
-    {
-        return connectionContext.CreateBulkMatchBuilder<T>()
-    .WithReturnedColumns(returnedColumns)
-       .WithTable(table ?? TableMapper.Resolve<T>())
- .WithMatchedColumn(matchedColumn)
-.WithBulkOptions(options)
-    .ExecuteAsync(machedValues, cancellationToken);
-    }
-
     public static Task<List<T>> BulkMatchAsync<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()

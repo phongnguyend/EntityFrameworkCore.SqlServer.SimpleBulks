@@ -17,16 +17,6 @@ public static class ConnectionContextExtensions
                       .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, string matchedColumn, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null)
-    {
-        return connectionContext.CreateBulkMatchBuilder<T>()
-      .WithReturnedColumns(returnedColumns)
-      .WithTable(table ?? TableMapper.Resolve<T>())
-.WithMatchedColumn(matchedColumn)
-        .WithBulkOptions(options)
-      .Execute(machedValues);
-    }
-
     public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IEnumerable<T> machedValues, IEnumerable<string> matchedColumns, IEnumerable<string> returnedColumns, SqlTableInfor table = null, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()

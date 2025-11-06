@@ -21,8 +21,6 @@ public static class DbContextAsyncExtensions
 
     public static Task DirectInsertAsync<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
-        var idColumn = dbContext.GetOutputId(typeof(T));
-
         return dbContext.CreateBulkInsertBuilder<T>()
       .WithColumns(columnNamesSelector)
  .ToTable(dbContext.GetTableInfor(typeof(T)))

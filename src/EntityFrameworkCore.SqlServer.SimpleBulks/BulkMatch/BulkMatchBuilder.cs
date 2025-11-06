@@ -32,12 +32,6 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public BulkMatchBuilder<T> WithMatchedColumn(string matchedColumn)
-    {
-        _matchedColumns = new List<string> { matchedColumn };
-        return this;
-    }
-
     public BulkMatchBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
     {
         _matchedColumns = matchedColumns;

@@ -19,8 +19,6 @@ public static class DbContextExtensions
 
     public static void DirectInsert<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
     {
-        var idColumn = dbContext.GetOutputId(typeof(T));
-
         dbContext.CreateBulkInsertBuilder<T>()
              .WithColumns(columnNamesSelector)
              .ToTable(dbContext.GetTableInfor(typeof(T)))
