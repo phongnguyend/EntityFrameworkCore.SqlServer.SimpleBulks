@@ -26,6 +26,8 @@ public abstract class TableInfor
 
     public IReadOnlyDictionary<string, ValueConverter> ValueConverters { get; init; }
 
+    public OutputId OutputId { get; init; }
+
     public TableInfor(string schema, string tableName)
     {
         Schema = schema;

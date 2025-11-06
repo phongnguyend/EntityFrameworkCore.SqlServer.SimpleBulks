@@ -14,9 +14,23 @@ public class UpsertAsyncTests : BaseTest
 
     public UpsertAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkMerge")
     {
-        TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(_schema, "SingleKeyRows"));
+        TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(_schema, "SingleKeyRows")
+        {
+            OutputId = new OutputId
+            {
+                Name = "Id",
+                Mode = OutputIdMode.ServerGenerated,
+            }
+        });
         TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(_schema, "CompositeKeyRows"));
-        TableMapper.Register<ConfigurationEntry>(new SqlTableInfor(_schema, "ConfigurationEntry"));
+        TableMapper.Register<ConfigurationEntry>(new SqlTableInfor(_schema, "ConfigurationEntry")
+        {
+            OutputId = new OutputId
+            {
+                Name = "Id",
+                Mode = OutputIdMode.ServerGenerated,
+            }
+        });
     }
 
     private void SeedData(int length)
@@ -106,7 +120,6 @@ public class UpsertAsyncTests : BaseTest
             row.NullableString
         },
     row => new { row.Column1, row.Column2, row.Column3, row.Season },
-    row => row.Id,
   options: new BulkMergeOptions()
   {
       LogTo = _output.WriteLine,
@@ -212,7 +225,6 @@ public class UpsertAsyncTests : BaseTest
                         row.NullableString
                     },
              row => new { row.Column1, row.Column2, row.Column3, row.Season },
-             row => row.Id,
           options: new BulkMergeOptions()
           {
               LogTo = _output.WriteLine,
@@ -298,7 +310,6 @@ public class UpsertAsyncTests : BaseTest
            ["Id"],
    ["Column1", "Column2", "Column3", "Season"],
      ["Column1", "Column2", "Column3", "Season"],
-     "Id",
  options: new BulkMergeOptions()
  {
      LogTo = _output.WriteLine,
@@ -387,7 +398,6 @@ public class UpsertAsyncTests : BaseTest
       ["Id"],
  ["Column1", "Column2", "Column3", "Season"],
     ["Column1", "Column2", "Column3", "Season"],
-    "Id",
         options: new BulkMergeOptions()
         {
             LogTo = _output.WriteLine,
@@ -484,7 +494,6 @@ public class UpsertAsyncTests : BaseTest
    x => x.Id,
     x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
      x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-     x => x.Id,
              options: new BulkMergeOptions()
              {
                  LogTo = _output.WriteLine
@@ -554,7 +563,6 @@ public class UpsertAsyncTests : BaseTest
                 x => x.Id,
           x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
           x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-          x => x.Id,
         options: new BulkMergeOptions()
         {
             ReturnDbGeneratedId = false,
@@ -627,7 +635,6 @@ public class UpsertAsyncTests : BaseTest
     x => x.Id,
      x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
              x => new { },
-             x => x.Id,
              options: new BulkMergeOptions()
              {
                  LogTo = _output.WriteLine
@@ -686,7 +693,6 @@ new BulkInsertOptions()
                 x => x.Id,
        x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
         x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-        x => x.Id,
           options: new BulkMergeOptions()
           {
               LogTo = _output.WriteLine
@@ -754,7 +760,6 @@ new BulkInsertOptions()
        x => x.Id,
             x => new { },
     x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-    x => x.Id,
                 options: new BulkMergeOptions()
                 {
                     LogTo = _output.WriteLine
@@ -824,7 +829,6 @@ new BulkInsertOptions()
                      x => x.Id,
               x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
                      x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-                     x => x.Id,
           options: new BulkMergeOptions()
           {
               LogTo = _output.WriteLine
@@ -885,7 +889,6 @@ new BulkInsertOptions()
                 x => x.Id,
                 x => new { },
                 x => new { },
-                x => x.Id,
                 options: new BulkMergeOptions()
                 {
                     LogTo = _output.WriteLine
@@ -899,7 +902,6 @@ new BulkInsertOptions()
  x => x.Id,
       x => new { },
             x => new { x.Key, x.Value, x.Description, x.IsSensitive, x.CreatedDateTime },
-            x => x.Id,
   options: new BulkMergeOptions()
   {
       LogTo = _output.WriteLine
@@ -977,7 +979,6 @@ new BulkInsertOptions()
             x => x.Id,
     x => new { },
      x => new { },
-     x => x.Id,
         options: new BulkMergeOptions()
         {
             LogTo = _output.WriteLine
@@ -991,7 +992,6 @@ new BulkInsertOptions()
      x => x.Id,
        x => new { x.Key, x.Value, x.Description, x.UpdatedDateTime },
         x => new { },
-        x => x.Id,
     options: new BulkMergeOptions()
     {
         LogTo = _output.WriteLine

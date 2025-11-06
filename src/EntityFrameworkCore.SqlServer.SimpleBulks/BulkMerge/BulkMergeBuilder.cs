@@ -27,6 +27,9 @@ public class BulkMergeBuilder<T>
     public BulkMergeBuilder<T> ToTable(TableInfor table)
     {
         _table = table;
+
+        _outputIdColumn = table?.OutputId?.Name;
+
         return this;
     }
 
@@ -64,18 +67,6 @@ public class BulkMergeBuilder<T>
     public BulkMergeBuilder<T> WithInsertColumns(Expression<Func<T, object>> insertColumnNamesSelector)
     {
         _insertColumnNames = insertColumnNamesSelector.Body.GetMemberNames().ToArray();
-        return this;
-    }
-
-    public BulkMergeBuilder<T> WithOutputId(string idColumn)
-    {
-        _outputIdColumn = idColumn;
-        return this;
-    }
-
-    public BulkMergeBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
-    {
-        _outputIdColumn = idSelector?.Body.GetMemberName();
         return this;
     }
 

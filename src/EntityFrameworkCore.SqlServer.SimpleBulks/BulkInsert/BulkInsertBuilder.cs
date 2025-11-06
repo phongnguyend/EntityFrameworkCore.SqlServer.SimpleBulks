@@ -28,24 +28,8 @@ public class BulkInsertBuilder<T>
     public BulkInsertBuilder<T> ToTable(TableInfor table)
     {
         _table = table;
-        return this;
-    }
-
-    public BulkInsertBuilder<T> WithOutputId(string idColumn)
-    {
-        _outputIdColumn = idColumn;
-        return this;
-    }
-
-    public BulkInsertBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
-    {
-        _outputIdColumn = idSelector.Body.GetMemberName();
-        return this;
-    }
-
-    public BulkInsertBuilder<T> WithOutputIdMode(OutputIdMode outputIdMode)
-    {
-        _outputIdMode = outputIdMode;
+        _outputIdColumn = table?.OutputId?.Name;
+        _outputIdMode = table?.OutputId?.Mode ?? OutputIdMode.ServerGenerated;
         return this;
     }
 
