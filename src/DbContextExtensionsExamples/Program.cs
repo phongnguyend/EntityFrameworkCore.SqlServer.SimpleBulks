@@ -11,9 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
-const string connectionString = "Server=.;Database=DbContextExtensionsExamples;User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-
-using (var dbct = new DemoDbContext(connectionString))
+using (var dbct = new DemoDbContext())
 {
     dbct.Database.Migrate();
 

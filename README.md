@@ -26,17 +26,11 @@ or you can use **ConnectionContextExtensions.cs** to work directly with a **SqlC
 
 ## Examples
 [DbContextExtensionsExamples](/src/DbContextExtensionsExamples/Program.cs)
-- Update the connection string:
-  ```c#
-  const string connectionString = "Server=.;Database=DbContextExtensionsExamples;User Id=xxx;Password=xxx;Encrypt=False";
-  ```
+- Update the connection string ConnectionStrings.SqlServerConnectionString.
 - Build and run.
 
 [ConnectionExtensionsExamples](/src/ConnectionExtensionsExamples/Program.cs)
-- Update the connection string:
-  ```c#
-  const string connectionString = "Server=.;Database=ConnectionExtensionsExamples;User Id=xxx;Password=xxx;Encrypt=False";
-  ```
+- Update the connection string ConnectionStrings.SqlServerConnectionString.
 - Build and run.
 
 ## DbContextExtensions

@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-const string connectionString = "Server=.;Database=ConnectionExtensionsExamples;User Id=sa;Password=sqladmin123!@#;Encrypt=False";
-
 TableMapper.Register<ConfigurationEntry>(new SqlTableInfor("ConfigurationEntries")
 {
     OutputId = new OutputId
@@ -28,14 +26,14 @@ TableMapper.Register<ConfigurationEntry>(new SqlTableInfor("ConfigurationEntries
 var existingConfigurationEntries = new List<ConfigurationEntry>();
 
 // Use DbContext to create the database and apply migrations only.
-using (var dbct = new DemoDbContext(connectionString))
+using (var dbct = new DemoDbContext())
 {
     dbct.Database.Migrate();
 
     existingConfigurationEntries = dbct.Set<ConfigurationEntry>().AsNoTracking().ToList();
 }
 
-var connection = new ConnectionContext(new SqlConnection(connectionString), null);
+var connection = new ConnectionContext(new SqlConnection(ConnectionStrings.SqlServerConnectionString), null);
 
 var deleteResult = await connection.BulkDeleteAsync(existingConfigurationEntries,
     x => x.Id,
