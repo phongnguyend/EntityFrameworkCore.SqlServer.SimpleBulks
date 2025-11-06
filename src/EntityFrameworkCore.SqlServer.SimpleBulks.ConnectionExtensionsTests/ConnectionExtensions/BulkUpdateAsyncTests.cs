@@ -155,15 +155,15 @@ public class BulkUpdateAsyncTests : BaseTest
                     row => row.Id,
                     row => new { row.Column1, row.Column2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
-                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                    table: new SqlTableInfor(_schema, "SingleKeyRows"),
                     options: mergeOptions);
 
                 await connectionContext.BulkMergeAsync(compositeKeyRows,
                     row => new { row.Id1, row.Id2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    mergeOptions);
+                    table: new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    options: mergeOptions);
             }
 
         }
@@ -238,15 +238,15 @@ public class BulkUpdateAsyncTests : BaseTest
                     ["Id"],
                     ["Column1", "Column2"],
                     ["Column1", "Column2", "Column3"],
-                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                    table: new SqlTableInfor(_schema, "SingleKeyRows"),
                     options: mergeOptions);
 
                 await connectionContext.BulkMergeAsync(compositeKeyRows,
                     ["Id1", "Id2"],
                     ["Column1", "Column2", "Column3"],
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    new SqlTableInfor(_schema, "CompositeKeyRows"),
-                    mergeOptions);
+                    table: new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    options: mergeOptions);
             }
         }
 

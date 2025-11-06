@@ -75,7 +75,7 @@ public class BulkMergeBuilder<T>
 
     public BulkMergeBuilder<T> WithOutputId(Expression<Func<T, object>> idSelector)
     {
-        _outputIdColumn = idSelector.Body.GetMemberName();
+        _outputIdColumn = idSelector?.Body.GetMemberName();
         return this;
     }
 
