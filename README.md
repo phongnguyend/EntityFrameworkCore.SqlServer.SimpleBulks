@@ -100,8 +100,6 @@ await dbct.BulkMergeAsync(compositeKeyRows,
 await dbct.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
-	.WithOutputId(row => row.Id)
-	// or .WithOutputId("Id")
 	.ToTable(dbct.GetTableInfor(typeof(Row)))
 	.ExecuteAsync(rows);
 ```
@@ -182,8 +180,6 @@ await connection.BulkDeleteAsync(compositeKeyRows, [ "Id1", "Id2" ]);
 await connection.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
-	.WithOutputId(row => row.Id)
-	// or .WithOutputId("Id")
 	.ToTable(new SqlTableInfor("Rows"))
 	.ExecuteAsync(rows);
 ```
