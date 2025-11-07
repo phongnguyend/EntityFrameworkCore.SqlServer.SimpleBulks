@@ -3,35 +3,35 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Text.RegularExpressions;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
+namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
-public static class TypeExtensions
+public static class TypeMapper
 {
     private static readonly ConcurrentDictionary<Type, string> _mappings = new ConcurrentDictionary<Type, string>();
 
     private static readonly ConcurrentDictionary<string, SqlDbType> _sqlTypeCache = new();
 
-    static TypeExtensions()
+    static TypeMapper()
     {
-        ConfigureSqlServerTypeMapping<bool>("bit");
-        ConfigureSqlServerTypeMapping<DateTime>("datetime2");
-        ConfigureSqlServerTypeMapping<DateTimeOffset>("datetimeoffset");
-        ConfigureSqlServerTypeMapping<decimal>("decimal(38, 20)");
-        ConfigureSqlServerTypeMapping<double>("float");
-        ConfigureSqlServerTypeMapping<Guid>("uniqueidentifier");
-        ConfigureSqlServerTypeMapping<short>("smallint");
-        ConfigureSqlServerTypeMapping<int>("int");
-        ConfigureSqlServerTypeMapping<long>("bigint");
-        ConfigureSqlServerTypeMapping<float>("real");
-        ConfigureSqlServerTypeMapping<string>("nvarchar(max)");
+        ConfigureSqlServerType<bool>("bit");
+        ConfigureSqlServerType<DateTime>("datetime2");
+        ConfigureSqlServerType<DateTimeOffset>("datetimeoffset");
+        ConfigureSqlServerType<decimal>("decimal(38, 20)");
+        ConfigureSqlServerType<double>("float");
+        ConfigureSqlServerType<Guid>("uniqueidentifier");
+        ConfigureSqlServerType<short>("smallint");
+        ConfigureSqlServerType<int>("int");
+        ConfigureSqlServerType<long>("bigint");
+        ConfigureSqlServerType<float>("real");
+        ConfigureSqlServerType<string>("nvarchar(max)");
     }
 
-    public static void ConfigureSqlServerTypeMapping<T>(string sqlServerType)
+    public static void ConfigureSqlServerType<T>(string sqlServerType)
     {
-        ConfigureSqlServerTypeMapping(typeof(T), sqlServerType);
+        ConfigureSqlServerType(typeof(T), sqlServerType);
     }
 
-    public static void ConfigureSqlServerTypeMapping(Type type, string sqlServerType)
+    public static void ConfigureSqlServerType(Type type, string sqlServerType)
     {
         _mappings[type] = sqlServerType;
     }
@@ -43,7 +43,7 @@ public static class TypeExtensions
             return "int";
         }
 
-        var sqlType = _mappings.TryGetValue(type, out string value) ? value : "nvarchar(max)";
+        var sqlType = _mappings.TryGetValue(type, out var value) ? value : "nvarchar(max)";
         return sqlType;
     }
 
