@@ -6,6 +6,11 @@
     <Project Path="ConnectionExtensionsExamples/ConnectionExtensionsExamples.csproj" Id="8836961e-98dd-4dbd-ad79-b251ac6361b9" />
     <Project Path="DbContextExtensionsExamples/DbContextExtensionsExamples.csproj" />
   </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj" />
   </Folder>
