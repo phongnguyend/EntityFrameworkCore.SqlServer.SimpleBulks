@@ -12,15 +12,6 @@ public class BulkInsertAsyncTests : BaseTest
 
     public BulkInsertAsyncTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
     {
-        TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(_schema, "SingleKeyRows")
-        {
-            OutputId = new OutputId
-            {
-                Name = "Id",
-                Mode = OutputIdMode.ServerGenerated,
-            }
-        });
-        TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(_schema, "CompositeKeyRows"));
     }
 
     [Theory]
