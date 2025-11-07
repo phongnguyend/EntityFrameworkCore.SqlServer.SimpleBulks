@@ -1,4 +1,23 @@
-﻿using System;
+﻿#if NET9_0_OR_GREATER
+using System;
+
+namespace EntityFrameworkCore.SqlServer.SimpleBulks;
+
+public static class SequentialGuidGenerator
+{
+    public static Guid Next()
+    {
+        return Next(DateTimeOffset.UtcNow);
+    }
+
+    public static Guid Next(DateTimeOffset timeNow)
+    {
+        return Guid.CreateVersion7(timeNow);
+    }
+}
+
+#else
+using System;
 using System.Security.Cryptography;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
@@ -37,3 +56,5 @@ public static class SequentialGuidGenerator
         return guid;
     }
 }
+
+#endif
