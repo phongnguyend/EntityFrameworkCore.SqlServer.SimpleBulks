@@ -2,7 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>$(CurrentTargetFramework)</TargetFramework>
-    <Version>8.9.0</Version>
+    <Version Condition="'$(CurrentTargetFramework)' == 'net8.0'">$(CurrentNet8Version)</Version>
+    <Version Condition="'$(CurrentTargetFramework)' == 'net9.0'">$(CurrentNet9Version)</Version>
+    <Version Condition="'$(CurrentTargetFramework)' == 'net10.0'">$(CurrentNet10Version)</Version>
     <PackageProjectUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</PackageProjectUrl>
     <RepositoryUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
