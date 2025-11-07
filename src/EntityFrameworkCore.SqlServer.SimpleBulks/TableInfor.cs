@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -152,9 +153,13 @@ public class SqlTableInfor : TableInfor
 
             var para = new SqlParameter($"@{prop.Name}", prop.GetValue(data) ?? DBNull.Value);
 
-            if (type == typeof(DateTime))
+            if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
             {
-                para.DbType = System.Data.DbType.DateTime2;
+                para.SqlDbType = columnType.ToSqlDbType();
+            }
+            else
+            {
+                para.SqlDbType = type.ToSqlDbType().ToSqlDbType();
             }
 
             parameters.Add(para);

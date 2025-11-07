@@ -41,9 +41,9 @@ public static class DataTableExtensions
     {
         if (columnTypeMappings == null)
         {
-            return dataColumn.DataType.ToSqlType();
+            return dataColumn.DataType.ToSqlDbType();
         }
 
-        return columnTypeMappings.TryGetValue(dataColumn.ColumnName, out string value) ? value : dataColumn.DataType.ToSqlType();
+        return columnTypeMappings.TryGetValue(dataColumn.ColumnName, out string value) ? value : dataColumn.DataType.ToSqlDbType();
     }
 }
