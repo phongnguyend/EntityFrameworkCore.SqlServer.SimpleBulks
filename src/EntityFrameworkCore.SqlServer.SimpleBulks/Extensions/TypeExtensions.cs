@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
 
@@ -8,22 +7,34 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class TypeExtensions
 {
-    private static Dictionary<Type, string> _mappings = new Dictionary<Type, string>
-        {
-            {typeof(bool), "bit"},
-            {typeof(DateTime), "datetime2"},
-            {typeof(DateTimeOffset), "datetimeoffset"},
-            {typeof(decimal), "decimal(38, 20)"},
-            {typeof(double), "float"},
-            {typeof(Guid), "uniqueidentifier"},
-            {typeof(short), "smallint"},
-            {typeof(int), "int"},
-            {typeof(long), "bigint"},
-            {typeof(float), "real"},
-            {typeof(string), "nvarchar(max)"},
-        };
+    private static readonly ConcurrentDictionary<Type, string> _mappings = new ConcurrentDictionary<Type, string>();
 
     private static readonly ConcurrentDictionary<string, SqlDbType> _sqlTypeCache = new();
+
+    static TypeExtensions()
+    {
+        ConfigureSqlServerTypeMapping<bool>("bit");
+        ConfigureSqlServerTypeMapping<DateTime>("datetime2");
+        ConfigureSqlServerTypeMapping<DateTimeOffset>("datetimeoffset");
+        ConfigureSqlServerTypeMapping<decimal>("decimal(38, 20)");
+        ConfigureSqlServerTypeMapping<double>("float");
+        ConfigureSqlServerTypeMapping<Guid>("uniqueidentifier");
+        ConfigureSqlServerTypeMapping<short>("smallint");
+        ConfigureSqlServerTypeMapping<int>("int");
+        ConfigureSqlServerTypeMapping<long>("bigint");
+        ConfigureSqlServerTypeMapping<float>("real");
+        ConfigureSqlServerTypeMapping<string>("nvarchar(max)");
+    }
+
+    public static void ConfigureSqlServerTypeMapping<T>(string sqlServerType)
+    {
+        ConfigureSqlServerTypeMapping(typeof(T), sqlServerType);
+    }
+
+    public static void ConfigureSqlServerTypeMapping(Type type, string sqlServerType)
+    {
+        _mappings[type] = sqlServerType;
+    }
 
     public static string ToSqlDbType(this Type type)
     {
