@@ -11,20 +11,24 @@ public static class DbContextExtensions
 {
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
+
         return dbContext.CreateBulkUpdateBuilder<T>()
-             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+             .WithId(table.PrimaryKeys)
              .WithColumns(columnNamesSelector)
-             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ToTable(table)
              .WithBulkOptions(options)
              .SingleUpdate(data);
     }
 
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
+
         return dbContext.CreateBulkUpdateBuilder<T>()
-             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+             .WithId(table.PrimaryKeys)
              .WithColumns(columnNames)
-             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ToTable(table)
              .WithBulkOptions(options)
              .SingleUpdate(data);
     }

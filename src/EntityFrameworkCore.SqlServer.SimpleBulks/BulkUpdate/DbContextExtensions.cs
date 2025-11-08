@@ -10,20 +10,23 @@ public static class DbContextExtensions
 {
     public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
         return dbContext.CreateBulkUpdateBuilder<T>()
-             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+             .WithId(table.PrimaryKeys)
              .WithColumns(columnNamesSelector)
-             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ToTable(table)
              .WithBulkOptions(options)
              .Execute(data);
     }
 
     public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
+
         return dbContext.CreateBulkUpdateBuilder<T>()
-             .WithId(dbContext.GetPrimaryKeys(typeof(T)))
+             .WithId(table.PrimaryKeys)
              .WithColumns(columnNames)
-             .ToTable(dbContext.GetTableInfor(typeof(T)))
+             .ToTable(table)
              .WithBulkOptions(options)
              .Execute(data);
     }

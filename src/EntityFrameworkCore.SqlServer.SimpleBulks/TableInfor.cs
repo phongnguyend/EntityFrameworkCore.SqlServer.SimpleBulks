@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
@@ -17,6 +16,8 @@ public abstract class TableInfor
     public string Name { get; private set; }
 
     public string SchemaQualifiedTableName { get; private set; }
+
+    public string[] PrimaryKeys { get; init; }
 
     public IReadOnlyDictionary<string, Type> PropertyTypes { get; init; }
 
