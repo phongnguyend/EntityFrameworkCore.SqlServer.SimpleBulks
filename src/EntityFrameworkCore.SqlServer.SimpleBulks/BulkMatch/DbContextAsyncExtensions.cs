@@ -12,9 +12,11 @@ public static class DbContextAsyncExtensions
 {
     public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
+
         return dbContext.CreateBulkMatchBuilder<T>()
-       .WithReturnedColumns(dbContext.GetAllPropertyNames(typeof(T)))
-         .WithTable(dbContext.GetTableInfor(typeof(T)))
+       .WithReturnedColumns(table.PropertyNames)
+         .WithTable(table)
      .WithMatchedColumns(matchedColumnsSelector)
       .WithBulkOptions(options)
       .ExecuteAsync(machedValues, cancellationToken);

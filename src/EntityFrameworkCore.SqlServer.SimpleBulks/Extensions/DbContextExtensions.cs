@@ -27,7 +27,7 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, Type>> _propertyTypesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, string>> _columnNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, string>> _columnTypesCache = [];
-    private static readonly ConcurrentDictionary<CacheKey, string[]> _primaryKeysCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _primaryKeysCache = [];
     private static readonly ConcurrentDictionary<CacheKey, ColumnInfor> _outputIdCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _insertablePropertyNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesCache = [];
@@ -49,6 +49,8 @@ public static class DbContextExtensions
             var tableInfo = new DbContextTableInfor(schema, tableName, dbContext)
             {
                 PrimaryKeys = dbContext.GetPrimaryKeys(key.EntityType),
+                PropertyNames = dbContext.GetAllPropertyNames(key.EntityType),
+                InsertablePropertyNames = dbContext.GetInsertablePropertyNames(key.EntityType),
                 PropertyTypes = dbContext.GetPropertyTypes(key.EntityType),
                 ColumnNameMappings = dbContext.GetColumnNames(key.EntityType),
                 ColumnTypeMappings = dbContext.GetColumnTypes(key.EntityType),
@@ -142,7 +144,7 @@ public static class DbContextExtensions
         });
     }
 
-    public static string[] GetPrimaryKeys(this DbContext dbContext, Type type)
+    public static IReadOnlyList<string> GetPrimaryKeys(this DbContext dbContext, Type type)
     {
         var cacheKey = new CacheKey(dbContext.GetType(), type);
         return _primaryKeysCache.GetOrAdd(cacheKey, (key) =>

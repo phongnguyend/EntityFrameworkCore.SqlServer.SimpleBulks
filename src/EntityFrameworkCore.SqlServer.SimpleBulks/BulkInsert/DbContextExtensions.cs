@@ -10,9 +10,11 @@ public static class DbContextExtensions
 {
     public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, BulkInsertOptions options = null)
     {
+        var table = dbContext.GetTableInfor(typeof(T));
+
         dbContext.CreateBulkInsertBuilder<T>()
-            .WithColumns(dbContext.GetInsertablePropertyNames(typeof(T)))
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
+            .WithColumns(table.InsertablePropertyNames)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }

@@ -17,7 +17,11 @@ public abstract class TableInfor
 
     public string SchemaQualifiedTableName { get; private set; }
 
-    public string[] PrimaryKeys { get; init; }
+    public IReadOnlyList<string> PrimaryKeys { get; init; }
+
+    public IReadOnlyList<string> PropertyNames { get; init; }
+
+    public IReadOnlyList<string> InsertablePropertyNames { get; init; }
 
     public IReadOnlyDictionary<string, Type> PropertyTypes { get; init; }
 
