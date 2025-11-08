@@ -15,17 +15,13 @@ public static class IListExtensions
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var properties = typeof(T).GetProperties();
-
         var table = new DataTable() { MinimumCapacity = data.Count() };
-        foreach (var prop in properties)
+
+        foreach (var propName in propertyNames)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            if (!propertyNames.Contains(prop.Name))
-            {
-                continue;
-            }
+            var prop = PropertiesCache<T>.GetProperty(propName);
 
             table.Columns.Add(prop.Name, GetProviderClrType(prop, valueConverters));
         }
@@ -42,14 +38,12 @@ public static class IListExtensions
             cancellationToken.ThrowIfCancellationRequested();
 
             var row = table.NewRow();
-            foreach (var prop in properties)
+
+            foreach (var propName in propertyNames)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (!propertyNames.Contains(prop.Name))
-                {
-                    continue;
-                }
+                var prop = PropertiesCache<T>.GetProperty(propName);
 
                 row[prop.Name] = GetProviderValue(prop, item, valueConverters) ?? DBNull.Value;
             }

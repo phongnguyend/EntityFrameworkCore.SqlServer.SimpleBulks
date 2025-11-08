@@ -105,16 +105,16 @@ public class BulkMatchBuilder<T>
 
         var results = new List<T>();
 
-        var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
-
         using var updateCommand = _connectionContext.CreateTextCommand(selectQuery, _options);
         using var reader = updateCommand.ExecuteReader();
         while (reader.Read())
         {
             T obj = (T)Activator.CreateInstance(typeof(T));
 
-            foreach (var prop in properties)
+            foreach (var propName in _returnedColumns)
             {
+                var prop = PropertiesCache<T>.GetProperty(propName);
+
                 if (!Equals(reader[prop.Name], DBNull.Value))
                 {
                     prop.SetValue(obj, GetValue(prop, reader, _table.ValueConverters), null);
@@ -180,16 +180,16 @@ public class BulkMatchBuilder<T>
 
         var results = new List<T>();
 
-        var properties = typeof(T).GetProperties().Where(prop => _returnedColumns.Contains(prop.Name)).ToList();
-
         using var updateCommand = _connectionContext.CreateTextCommand(selectQuery, _options);
         using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
             T obj = (T)Activator.CreateInstance(typeof(T));
 
-            foreach (var prop in properties)
+            foreach (var propName in _returnedColumns)
             {
+                var prop = PropertiesCache<T>.GetProperty(propName);
+
                 if (!Equals(reader[prop.Name], DBNull.Value))
                 {
                     prop.SetValue(obj, GetValue(prop, reader, _table.ValueConverters), null);

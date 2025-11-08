@@ -61,7 +61,7 @@ public abstract class TableInfor
             return Nullable.GetUnderlyingType(type) ?? type;
         }
 
-        var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name == propertyName);
+        var property = PropertiesCache<T>.GetProperty(propertyName);
         if (property != null)
         {
             return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
@@ -89,18 +89,13 @@ public class DbContextTableInfor : TableInfor
 
     public override List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames)
     {
-        var properties = typeof(T).GetProperties();
-
         var parameters = new List<SqlParameter>();
 
         var mappingSource = _dbContext.GetService<IRelationalTypeMappingSource>();
 
-        foreach (var prop in properties)
+        foreach (var propName in propertyNames)
         {
-            if (!propertyNames.Contains(prop.Name))
-            {
-                continue;
-            }
+            var prop = PropertiesCache<T>.GetProperty(propName);
 
             if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
             {
@@ -137,16 +132,11 @@ public class SqlTableInfor : TableInfor
 
     public override List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames)
     {
-        var properties = typeof(T).GetProperties();
-
         var parameters = new List<SqlParameter>();
 
-        foreach (var prop in properties)
+        foreach (var propName in propertyNames)
         {
-            if (!propertyNames.Contains(prop.Name))
-            {
-                continue;
-            }
+            var prop = PropertiesCache<T>.GetProperty(propName);
 
             var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 

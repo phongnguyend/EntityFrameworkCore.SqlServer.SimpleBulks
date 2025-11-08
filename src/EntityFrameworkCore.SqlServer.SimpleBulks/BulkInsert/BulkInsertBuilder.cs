@@ -55,7 +55,7 @@ public class BulkInsertBuilder<T>
 
     private PropertyInfo GetIdProperty()
     {
-        return typeof(T).GetProperty(_outputIdColumn);
+        return PropertiesCache<T>.GetProperty(_outputIdColumn);
     }
 
     private static Action<T, Guid> GetSetIdMethod(PropertyInfo idProperty)
