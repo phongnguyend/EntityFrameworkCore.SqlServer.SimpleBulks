@@ -5,6 +5,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
@@ -107,6 +108,17 @@ public static class ConnectionContextExtensions
         }
 
         return columnNameMappings.TryGetValue(columnName, out string value) ? value : columnName;
+    }
+
+    public static void ExecuteReader(this ConnectionContext connectionContext, string commandText, Action<IDataReader> action, BulkOptions options = null)
+    {
+        using var command = connectionContext.CreateTextCommand(commandText, options);
+        using var reader = command.ExecuteReader();
+
+        while (reader.Read())
+        {
+            action(reader);
+        }
     }
 
     public static BulkInsertBuilder<T> CreateBulkInsertBuilder<T>(this ConnectionContext connectionContext)
