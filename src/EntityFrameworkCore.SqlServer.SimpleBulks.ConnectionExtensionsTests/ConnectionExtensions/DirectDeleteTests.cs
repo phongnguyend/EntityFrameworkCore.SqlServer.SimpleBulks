@@ -62,14 +62,12 @@ public class DirectDeleteTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = connectionContext.DirectDelete(row,
-            row => row.Id,
                   options: new BulkDeleteOptions()
                   {
                       LogTo = _output.WriteLine
                   });
 
         var deleteResult2 = connectionContext.DirectDelete(compositeKeyRow,
-            row => new { row.Id1, row.Id2 },
                 options: new BulkDeleteOptions()
                 {
                     LogTo = _output.WriteLine
@@ -104,14 +102,12 @@ public class DirectDeleteTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = connectionContext.DirectDelete(row,
-            row => row.Id,
                   options: new BulkDeleteOptions()
                   {
                       LogTo = _output.WriteLine
                   });
 
         var deleteResult2 = connectionContext.DirectDelete(compositeKeyRow,
-            row => new { row.Id1, row.Id2 },
                 options: new BulkDeleteOptions()
                 {
                     LogTo = _output.WriteLine

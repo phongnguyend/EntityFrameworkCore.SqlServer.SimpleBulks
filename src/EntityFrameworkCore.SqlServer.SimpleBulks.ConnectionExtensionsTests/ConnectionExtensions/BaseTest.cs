@@ -22,6 +22,7 @@ public abstract class BaseTest : IDisposable
 
         TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(schema, "SingleKeyRows")
         {
+            PrimaryKeys = ["Id"],
             OutputId = new OutputId
             {
                 Name = "Id",
@@ -29,10 +30,14 @@ public abstract class BaseTest : IDisposable
             }
         });
 
-        TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(schema, "CompositeKeyRows"));
+        TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(schema, "CompositeKeyRows")
+        {
+            PrimaryKeys = ["Id1", "Id2"],
+        });
 
         TableMapper.Register<ConfigurationEntry>(new SqlTableInfor(schema, "ConfigurationEntry")
         {
+            PrimaryKeys = ["Id"],
             OutputId = new OutputId
             {
                 Name = "Id",

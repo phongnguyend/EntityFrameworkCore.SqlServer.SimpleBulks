@@ -62,14 +62,12 @@ public class DirectDeleteAsyncTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = await connectionContext.DirectDeleteAsync(row,
-            row => row.Id,
       options: new BulkDeleteOptions()
       {
           LogTo = _output.WriteLine
       });
 
         var deleteResult2 = await connectionContext.DirectDeleteAsync(compositeKeyRow,
-            row => new { row.Id1, row.Id2 },
                options: new BulkDeleteOptions()
                {
                    LogTo = _output.WriteLine
@@ -104,14 +102,12 @@ public class DirectDeleteAsyncTests : BaseTest
         var compositeKeyRow = _context.CompositeKeyRows.AsNoTracking().Skip(index).First();
 
         var deleteResult1 = await connectionContext.DirectDeleteAsync(row,
-            row => row.Id,
                options: new BulkDeleteOptions()
                {
                    LogTo = _output.WriteLine
                });
 
         var deleteResult2 = await connectionContext.DirectDeleteAsync(compositeKeyRow,
-            row => new { row.Id1, row.Id2 },
         options: new BulkDeleteOptions()
         {
             LogTo = _output.WriteLine

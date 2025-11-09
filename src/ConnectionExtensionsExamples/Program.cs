@@ -16,6 +16,7 @@ using System.Linq;
 
 TableMapper.Register<ConfigurationEntry>(new SqlTableInfor("ConfigurationEntries")
 {
+    PrimaryKeys = ["Id"],
     OutputId = new OutputId
     {
         Name = "Id",
@@ -130,7 +131,6 @@ configurationEntry.SeasonAsInt = Season.Spring;
 configurationEntry.SeasonAsString = Season.Spring;
 
 await connection.DirectUpdateAsync(configurationEntry,
-    x => x.Id,
     x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
     options: new BulkUpdateOptions
     {
@@ -138,7 +138,6 @@ await connection.DirectUpdateAsync(configurationEntry,
     });
 
 await connection.DirectDeleteAsync(configurationEntry,
-    x => x.Id,
     options: new BulkDeleteOptions
     {
         LogTo = Console.WriteLine

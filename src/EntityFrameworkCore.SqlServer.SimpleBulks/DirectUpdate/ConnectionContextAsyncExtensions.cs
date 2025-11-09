@@ -10,23 +10,27 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
 
 public static class ConnectionContextAsyncExtensions
 {
-    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
+        var temp = table ?? TableMapper.Resolve<T>();
+
         return connectionContext.CreateBulkUpdateBuilder<T>()
-      .WithId(idSelector)
-       .WithColumns(columnNamesSelector)
-     .ToTable(table ?? TableMapper.Resolve<T>())
+    .WithId(temp.PrimaryKeys)
+.WithColumns(columnNamesSelector)
+    .ToTable(temp)
  .WithBulkOptions(options)
-.SingleUpdateAsync(data, cancellationToken);
+   .SingleUpdateAsync(data, cancellationToken);
     }
 
-    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> idColumns, IEnumerable<string> columnNames, SqlTableInfor table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
+        var temp = table ?? TableMapper.Resolve<T>();
+
         return connectionContext.CreateBulkUpdateBuilder<T>()
-                 .WithId(idColumns)
-              .WithColumns(columnNames)
-               .ToTable(table ?? TableMapper.Resolve<T>())
-            .WithBulkOptions(options)
-             .SingleUpdateAsync(data, cancellationToken);
+     .WithId(temp.PrimaryKeys)
+    .WithColumns(columnNames)
+ .ToTable(temp)
+     .WithBulkOptions(options)
+        .SingleUpdateAsync(data, cancellationToken);
     }
 }
