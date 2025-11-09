@@ -31,4 +31,9 @@ public static class TableMapper
 
         return tableInfo;
     }
+
+    public static bool TryResolve(Type type, out TableInfor tableInfo)
+    {
+        return _mappings.TryGetValue(type, out tableInfo);
+    }
 }
