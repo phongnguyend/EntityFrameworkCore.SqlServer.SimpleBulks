@@ -21,7 +21,7 @@ internal static class MappingContextCache
 
             if (!isEntityType)
             {
-                return new MappingContext();
+                return MappingContext.Default;
             }
 
             var mappingContext = new MappingContext
