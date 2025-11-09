@@ -118,10 +118,8 @@ await connection.BulkInsertAsync(compositeKeyRows,
            row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
 await connection.BulkUpdateAsync(rows,
-           row => row.Id,
            row => new { row.Column3, row.Column2 });
 await connection.BulkUpdateAsync(compositeKeyRows,
-           row => new { row.Id1, row.Id2 },
            row => new { row.Column3, row.Column2 });
 
 await connection.BulkMergeAsync(rows,
@@ -133,8 +131,8 @@ await connection.BulkMergeAsync(compositeKeyRows,
            row => new { row.Column1, row.Column2, row.Column3 },
            row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
-await connection.BulkDeleteAsync(rows, row => row.Id);
-await connection.BulkDeleteAsync(compositeKeyRows, row => new { row.Id1, row.Id2 });
+await connection.BulkDeleteAsync(rows);
+await connection.BulkDeleteAsync(compositeKeyRows);
 ```
 ### Using Dynamic String
 ```c#
@@ -151,10 +149,8 @@ await connection.BulkInsertAsync(compositeKeyRows,
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
 await connection.BulkUpdateAsync(rows,
-           ["Id"],
            [ "Column3", "Column2" ]);
 await connection.BulkUpdateAsync(compositeKeyRows,
-           [ "Id1", "Id2" ],
            [ "Column3", "Column2" ]);
 
 await connection.BulkMergeAsync(rows,
@@ -165,9 +161,6 @@ await connection.BulkMergeAsync(compositeKeyRows,
            [ "Id1", "Id2" ],
            [ "Column1", "Column2", "Column3" ],
            [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
-
-await connection.BulkDeleteAsync(rows, ["Id"]);
-await connection.BulkDeleteAsync(compositeKeyRows, [ "Id1", "Id2" ]);
 ```
 ### Using Builder Approach in case you need both Dynamic & Lambda Expression
 ```c#

@@ -86,27 +86,29 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    row => row.Id,
                     row => new { row.Column3, row.Column2 },
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
-                    row => new { row.Id1, row.Id2 },
                     row => new { row.Column3, row.Column2 },
                     options: updateOptions);
             }
             else
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    row => row.Id,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    {
+                        PrimaryKeys = ["Id"],
+                    },
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
-                    row => new { row.Id1, row.Id2 },
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    {
+                        PrimaryKeys = ["Id1", "Id2"],
+                    },
                     options: updateOptions);
             }
 
@@ -169,27 +171,29 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    ["Id"],
                     ["Column3", "Column2"],
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
-                    ["Id1", "Id2"],
                     ["Column3", "Column2"],
                     options: updateOptions);
             }
             else
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    ["Id"],
                     ["Column3", "Column2"],
-                    new SqlTableInfor(_schema, "SingleKeyRows"),
+                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    {
+                        PrimaryKeys = ["Id"],
+                    },
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
-                    ["Id1", "Id2"],
                     ["Column3", "Column2"],
-                    new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    {
+                        PrimaryKeys = ["Id1", "Id2"],
+                    },
                     options: updateOptions);
             }
 
