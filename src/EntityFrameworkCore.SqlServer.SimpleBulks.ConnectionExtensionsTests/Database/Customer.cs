@@ -12,5 +12,9 @@ public class Customer
 
     public int Index { get; set; }
 
+    public Season? Season { get; set; }
+
+    public Season? SeasonAsString { get; set; }
+
     public ICollection<Contact> Contacts { get; set; }
 }

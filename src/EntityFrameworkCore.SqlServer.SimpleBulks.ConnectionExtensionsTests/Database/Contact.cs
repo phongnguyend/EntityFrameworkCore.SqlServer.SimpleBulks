@@ -12,6 +12,10 @@ public class Contact
 
     public int Index { get; set; }
 
+    public Season? Season { get; set; }
+
+    public Season? SeasonAsString { get; set; }
+
     public Guid CustomerId { get; set; }
 
     public Customer Customer { get; set; }

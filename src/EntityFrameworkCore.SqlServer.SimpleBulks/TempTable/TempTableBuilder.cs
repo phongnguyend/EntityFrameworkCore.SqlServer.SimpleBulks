@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 public class TempTableBuilder<T>
 {
     private IEnumerable<string> _columnNames;
-    private MappingContext _mappingContext;
+    private MappingContext _mappingContext = MappingContext.Default;
     private TempTableOptions _options = TempTableOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 

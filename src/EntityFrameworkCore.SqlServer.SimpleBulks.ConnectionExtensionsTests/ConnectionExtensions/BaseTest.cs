@@ -28,7 +28,9 @@ public abstract class BaseTest : IDisposable
                 Mode = OutputIdMode.ServerGenerated,
             }
         });
+
         TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(schema, "CompositeKeyRows"));
+
         TableMapper.Register<ConfigurationEntry>(new SqlTableInfor(schema, "ConfigurationEntry")
         {
             OutputId = new OutputId
@@ -36,6 +38,16 @@ public abstract class BaseTest : IDisposable
                 Name = "Id",
                 Mode = OutputIdMode.ServerGenerated,
             }
+        });
+
+        TableMapper.Register<Customer>(new SqlTableInfor(schema, "Customers")
+        {
+            PropertyNames = ["Id", "FirstName", "LastName", "CurrentCountryIsoCode", "Index", "Season", "SeasonAsString"]
+        });
+
+        TableMapper.Register<Contact>(new SqlTableInfor(schema, "Contacts")
+        {
+            PropertyNames = ["Id", "EmailAddress", "PhoneNumber", "CountryIsoCode", "Index", "Season", "SeasonAsString", "CustomerId"]
         });
     }
 
