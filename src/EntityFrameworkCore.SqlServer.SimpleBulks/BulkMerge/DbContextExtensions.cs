@@ -14,7 +14,7 @@ public static class DbContextExtensions
       .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
               .WithInsertColumns(insertColumnNamesSelector)
-               .ToTable(dbContext.GetTableInfor(typeof(T)))
+               .ToTable(dbContext.GetTableInfor<T>())
                 .WithBulkOptions(options)
          .Execute(data);
     }
@@ -25,7 +25,7 @@ public static class DbContextExtensions
            .WithId(idColumns)
         .WithUpdateColumns(updateColumnNames)
             .WithInsertColumns(insertColumnNames)
-            .ToTable(dbContext.GetTableInfor(typeof(T)))
+            .ToTable(dbContext.GetTableInfor<T>())
         .WithBulkOptions(options)
            .Execute(data);
     }

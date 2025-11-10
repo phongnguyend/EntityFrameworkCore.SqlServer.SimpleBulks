@@ -12,7 +12,7 @@ public class GetTableInforTests
         var dbContext = new TestDbContext("", "");
 
         // Act
-        var tableInfor = dbContext.GetTableInfor(typeof(ConfigurationEntry));
+        var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Assert
         Assert.Equal("ConfigurationEntry", tableInfor.Name);
@@ -26,8 +26,8 @@ public class GetTableInforTests
         var dbContext = new TestDbContext("", "");
 
         // Act
-        var tableInfor1 = dbContext.GetTableInfor(typeof(ConfigurationEntry));
-        var tableInfor2 = dbContext.GetTableInfor(typeof(ConfigurationEntry));
+        var tableInfor1 = dbContext.GetTableInfor<ConfigurationEntry>();
+        var tableInfor2 = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Assert
         Assert.Equal(tableInfor1, tableInfor2);
@@ -43,7 +43,7 @@ public class GetTableInforTests
             tasks.Add(Task.Run(() =>
             {
                 using var dbct = new TestDbContext("", "");
-                return dbct.GetTableInfor(typeof(ConfigurationEntry));
+                return dbct.GetTableInfor<ConfigurationEntry>();
             }));
         }
 
@@ -51,7 +51,7 @@ public class GetTableInforTests
 
         var dbContext = new TestDbContext("", "");
 
-        var tableInfor = dbContext.GetTableInfor(typeof(ConfigurationEntry));
+        var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         foreach (var task in tasks)
         {

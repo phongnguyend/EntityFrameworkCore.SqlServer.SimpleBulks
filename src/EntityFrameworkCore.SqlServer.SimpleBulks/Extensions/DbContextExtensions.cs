@@ -35,9 +35,9 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesWithoutRowVersionsCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, ValueConverter>> _valueConvertersCache = [];
 
-    public static TableInfor GetTableInfor(this DbContext dbContext, Type type)
+    public static TableInfor GetTableInfor<T>(this DbContext dbContext)
     {
-        var cacheKey = new CacheKey(dbContext.GetType(), type);
+        var cacheKey = new CacheKey(dbContext.GetType(), typeof(T));
         return _tableInfoCache.GetOrAdd(cacheKey, (key) =>
         {
             var entityType = dbContext.Model.FindEntityType(key.EntityType);

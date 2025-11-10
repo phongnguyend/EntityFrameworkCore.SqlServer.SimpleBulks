@@ -10,7 +10,7 @@ public static class DbContextAsyncExtensions
 {
     public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this DbContext dbContext, IEnumerable<T> data, BulkDeleteOptions options = null, CancellationToken cancellationToken = default)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
+        var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkDeleteBuilder<T>()
              .WithId(table.PrimaryKeys)

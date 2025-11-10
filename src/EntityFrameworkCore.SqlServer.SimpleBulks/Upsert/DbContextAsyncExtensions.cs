@@ -17,7 +17,7 @@ public static class DbContextAsyncExtensions
              .WithId(idSelector)
        .WithUpdateColumns(updateColumnNamesSelector)
            .WithInsertColumns(insertColumnNamesSelector)
-    .ToTable(dbContext.GetTableInfor(typeof(T)))
+    .ToTable(dbContext.GetTableInfor<T>())
     .WithBulkOptions(options)
   .SingleMergeAsync(data, cancellationToken);
     }
@@ -28,7 +28,7 @@ public static class DbContextAsyncExtensions
      .WithId(idColumns)
    .WithUpdateColumns(updateColumnNames)
         .WithInsertColumns(insertColumnNames)
-      .ToTable(dbContext.GetTableInfor(typeof(T)))
+      .ToTable(dbContext.GetTableInfor<T>())
        .WithBulkOptions(options)
 .SingleMergeAsync(data, cancellationToken);
     }

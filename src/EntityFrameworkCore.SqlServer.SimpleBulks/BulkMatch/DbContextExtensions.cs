@@ -10,7 +10,7 @@ public static class DbContextExtensions
 {
     public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
+        var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkMatchBuilder<T>()
             .WithReturnedColumns(table.PropertyNames)
@@ -24,7 +24,7 @@ public static class DbContextExtensions
     {
         return dbContext.CreateBulkMatchBuilder<T>()
             .WithReturnedColumns(returnedColumnsSelector)
-            .WithTable(dbContext.GetTableInfor(typeof(T)))
+            .WithTable(dbContext.GetTableInfor<T>())
             .WithMatchedColumns(matchedColumnsSelector)
             .WithBulkOptions(options)
             .Execute(machedValues);

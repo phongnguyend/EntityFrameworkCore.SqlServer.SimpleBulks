@@ -12,7 +12,7 @@ public static class DbContextAsyncExtensions
 {
     public static Task BulkInsertAsync<T>(this DbContext dbContext, IEnumerable<T> data, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
+        var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkInsertBuilder<T>()
               .WithColumns(table.InsertablePropertyNames)
@@ -25,7 +25,7 @@ public static class DbContextAsyncExtensions
     {
         return dbContext.CreateBulkInsertBuilder<T>()
               .WithColumns(columnNamesSelector)
-              .ToTable(dbContext.GetTableInfor(typeof(T)))
+              .ToTable(dbContext.GetTableInfor<T>())
               .WithBulkOptions(options)
               .ExecuteAsync(data, cancellationToken);
     }

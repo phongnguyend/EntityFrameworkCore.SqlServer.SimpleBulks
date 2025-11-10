@@ -11,7 +11,7 @@ public static class DbContextExtensions
 {
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
+        var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkUpdateBuilder<T>()
              .WithId(table.PrimaryKeys)
@@ -23,7 +23,7 @@ public static class DbContextExtensions
 
     public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
     {
-        var table = dbContext.GetTableInfor(typeof(T));
+        var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkUpdateBuilder<T>()
              .WithId(table.PrimaryKeys)
