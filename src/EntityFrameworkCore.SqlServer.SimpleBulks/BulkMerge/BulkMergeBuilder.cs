@@ -287,8 +287,7 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connectionContext.CreateTextCommand(sqlMergeStatement, _options))
         {
-            _table.CreateSqlParameters(updateCommand, data, propertyNames)
-                .ForEach(x => updateCommand.Parameters.Add(x));
+            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, autoAdd: true));
 
             using var reader = updateCommand.ExecuteReader();
 
@@ -342,6 +341,19 @@ public class BulkMergeBuilder<T>
     private void Log(string message)
     {
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMerge]: {message}");
+    }
+
+    private void LogParameters(List<ParameterInfo> parameters)
+    {
+        if (_options?.LogTo == null)
+        {
+            return;
+        }
+
+        foreach (var parameter in parameters)
+        {
+            _options.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMerge][Parameter]: Name={parameter.Name}, Type={parameter.Type}");
+        }
     }
 
     public async Task<BulkMergeResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
@@ -555,8 +567,7 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connectionContext.CreateTextCommand(sqlMergeStatement, _options))
         {
-            _table.CreateSqlParameters(updateCommand, data, propertyNames)
-            .ForEach(x => updateCommand.Parameters.Add(x));
+            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, autoAdd: true));
 
             using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
 

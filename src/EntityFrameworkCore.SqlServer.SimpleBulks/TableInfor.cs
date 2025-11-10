@@ -75,7 +75,7 @@ public abstract class TableInfor
         throw new ArgumentException($"Property '{propertyName}' not found.");
     }
 
-    public abstract List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames);
+    public abstract List<ParameterInfo> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames, bool autoAdd);
 }
 
 public class DbContextTableInfor : TableInfor
@@ -92,9 +92,9 @@ public class DbContextTableInfor : TableInfor
         _dbContext = dbContext;
     }
 
-    public override List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames)
+    public override List<ParameterInfo> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames, bool autoAdd)
     {
-        var parameters = new List<SqlParameter>();
+        var parameters = new List<ParameterInfo>();
 
         var mappingSource = _dbContext.GetService<IRelationalTypeMappingSource>();
 
@@ -105,8 +105,19 @@ public class DbContextTableInfor : TableInfor
             if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
             {
                 var mapping = mappingSource.FindMapping(columnType);
-                var para = (SqlParameter)mapping.CreateParameter(command, prop.Name, GetProviderValue(prop, data) ?? DBNull.Value);
-                parameters.Add(para);
+                var para = (SqlParameter)mapping.CreateParameter(command, $"@{prop.Name}", GetProviderValue(prop, data) ?? DBNull.Value);
+
+                parameters.Add(new ParameterInfo
+                {
+                    Name = para.ParameterName,
+                    Type = columnType,
+                    Parameter = para
+                });
+
+                if (autoAdd)
+                {
+                    command.Parameters.Add(para);
+                }
             }
         }
 
@@ -135,9 +146,9 @@ public class SqlTableInfor : TableInfor
     {
     }
 
-    public override List<SqlParameter> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames)
+    public override List<ParameterInfo> CreateSqlParameters<T>(SqlCommand command, T data, IEnumerable<string> propertyNames, bool autoAdd)
     {
-        var parameters = new List<SqlParameter>();
+        var parameters = new List<ParameterInfo>();
 
         foreach (var propName in propertyNames)
         {
@@ -147,16 +158,29 @@ public class SqlTableInfor : TableInfor
 
             var para = new SqlParameter($"@{prop.Name}", prop.GetValue(data) ?? DBNull.Value);
 
+            var paraInfo = new ParameterInfo
+            {
+                Name = para.ParameterName,
+                Parameter = para
+            };
+
             if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
             {
-                para.SqlDbType = columnType.ToSqlDbType();
+                paraInfo.Type = columnType;
             }
             else
             {
-                para.SqlDbType = type.ToSqlDbType().ToSqlDbType();
+                paraInfo.Type = type.ToSqlDbType();
             }
 
-            parameters.Add(para);
+            para.SqlDbType = paraInfo.Type.ToSqlDbType();
+
+            parameters.Add(paraInfo);
+
+            if (autoAdd)
+            {
+                command.Parameters.Add(para);
+            }
         }
 
         return parameters;
