@@ -94,7 +94,7 @@ await dbct.BulkMergeAsync(compositeKeyRows,
 await dbct.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
-	.ToTable(dbct.GetTableInfor(typeof(Row)))
+	.ToTable(dbContext.GetTableInfor<Row>())
 	.ExecuteAsync(rows);
 ```
 
@@ -107,8 +107,8 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 // Register Type - Table Name globaly
-TableMapper.Register<Row>(new SqlTableInfor("Rows"));
-TableMapper.Register<CompositeKeyRow>(new SqlTableInfor("CompositeKeyRows"));
+TableMapper.Register(new SqlTableInfor<Row>("Rows"));
+TableMapper.Register(new SqlTableInfor<CompositeKeyRow>("CompositeKeyRows"));
 
 var connection = new ConnectionContext(new SqlConnection(connectionString), null);
 
@@ -167,7 +167,7 @@ await connection.BulkMergeAsync(compositeKeyRows,
 await connection.CreateBulkInsertBuilder<Row>()
 	.WithColumns(row => new { row.Column1, row.Column2, row.Column3 })
 	// or .WithColumns([ "Column1", "Column2", "Column3" ])
-	.ToTable(new SqlTableInfor("Rows"))
+	.ToTable(new SqlTableInfor<Row>("Rows"))
 	.ExecuteAsync(rows);
 ```
 
