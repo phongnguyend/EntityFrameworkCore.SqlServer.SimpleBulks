@@ -352,7 +352,7 @@ public class BulkMergeBuilder<T>
 
         foreach (var parameter in parameters)
         {
-            _options.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMerge][Parameter]: Name={parameter.Name}, Type={parameter.Type}");
+            _options.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMerge][Parameter]: {parameter}");
         }
     }
 

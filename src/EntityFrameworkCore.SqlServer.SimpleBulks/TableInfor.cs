@@ -138,6 +138,8 @@ public class DbContextTableInfor<T> : TableInfor<T>
 
 public class SqlTableInfor<T> : TableInfor<T>
 {
+    public Func<T, string, SqlParameter> ParameterConverter { get; init; }
+
     public SqlTableInfor(string schema, string tableName) : base(schema, tableName)
     {
     }
@@ -152,30 +154,45 @@ public class SqlTableInfor<T> : TableInfor<T>
 
         foreach (var propName in propertyNames)
         {
-            var prop = PropertiesCache<T>.GetProperty(propName);
+            var para = ParameterConverter?.Invoke(data, propName);
 
-            var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-
-            var para = new SqlParameter($"@{prop.Name}", prop.GetValue(data) ?? DBNull.Value);
-
-            var paraInfo = new ParameterInfo
+            if (para == null)
             {
-                Name = para.ParameterName,
-                Parameter = para
-            };
+                var prop = PropertiesCache<T>.GetProperty(propName);
 
-            if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
-            {
-                paraInfo.Type = columnType;
+                var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                para = new SqlParameter($"@{prop.Name}", prop.GetValue(data) ?? DBNull.Value);
+
+                var paraInfo = new ParameterInfo
+                {
+                    Name = para.ParameterName,
+                    Parameter = para
+                };
+
+                if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
+                {
+                    paraInfo.Type = columnType;
+                }
+                else
+                {
+                    paraInfo.Type = type.ToSqlDbType();
+                }
+
+                para.SqlDbType = paraInfo.Type.ToSqlDbType();
+
+                parameters.Add(paraInfo);
             }
             else
             {
-                paraInfo.Type = type.ToSqlDbType();
+                parameters.Add(new ParameterInfo
+                {
+                    Name = para.ParameterName,
+                    Type = para.SqlDbType.ToString(),
+                    Parameter = para,
+                    FromConverter = true
+                });
             }
-
-            para.SqlDbType = paraInfo.Type.ToSqlDbType();
-
-            parameters.Add(paraInfo);
 
             if (autoAdd)
             {

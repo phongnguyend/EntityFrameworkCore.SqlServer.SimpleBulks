@@ -194,7 +194,7 @@ public class BulkUpdateBuilder<T>
 
         foreach (var parameter in parameters)
         {
-            _options.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkUpdate][Parameter]: Name={parameter.Name}, Type={parameter.Type}");
+            _options.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkUpdate][Parameter]: {parameter}");
         }
     }
 

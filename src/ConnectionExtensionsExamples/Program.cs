@@ -21,6 +21,15 @@ TableMapper.Register(new SqlTableInfor<ConfigurationEntry>("ConfigurationEntries
     {
         Name = "Id",
         Mode = OutputIdMode.ServerGenerated,
+    },
+    ParameterConverter = (data, propertyName) =>
+    {
+        if (propertyName == "CreatedDateTime")
+        {
+            return new SqlParameter(propertyName, data.CreatedDateTime);
+        }
+
+        return null;
     }
 });
 
