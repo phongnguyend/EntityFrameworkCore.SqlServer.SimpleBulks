@@ -16,7 +16,7 @@ public static class TableMapper
     {
         var builder = new SqlTableInforBuilder<T>();
         config(builder);
-        _mappings[typeof(T)] = builder.Build();
+        Register(builder.Build());
     }
 
     public static TableInfor<T> Resolve<T>()
