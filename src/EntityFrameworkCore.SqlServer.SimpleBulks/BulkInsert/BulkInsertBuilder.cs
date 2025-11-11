@@ -13,7 +13,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 
 public class BulkInsertBuilder<T>
 {
-    private TableInfor _table;
+    private TableInfor<T> _table;
     private string _outputIdColumn;
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
     private IEnumerable<string> _columnNames;
@@ -25,7 +25,7 @@ public class BulkInsertBuilder<T>
         _connectionContext = connectionContext;
     }
 
-    public BulkInsertBuilder<T> ToTable(TableInfor table)
+    public BulkInsertBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
         _outputIdColumn = table?.OutputId?.Name;

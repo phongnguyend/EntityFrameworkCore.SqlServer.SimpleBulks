@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 public class BulkUpdateBuilder<T>
 {
-    private TableInfor _table;
+    private TableInfor<T> _table;
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _columnNames;
     private BulkUpdateOptions _options = BulkUpdateOptions.DefaultOptions;
@@ -23,7 +23,7 @@ public class BulkUpdateBuilder<T>
         _connectionContext = connectionContext;
     }
 
-    public BulkUpdateBuilder<T> ToTable(TableInfor table)
+    public BulkUpdateBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
         return this;

@@ -37,7 +37,7 @@ public class GetTableInforTests
     public async Task GetTableInfor_MultiThreads_ShoudReturnFromCache()
     {
         // Arrange && Act
-        var tasks = new List<Task<TableInfor>>();
+        var tasks = new List<Task<TableInfor<ConfigurationEntry>>>();
         for (int i = 0; i < 100; i++)
         {
             tasks.Add(Task.Run(() =>

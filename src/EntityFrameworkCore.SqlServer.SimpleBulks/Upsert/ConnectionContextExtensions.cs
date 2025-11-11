@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Upsert;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, SqlTableInfor table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
          .WithId(idSelector)
@@ -19,7 +19,7 @@ public static class ConnectionContextExtensions
              .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, SqlTableInfor table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
       .WithId(idColumns)

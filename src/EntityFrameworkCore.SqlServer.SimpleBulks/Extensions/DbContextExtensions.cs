@@ -23,7 +23,7 @@ public static class DbContextExtensions
 {
     private readonly record struct CacheKey(Type DbContextType, Type EntityType);
 
-    private static readonly ConcurrentDictionary<CacheKey, TableInfor> _tableInfoCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, object> _tableInfoCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<ColumnInfor>> _propertiesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, Type>> _propertyTypesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, string>> _columnNamesCache = [];
@@ -35,10 +35,10 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesWithoutRowVersionsCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, ValueConverter>> _valueConvertersCache = [];
 
-    public static TableInfor GetTableInfor<T>(this DbContext dbContext)
+    public static TableInfor<T> GetTableInfor<T>(this DbContext dbContext)
     {
         var cacheKey = new CacheKey(dbContext.GetType(), typeof(T));
-        return _tableInfoCache.GetOrAdd(cacheKey, (key) =>
+        return (TableInfor<T>)_tableInfoCache.GetOrAdd(cacheKey, (key) =>
         {
             var entityType = dbContext.Model.FindEntityType(key.EntityType);
 
@@ -47,7 +47,7 @@ public static class DbContextExtensions
 
             var outputIdColumn = dbContext.GetOutputId(key.EntityType);
 
-            var tableInfo = new DbContextTableInfor(schema, tableName, dbContext)
+            var tableInfo = new DbContextTableInfor<T>(schema, tableName, dbContext)
             {
                 PrimaryKeys = dbContext.GetPrimaryKeys(key.EntityType),
                 PropertyNames = dbContext.GetAllPropertyNames(key.EntityType),

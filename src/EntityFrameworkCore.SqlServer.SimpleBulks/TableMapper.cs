@@ -5,35 +5,32 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
 public static class TableMapper
 {
-    private static readonly ConcurrentDictionary<Type, TableInfor> _mappings = new ConcurrentDictionary<Type, TableInfor>();
+    private static readonly ConcurrentDictionary<Type, object> _mappings = new ConcurrentDictionary<Type, object>();
 
-    public static void Register<T>(TableInfor tableInfo)
+    public static void Register<T>(TableInfor<T> tableInfo)
     {
-        Register(typeof(T), tableInfo);
+        _mappings[typeof(T)] = tableInfo;
     }
 
-    public static TableInfor Resolve<T>()
+    public static TableInfor<T> Resolve<T>()
     {
-        return Resolve(typeof(T));
-    }
-
-    public static void Register(Type type, TableInfor tableInfo)
-    {
-        _mappings[type] = tableInfo;
-    }
-
-    public static TableInfor Resolve(Type type)
-    {
-        if (!_mappings.TryGetValue(type, out TableInfor tableInfo))
+        if (!_mappings.TryGetValue(typeof(T), out var tableInfo))
         {
-            throw new Exception($"Type {type} has not been registered.");
+            throw new Exception($"Type {typeof(T)} has not been registered.");
         }
 
-        return tableInfo;
+        return (TableInfor<T>)tableInfo;
     }
 
-    public static bool TryResolve(Type type, out TableInfor tableInfo)
+    public static bool TryResolve<T>(out TableInfor<T> tableInfo)
     {
-        return _mappings.TryGetValue(type, out tableInfo);
+        if (_mappings.TryGetValue(typeof(T), out var info))
+        {
+            tableInfo = (TableInfor<T>)info;
+            return true;
+        }
+
+        tableInfo = null;
+        return false;
     }
 }

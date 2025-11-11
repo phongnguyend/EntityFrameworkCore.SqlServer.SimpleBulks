@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 
 public static class ConnectionContextExtensions
 {
-    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor table = null, BulkInsertOptions options = null)
+    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkInsertOptions options = null)
     {
         connectionContext.CreateBulkInsertBuilder<T>()
       .WithColumns(columnNamesSelector)
@@ -18,7 +18,7 @@ public static class ConnectionContextExtensions
     }
 
 
-    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor table = null, BulkInsertOptions options = null)
+    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor<T> table = null, BulkInsertOptions options = null)
     {
         connectionContext.CreateBulkInsertBuilder<T>()
 .WithColumns(columnNames)

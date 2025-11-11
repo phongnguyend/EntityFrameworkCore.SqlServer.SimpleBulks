@@ -12,7 +12,7 @@ public static class DbContextExtensions
     {
         return dbContext.CreateTempTableBuilder<T>()
      .WithColumns(columnNamesSelector)
-      .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+      .WithMappingContext(dbContext.GetMappingContext<T>())
   .WithTempTableOptions(options)
           .Execute(data);
     }
@@ -21,7 +21,7 @@ public static class DbContextExtensions
     {
         return dbContext.CreateTempTableBuilder<T>()
       .WithColumns(columnNames)
-         .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+         .WithMappingContext(dbContext.GetMappingContext<T>())
     .WithTempTableOptions(options)
        .Execute(data);
     }

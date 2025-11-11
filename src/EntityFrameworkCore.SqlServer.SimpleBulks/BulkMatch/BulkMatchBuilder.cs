@@ -15,7 +15,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public class BulkMatchBuilder<T>
 {
-    private TableInfor _table;
+    private TableInfor<T> _table;
     private IEnumerable<string> _matchedColumns;
     private IEnumerable<string> _returnedColumns;
     private BulkMatchOptions _options = BulkMatchOptions.DefaultOptions;
@@ -26,7 +26,7 @@ public class BulkMatchBuilder<T>
         _connectionContext = connectionContext;
     }
 
-    public BulkMatchBuilder<T> WithTable(TableInfor table)
+    public BulkMatchBuilder<T> WithTable(TableInfor<T> table)
     {
         _table = table;
         return this;

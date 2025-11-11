@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkMergeResult BulkMerge<T>(this ConnectionContext connectionContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, SqlTableInfor table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult BulkMerge<T>(this ConnectionContext connectionContext, IEnumerable<T> data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
        .WithId(idSelector)
@@ -18,7 +18,7 @@ public static class ConnectionContextExtensions
          .Execute(data);
     }
 
-    public static BulkMergeResult BulkMerge<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, SqlTableInfor table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult BulkMerge<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
            .WithId(idColumns)

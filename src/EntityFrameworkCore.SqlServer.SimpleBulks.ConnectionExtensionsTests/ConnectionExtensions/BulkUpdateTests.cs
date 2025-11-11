@@ -97,7 +97,7 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
                     {
                         PrimaryKeys = ["Id"],
                     },
@@ -105,7 +105,7 @@ public class BulkUpdateTests : BaseTest
 
                 connectionContext.BulkUpdate(compositeKeyRows,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows")
                     {
                         PrimaryKeys = ["Id1", "Id2"],
                     },
@@ -154,14 +154,14 @@ public class BulkUpdateTests : BaseTest
                     row => row.Id,
                     row => new { row.Column1, row.Column2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
-                    table:new SqlTableInfor(_schema, "SingleKeyRows"),
+                    table:new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows"),
                     options: mergeOptions);
 
                 connectionContext.BulkMerge(compositeKeyRows,
                     row => new { row.Id1, row.Id2 },
                     row => new { row.Column1, row.Column2, row.Column3 },
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    table: new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    table: new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows"),
                     options: mergeOptions);
             }
 
@@ -182,7 +182,7 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows,
                     ["Column3", "Column2"],
-                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
                     {
                         PrimaryKeys = ["Id"],
                     },
@@ -190,7 +190,7 @@ public class BulkUpdateTests : BaseTest
 
                 connectionContext.BulkUpdate(compositeKeyRows,
                     ["Column3", "Column2"],
-                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows")
                     {
                         PrimaryKeys = ["Id1", "Id2"],
                     },
@@ -239,14 +239,14 @@ public class BulkUpdateTests : BaseTest
                     ["Id"],
                     ["Column1", "Column2"],
                     ["Column1", "Column2", "Column3"],
-                    table: new SqlTableInfor(_schema, "SingleKeyRows"),
+                    table: new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows"),
                     options: mergeOptions);
 
                 connectionContext.BulkMerge(compositeKeyRows,
                     ["Id1", "Id2"],
                     ["Column1", "Column2", "Column3"],
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    table: new SqlTableInfor(_schema, "CompositeKeyRows"),
+                    table: new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows"),
                     options: mergeOptions);
             }
         }

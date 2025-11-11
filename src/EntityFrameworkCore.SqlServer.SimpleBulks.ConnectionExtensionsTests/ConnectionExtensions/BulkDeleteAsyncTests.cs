@@ -69,13 +69,13 @@ public class BulkDeleteAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkDeleteAsync(rows,
-                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
                     {
                         PrimaryKeys = ["Id"],
                     },
                     options: options);
                 await connectionContext.BulkDeleteAsync(compositeKeyRows,
-                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows")
                     {
                         PrimaryKeys = ["Id1", "Id2"],
                     },
@@ -92,13 +92,13 @@ public class BulkDeleteAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkDeleteAsync(rows,
-                    new SqlTableInfor(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
                     {
                         PrimaryKeys = ["Id"],
                     },
                     options);
                 await connectionContext.BulkDeleteAsync(compositeKeyRows,
-                    new SqlTableInfor(_schema, "CompositeKeyRows")
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows")
                     {
                         PrimaryKeys = ["Id1", "Id2"],
                     },

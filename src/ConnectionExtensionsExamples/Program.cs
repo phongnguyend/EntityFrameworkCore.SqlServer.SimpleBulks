@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-TableMapper.Register<ConfigurationEntry>(new SqlTableInfor("ConfigurationEntries")
+TableMapper.Register(new SqlTableInfor<ConfigurationEntry>("ConfigurationEntries")
 {
     PrimaryKeys = ["Id"],
     OutputId = new OutputId

@@ -14,7 +14,7 @@ public static class DbContextAsyncExtensions
     {
         return dbContext.CreateTempTableBuilder<T>()
     .WithColumns(columnNamesSelector)
-    .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+    .WithMappingContext(dbContext.GetMappingContext<T>())
         .WithTempTableOptions(options)
       .ExecuteAsync(data, cancellationToken);
     }
@@ -23,7 +23,7 @@ public static class DbContextAsyncExtensions
     {
         return dbContext.CreateTempTableBuilder<T>()
       .WithColumns(columnNames)
-      .WithMappingContext(dbContext.GetMappingContext(typeof(T)))
+      .WithMappingContext(dbContext.GetMappingContext<T>())
         .WithTempTableOptions(options)
     .ExecuteAsync(data, cancellationToken);
     }

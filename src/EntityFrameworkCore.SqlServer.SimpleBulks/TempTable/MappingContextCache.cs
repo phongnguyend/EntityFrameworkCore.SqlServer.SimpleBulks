@@ -12,8 +12,10 @@ internal static class MappingContextCache
     private static readonly ConcurrentDictionary<CacheKey, MappingContext> _dbContextMappingContextCache = [];
     private static readonly ConcurrentDictionary<Type, MappingContext> _typeMappingContextCache = [];
 
-    public static MappingContext GetMappingContext(this DbContext dbContext, Type type)
+    public static MappingContext GetMappingContext<T>(this DbContext dbContext)
     {
+        var type = typeof(T);
+
         var cacheKey = new CacheKey(dbContext.GetType(), type);
 
         return _dbContextMappingContextCache.GetOrAdd(cacheKey, (key) =>
@@ -36,11 +38,12 @@ internal static class MappingContextCache
         });
     }
 
-    public static MappingContext GetMappingContext(this Type type)
+    public static MappingContext GetMappingContext<T>()
     {
+        var type = typeof(T);
         return _typeMappingContextCache.GetOrAdd(type, (type) =>
         {
-            if (!TableMapper.TryResolve(type, out var table))
+            if (!TableMapper.TryResolve<T>(out var table))
             {
                 return MappingContext.Default;
             }

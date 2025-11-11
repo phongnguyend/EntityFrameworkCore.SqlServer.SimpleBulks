@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 
 public class BulkMergeBuilder<T>
 {
-    private TableInfor _table;
+    private TableInfor<T> _table;
     private IEnumerable<string> _idColumns;
     private IEnumerable<string> _updateColumnNames;
     private IEnumerable<string> _insertColumnNames;
@@ -24,7 +24,7 @@ public class BulkMergeBuilder<T>
         _connectionContext = connectionContext;
     }
 
-    public BulkMergeBuilder<T> ToTable(TableInfor table)
+    public BulkMergeBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
 
@@ -232,7 +232,7 @@ public class BulkMergeBuilder<T>
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
              {
-                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType<T>(x) == typeof(string) ?
+                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
                  $" collate {_options.Collation}" : string.Empty;
                  return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
              }));
@@ -512,7 +512,7 @@ public class BulkMergeBuilder<T>
 
         var joinCondition = string.Join(" and ", _idColumns.Select(x =>
      {
-         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType<T>(x) == typeof(string) ?
+         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
        $" collate {_options.Collation}" : string.Empty;
          return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
      }));

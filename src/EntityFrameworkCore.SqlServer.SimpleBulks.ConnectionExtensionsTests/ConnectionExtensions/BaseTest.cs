@@ -20,7 +20,7 @@ public abstract class BaseTest : IDisposable
         _context.Database.EnsureCreated();
         _connection = new SqlConnection(connectionString);
 
-        TableMapper.Register<SingleKeyRow<int>>(new SqlTableInfor(schema, "SingleKeyRows")
+        TableMapper.Register(new SqlTableInfor<SingleKeyRow<int>>(schema, "SingleKeyRows")
         {
             PrimaryKeys = ["Id"],
             OutputId = new OutputId
@@ -30,12 +30,12 @@ public abstract class BaseTest : IDisposable
             }
         });
 
-        TableMapper.Register<CompositeKeyRow<int, int>>(new SqlTableInfor(schema, "CompositeKeyRows")
+        TableMapper.Register(new SqlTableInfor<CompositeKeyRow<int, int>>(schema, "CompositeKeyRows")
         {
             PrimaryKeys = ["Id1", "Id2"],
         });
 
-        TableMapper.Register<ConfigurationEntry>(new SqlTableInfor(schema, "ConfigurationEntry")
+        TableMapper.Register(new SqlTableInfor<ConfigurationEntry>(schema, "ConfigurationEntry")
         {
             PrimaryKeys = ["Id"],
             OutputId = new OutputId
@@ -45,12 +45,12 @@ public abstract class BaseTest : IDisposable
             }
         });
 
-        TableMapper.Register<Customer>(new SqlTableInfor(schema, "Customers")
+        TableMapper.Register(new SqlTableInfor<Customer>(schema, "Customers")
         {
             PropertyNames = ["Id", "FirstName", "LastName", "CurrentCountryIsoCode", "Index", "Season", "SeasonAsString"]
         });
 
-        TableMapper.Register<Contact>(new SqlTableInfor(schema, "Contacts")
+        TableMapper.Register(new SqlTableInfor<Contact>(schema, "Contacts")
         {
             PropertyNames = ["Id", "EmailAddress", "PhoneNumber", "CountryIsoCode", "Index", "Season", "SeasonAsString", "CustomerId"]
         });

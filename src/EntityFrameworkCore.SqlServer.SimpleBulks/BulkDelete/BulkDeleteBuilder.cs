@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 
 public class BulkDeleteBuilder<T>
 {
-    private TableInfor _table;
+    private TableInfor<T> _table;
     private IEnumerable<string> _idColumns;
     private BulkDeleteOptions _options = BulkDeleteOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
@@ -20,7 +20,7 @@ public class BulkDeleteBuilder<T>
         _connectionContext = connectionContext;
     }
 
-    public BulkDeleteBuilder<T> ToTable(TableInfor table)
+    public BulkDeleteBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
         return this;

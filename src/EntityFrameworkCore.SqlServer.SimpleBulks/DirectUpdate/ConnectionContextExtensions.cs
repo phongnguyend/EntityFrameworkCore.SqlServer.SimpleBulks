@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkUpdateResult DirectUpdate<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult DirectUpdate<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
     {
         var temp = table ?? TableMapper.Resolve<T>();
 
@@ -20,7 +20,7 @@ public static class ConnectionContextExtensions
   .SingleUpdate(data);
     }
 
-    public static BulkUpdateResult DirectUpdate<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult DirectUpdate<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
     {
         var temp = table ?? TableMapper.Resolve<T>();
 
