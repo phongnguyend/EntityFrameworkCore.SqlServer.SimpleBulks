@@ -1,7 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
@@ -47,10 +49,24 @@ public class SqlTableInforBuilder<T>
         return this;
     }
 
+    public SqlTableInforBuilder<T> PrimaryKeys(Expression<Func<T, object>> primaryKeysSelector)
+    {
+        var primaryKey = primaryKeysSelector.Body.GetMemberName();
+        var primaryKeys = string.IsNullOrEmpty(primaryKey) ? primaryKeysSelector.Body.GetMemberNames() : [primaryKey];
+        return PrimaryKeys(primaryKeys);
+    }
+
     public SqlTableInforBuilder<T> PropertyNames(IReadOnlyList<string> propertyNames)
     {
         _propertyNames = propertyNames;
         return this;
+    }
+
+    public SqlTableInforBuilder<T> PropertyNames(Expression<Func<T, object>> propertyNamesSelector)
+    {
+        var propertyName = propertyNamesSelector.Body.GetMemberName();
+        var propertyNames = string.IsNullOrEmpty(propertyName) ? propertyNamesSelector.Body.GetMemberNames() : [propertyName];
+        return PropertyNames(propertyNames);
     }
 
     public SqlTableInforBuilder<T> InsertablePropertyNames(IReadOnlyList<string> insertablePropertyNames)
@@ -91,6 +107,12 @@ public class SqlTableInforBuilder<T>
             Mode = outputIdMode
         };
         return this;
+    }
+
+    public SqlTableInforBuilder<T> OutputId(Expression<Func<T, object>> nameSelector, OutputIdMode outputIdMode)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+        return OutputId(propertyName, outputIdMode);
     }
 
     public SqlTableInforBuilder<T> ParameterConverter(Func<T, string, SqlParameter> converter)

@@ -18,8 +18,8 @@ TableMapper.Configure<ConfigurationEntry>(config =>
 {
     config
     .TableName("ConfigurationEntries")
-    .PrimaryKeys(["Id"])
-    .OutputId("Id", OutputIdMode.ServerGenerated)
+    .PrimaryKeys(x => x.Id)
+    .OutputId(x => x.Id, OutputIdMode.ServerGenerated)
     .ParameterConverter((data, propertyName) =>
     {
         if (propertyName == "CreatedDateTime")
