@@ -14,15 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-TableMapper.Register(new SqlTableInfor<ConfigurationEntry>("ConfigurationEntries")
+TableMapper.Configure<ConfigurationEntry>(config =>
 {
-    PrimaryKeys = ["Id"],
-    OutputId = new OutputId
-    {
-        Name = "Id",
-        Mode = OutputIdMode.ServerGenerated,
-    },
-    ParameterConverter = (data, propertyName) =>
+    config
+    .TableName("ConfigurationEntries")
+    .PrimaryKeys(["Id"])
+    .OutputId("Id", OutputIdMode.ServerGenerated)
+    .ParameterConverter((data, propertyName) =>
     {
         if (propertyName == "CreatedDateTime")
         {
@@ -30,7 +28,7 @@ TableMapper.Register(new SqlTableInfor<ConfigurationEntry>("ConfigurationEntries
         }
 
         return null;
-    }
+    });
 });
 
 var existingConfigurationEntries = new List<ConfigurationEntry>();
