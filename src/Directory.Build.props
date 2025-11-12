@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <CurrentTargetFramework>net8.0</CurrentTargetFramework>
-    <CurrentNet8Version>8.14.0</CurrentNet8Version>
+    <CurrentNet8Version>8.15.0</CurrentNet8Version>
     <CurrentNet9Version>9.0.0-preview.1</CurrentNet9Version>
     <CurrentNet10Version>10.0.0-preview.1</CurrentNet10Version>
   </PropertyGroup>
