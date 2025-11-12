@@ -21,7 +21,7 @@ public static class DbContextExtensions
              .SingleUpdate(data);
     }
 
-    public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, IEnumerable<string> columnNames, BulkUpdateOptions options = null)
+    public static BulkUpdateResult DirectUpdate<T>(this DbContext dbContext, T data, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null)
     {
         var table = dbContext.GetTableInfor<T>();
 

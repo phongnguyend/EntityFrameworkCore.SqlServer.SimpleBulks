@@ -23,7 +23,7 @@ public static class DbContextAsyncExtensions
              .SingleUpdateAsync(data, cancellationToken);
     }
 
-    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this DbContext dbContext, T data, IEnumerable<string> columnNames, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this DbContext dbContext, T data, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
         var table = dbContext.GetTableInfor<T>();
 

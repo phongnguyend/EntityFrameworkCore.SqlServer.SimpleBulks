@@ -20,7 +20,7 @@ public static class DbContextExtensions
       .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, BulkMergeOptions options = null)
+    public static BulkMergeResult Upsert<T>(this DbContext dbContext, T data, IReadOnlyCollection<string> idColumns, IReadOnlyCollection<string> updateColumnNames, IReadOnlyCollection<string> insertColumnNames, BulkMergeOptions options = null)
     {
         return dbContext.CreateBulkMergeBuilder<T>()
              .WithId(idColumns)

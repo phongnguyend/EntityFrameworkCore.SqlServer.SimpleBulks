@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 
 public static class DbContextAsyncExtensions
 {
-    public static Task BulkInsertAsync<T>(this DbContext dbContext, IEnumerable<T> data, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    public static Task BulkInsertAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
         var table = dbContext.GetTableInfor<T>();
 
@@ -21,7 +21,7 @@ public static class DbContextAsyncExtensions
               .ExecuteAsync(data, cancellationToken);
     }
 
-    public static Task BulkInsertAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    public static Task BulkInsertAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateBulkInsertBuilder<T>()
               .WithColumns(columnNamesSelector)

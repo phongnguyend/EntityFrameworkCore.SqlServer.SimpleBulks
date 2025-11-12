@@ -22,7 +22,7 @@ public static class ConnectionContextAsyncExtensions
    .SingleUpdateAsync(data, cancellationToken);
     }
 
-    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor<T> table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkUpdateResult> DirectUpdateAsync<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> columnNames, SqlTableInfor<T> table = null, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
     {
         var temp = table ?? TableMapper.Resolve<T>();
 

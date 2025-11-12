@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 
 public static class IListExtensions
 {
-    public static DataTable ToDataTable<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
+    public static DataTable ToDataTable<T>(this IReadOnlyCollection<T> data, IReadOnlyCollection<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -60,7 +60,7 @@ public static class IListExtensions
         return table;
     }
 
-    public static async Task<DataTable> ToDataTableAsync<T>(this IEnumerable<T> data, IEnumerable<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
+    public static async Task<DataTable> ToDataTableAsync<T>(this IReadOnlyCollection<T> data, IReadOnlyCollection<string> propertyNames, IReadOnlyDictionary<string, ValueConverter> valueConverters = null, bool addIndexNumberColumn = false, CancellationToken cancellationToken = default)
     {
         return await Task.Run(() =>
         {

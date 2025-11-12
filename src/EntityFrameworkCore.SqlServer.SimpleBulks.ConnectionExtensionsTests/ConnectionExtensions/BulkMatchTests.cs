@@ -75,7 +75,7 @@ public class BulkMatchTests : BaseTest
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
         var customerIds = customers.Select(x => x.Id).ToList();
-        var matchedCustommers = customerIds.Select(x => new Customer { Id = x });
+        var matchedCustommers = customerIds.Select(x => new Customer { Id = x }).ToList();
 
         // Act
         var customersFromDb = connectionContext.BulkMatch(matchedCustommers,
@@ -106,7 +106,7 @@ public class BulkMatchTests : BaseTest
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
         var customerIds = customers.Select(x => x.Id).ToList();
-        var matchedCustommers = customerIds.Select(x => new Customer { Id = x });
+        var matchedCustommers = customerIds.Select(x => new Customer { Id = x }).ToList();
 
         // Act
         var customersFromDb = connectionContext.BulkMatch(matchedCustommers,
@@ -136,7 +136,7 @@ public class BulkMatchTests : BaseTest
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
         var customerIds = customers.Select(x => x.Id).ToList();
-        var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x });
+        var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x }).ToList();
 
         // Act
         var contactsFromDb = connectionContext.BulkMatch(matchedContacts,
@@ -172,7 +172,7 @@ public class BulkMatchTests : BaseTest
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
         var customerIds = customers.Select(x => x.Id).ToList();
-        var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x });
+        var matchedContacts = customerIds.Select(x => new Contact { CustomerId = x }).ToList();
 
         // Act
         var contactsFromDb = connectionContext.BulkMatch(matchedContacts,
@@ -205,7 +205,7 @@ public class BulkMatchTests : BaseTest
 
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
-        var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode });
+        var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode }).ToList();
 
         // Act
         var contactsFromDb = connectionContext.BulkMatch(matchedContacts,
@@ -240,7 +240,7 @@ public class BulkMatchTests : BaseTest
 
         // Arrange
         var customers = _customers.Where(x => x.Index % 5 == 0).ToList();
-        var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode });
+        var matchedContacts = customers.Select(x => new Contact { CustomerId = x.Id, CountryIsoCode = x.CurrentCountryIsoCode }).ToList();
 
         // Act
         var contactsFromDb = connectionContext.BulkMatch(matchedContacts,

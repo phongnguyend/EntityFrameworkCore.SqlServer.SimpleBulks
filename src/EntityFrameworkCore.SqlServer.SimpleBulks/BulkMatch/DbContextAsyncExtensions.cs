@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public static class DbContextAsyncExtensions
 {
-    public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
         var table = dbContext.GetTableInfor<T>();
 
@@ -22,7 +22,7 @@ public static class DbContextAsyncExtensions
       .ExecuteAsync(machedValues, cancellationToken);
     }
 
-    public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<List<T>> BulkMatchAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateBulkMatchBuilder<T>()
      .WithReturnedColumns(returnedColumnsSelector)

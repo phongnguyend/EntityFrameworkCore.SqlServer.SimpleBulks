@@ -1,21 +1,22 @@
-﻿using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
+﻿using DbContextExtensionsExamples;
+using DbContextExtensionsExamples.Entities;
+using EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
-using DbContextExtensionsExamples;
-using DbContextExtensionsExamples.Entities;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using (var dbct = new DemoDbContext())
 {
     dbct.Database.Migrate();
 
-    var deleteResult = await dbct.BulkDeleteAsync(dbct.Set<ConfigurationEntry>().AsNoTracking(),
+    var deleteResult = await dbct.BulkDeleteAsync(dbct.Set<ConfigurationEntry>().AsNoTracking().ToList(),
         new BulkDeleteOptions()
         {
             LogTo = Console.WriteLine

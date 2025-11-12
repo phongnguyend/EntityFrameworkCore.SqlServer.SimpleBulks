@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 
 public static class DbContextExtensions
 {
-    public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, BulkInsertOptions options = null)
+    public static void BulkInsert<T>(this DbContext dbContext, IReadOnlyCollection<T> data, BulkInsertOptions options = null)
     {
         var table = dbContext.GetTableInfor<T>();
 
@@ -19,7 +19,7 @@ public static class DbContextExtensions
             .Execute(data);
     }
 
-    public static void BulkInsert<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
+    public static void BulkInsert<T>(this DbContext dbContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
     {
         dbContext.CreateBulkInsertBuilder<T>()
             .WithColumns(columnNamesSelector)

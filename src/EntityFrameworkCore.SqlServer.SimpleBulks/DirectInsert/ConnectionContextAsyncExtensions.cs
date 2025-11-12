@@ -20,7 +20,7 @@ public static class ConnectionContextAsyncExtensions
     }
 
 
-    public static Task DirectInsertAsync<T>(this ConnectionContext connectionContext, T data, IEnumerable<string> columnNames, SqlTableInfor<T> table = null, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    public static Task DirectInsertAsync<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> columnNames, SqlTableInfor<T> table = null, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
    .WithColumns(columnNames)

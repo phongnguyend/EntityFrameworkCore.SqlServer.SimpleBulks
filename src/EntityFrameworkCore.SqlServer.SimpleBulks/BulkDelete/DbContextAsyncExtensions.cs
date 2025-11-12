@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 
 public static class DbContextAsyncExtensions
 {
-    public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this DbContext dbContext, IEnumerable<T> data, BulkDeleteOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkDeleteResult> BulkDeleteAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, BulkDeleteOptions options = null, CancellationToken cancellationToken = default)
     {
         var table = dbContext.GetTableInfor<T>();
 

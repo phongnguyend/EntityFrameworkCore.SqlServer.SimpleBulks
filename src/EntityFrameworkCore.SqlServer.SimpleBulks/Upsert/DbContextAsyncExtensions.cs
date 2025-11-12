@@ -22,7 +22,7 @@ public static class DbContextAsyncExtensions
   .SingleMergeAsync(data, cancellationToken);
     }
 
-    public static Task<BulkMergeResult> UpsertAsync<T>(this DbContext dbContext, T data, IEnumerable<string> idColumns, IEnumerable<string> updateColumnNames, IEnumerable<string> insertColumnNames, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<BulkMergeResult> UpsertAsync<T>(this DbContext dbContext, T data, IReadOnlyCollection<string> idColumns, IReadOnlyCollection<string> updateColumnNames, IReadOnlyCollection<string> insertColumnNames, BulkMergeOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateBulkMergeBuilder<T>()
      .WithId(idColumns)

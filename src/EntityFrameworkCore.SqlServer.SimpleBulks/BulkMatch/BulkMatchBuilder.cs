@@ -16,8 +16,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 public class BulkMatchBuilder<T>
 {
     private TableInfor<T> _table;
-    private IEnumerable<string> _matchedColumns;
-    private IEnumerable<string> _returnedColumns;
+    private IReadOnlyCollection<string> _matchedColumns;
+    private IReadOnlyCollection<string> _returnedColumns;
     private BulkMatchOptions _options = BulkMatchOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
@@ -32,7 +32,7 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public BulkMatchBuilder<T> WithMatchedColumns(IEnumerable<string> matchedColumns)
+    public BulkMatchBuilder<T> WithMatchedColumns(IReadOnlyCollection<string> matchedColumns)
     {
         _matchedColumns = matchedColumns;
         return this;
@@ -45,7 +45,7 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public BulkMatchBuilder<T> WithReturnedColumns(IEnumerable<string> returnedColumns)
+    public BulkMatchBuilder<T> WithReturnedColumns(IReadOnlyCollection<string> returnedColumns)
     {
         _returnedColumns = returnedColumns;
         return this;
@@ -63,7 +63,7 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public List<T> Execute(IEnumerable<T> machedValues)
+    public List<T> Execute(IReadOnlyCollection<T> machedValues)
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
@@ -139,7 +139,7 @@ public class BulkMatchBuilder<T>
         _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
     }
 
-    public async Task<List<T>> ExecuteAsync(IEnumerable<T> machedValues, CancellationToken cancellationToken = default)
+    public async Task<List<T>> ExecuteAsync(IReadOnlyCollection<T> machedValues, CancellationToken cancellationToken = default)
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 

@@ -10,7 +10,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 
 public static class DbContextAsyncExtensions
 {
-    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, TempTableOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, TempTableOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateTempTableBuilder<T>()
     .WithColumns(columnNamesSelector)
@@ -19,7 +19,7 @@ public static class DbContextAsyncExtensions
       .ExecuteAsync(data, cancellationToken);
     }
 
-    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IEnumerable<T> data, IEnumerable<string> columnNames, TempTableOptions options = null, CancellationToken cancellationToken = default)
+    public static Task<string> CreateTempTableAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, TempTableOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateTempTableBuilder<T>()
       .WithColumns(columnNames)

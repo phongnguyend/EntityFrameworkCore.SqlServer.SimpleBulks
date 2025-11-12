@@ -8,7 +8,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public static class DbContextExtensions
 {
-    public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this DbContext dbContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null)
     {
         var table = dbContext.GetTableInfor<T>();
 
@@ -20,7 +20,7 @@ public static class DbContextExtensions
             .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this DbContext dbContext, IEnumerable<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this DbContext dbContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null)
     {
         return dbContext.CreateBulkMatchBuilder<T>()
             .WithReturnedColumns(returnedColumnsSelector)

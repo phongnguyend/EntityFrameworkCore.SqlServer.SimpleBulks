@@ -12,9 +12,9 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 public class BulkMergeBuilder<T>
 {
     private TableInfor<T> _table;
-    private IEnumerable<string> _idColumns;
-    private IEnumerable<string> _updateColumnNames;
-    private IEnumerable<string> _insertColumnNames;
+    private IReadOnlyCollection<string> _idColumns;
+    private IReadOnlyCollection<string> _updateColumnNames;
+    private IReadOnlyCollection<string> _insertColumnNames;
     private string _outputIdColumn;
     private BulkMergeOptions _options = BulkMergeOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
@@ -33,7 +33,7 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithId(IEnumerable<string> idColumns)
+    public BulkMergeBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _idColumns = idColumns;
         return this;
@@ -46,7 +46,7 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithUpdateColumns(IEnumerable<string> updateColumnNames)
+    public BulkMergeBuilder<T> WithUpdateColumns(IReadOnlyCollection<string> updateColumnNames)
     {
         _updateColumnNames = updateColumnNames;
         return this;
@@ -58,7 +58,7 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeBuilder<T> WithInsertColumns(IEnumerable<string> insertColumnNames)
+    public BulkMergeBuilder<T> WithInsertColumns(IReadOnlyCollection<string> insertColumnNames)
     {
         _insertColumnNames = insertColumnNames;
         return this;
@@ -76,7 +76,7 @@ public class BulkMergeBuilder<T>
         return this;
     }
 
-    public BulkMergeResult Execute(IEnumerable<T> data)
+    public BulkMergeResult Execute(IReadOnlyCollection<T> data)
     {
         if (data.Count() == 1)
         {
@@ -356,7 +356,7 @@ public class BulkMergeBuilder<T>
         }
     }
 
-    public async Task<BulkMergeResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    public async Task<BulkMergeResult> ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
         if (data.Count() == 1)
         {

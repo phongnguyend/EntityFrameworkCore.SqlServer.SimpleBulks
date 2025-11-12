@@ -11,7 +11,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 public class BulkDeleteBuilder<T>
 {
     private TableInfor<T> _table;
-    private IEnumerable<string> _idColumns;
+    private IReadOnlyCollection<string> _idColumns;
     private BulkDeleteOptions _options = BulkDeleteOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
@@ -26,7 +26,7 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteBuilder<T> WithId(IEnumerable<string> idColumns)
+    public BulkDeleteBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _idColumns = idColumns;
         return this;
@@ -45,7 +45,7 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    public BulkDeleteResult Execute(IEnumerable<T> data)
+    public BulkDeleteResult Execute(IReadOnlyCollection<T> data)
     {
         if (data.Count() == 1)
         {
@@ -142,7 +142,7 @@ public class BulkDeleteBuilder<T>
         }
     }
 
-    public async Task<BulkDeleteResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    public async Task<BulkDeleteResult> ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
         if (data.Count() == 1)
         {

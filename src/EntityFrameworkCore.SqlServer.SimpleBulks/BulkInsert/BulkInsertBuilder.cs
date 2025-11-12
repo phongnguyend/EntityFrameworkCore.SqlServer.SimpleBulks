@@ -16,7 +16,7 @@ public class BulkInsertBuilder<T>
     private TableInfor<T> _table;
     private string _outputIdColumn;
     private OutputIdMode _outputIdMode = OutputIdMode.ServerGenerated;
-    private IEnumerable<string> _columnNames;
+    private IReadOnlyCollection<string> _columnNames;
     private BulkInsertOptions _options = BulkInsertOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
@@ -33,7 +33,7 @@ public class BulkInsertBuilder<T>
         return this;
     }
 
-    public BulkInsertBuilder<T> WithColumns(IEnumerable<string> columnNames)
+    public BulkInsertBuilder<T> WithColumns(IReadOnlyCollection<string> columnNames)
     {
         _columnNames = columnNames;
         return this;
@@ -63,7 +63,7 @@ public class BulkInsertBuilder<T>
         return (Action<T, Guid>)Delegate.CreateDelegate(typeof(Action<T, Guid>), idProperty.GetSetMethod());
     }
 
-    public void Execute(IEnumerable<T> data)
+    public void Execute(IReadOnlyCollection<T> data)
     {
         if (data.Count() == 1)
         {
@@ -275,7 +275,7 @@ public class BulkInsertBuilder<T>
         }
     }
 
-    public async Task ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    public async Task ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
         if (data.Count() == 1)
         {

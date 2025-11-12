@@ -7,7 +7,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.TempTable;
 
 public static class ConnectionContextExtensions
 {
-    public static string CreateTempTable<T>(this ConnectionContext connectionContext, IEnumerable<T> data, Expression<Func<T, object>> columnNamesSelector, TempTableOptions options = null)
+    public static string CreateTempTable<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, TempTableOptions options = null)
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNamesSelector)
@@ -16,7 +16,7 @@ public static class ConnectionContextExtensions
             .Execute(data);
     }
 
-    public static string CreateTempTable<T>(this ConnectionContext connectionContext, IEnumerable<T> data, IEnumerable<string> columnNames, TempTableOptions options = null)
+    public static string CreateTempTable<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, TempTableOptions options = null)
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNames)

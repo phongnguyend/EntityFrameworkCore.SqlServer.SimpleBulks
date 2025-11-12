@@ -13,8 +13,8 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 public class BulkUpdateBuilder<T>
 {
     private TableInfor<T> _table;
-    private IEnumerable<string> _idColumns;
-    private IEnumerable<string> _columnNames;
+    private IReadOnlyCollection<string> _idColumns;
+    private IReadOnlyCollection<string> _columnNames;
     private BulkUpdateOptions _options = BulkUpdateOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
@@ -29,7 +29,7 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateBuilder<T> WithId(IEnumerable<string> idColumns)
+    public BulkUpdateBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _idColumns = idColumns;
         return this;
@@ -42,7 +42,7 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateBuilder<T> WithColumns(IEnumerable<string> columnNames)
+    public BulkUpdateBuilder<T> WithColumns(IReadOnlyCollection<string> columnNames)
     {
         _columnNames = columnNames;
         return this;
@@ -60,7 +60,7 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateResult Execute(IEnumerable<T> data)
+    public BulkUpdateResult Execute(IReadOnlyCollection<T> data)
     {
         if (data.Count() == 1)
         {
@@ -198,7 +198,7 @@ public class BulkUpdateBuilder<T>
         }
     }
 
-    public async Task<BulkUpdateResult> ExecuteAsync(IEnumerable<T> data, CancellationToken cancellationToken = default)
+    public async Task<BulkUpdateResult> ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
         if (data.Count() == 1)
         {
