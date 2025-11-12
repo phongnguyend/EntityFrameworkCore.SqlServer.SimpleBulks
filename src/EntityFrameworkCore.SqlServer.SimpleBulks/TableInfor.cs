@@ -23,8 +23,6 @@ public abstract class TableInfor<T>
 
     public IReadOnlyList<string> InsertablePropertyNames { get; init; }
 
-    public IReadOnlyDictionary<string, Type> PropertyTypes { get; init; }
-
     public IReadOnlyDictionary<string, string> ColumnNameMappings { get; init; }
 
     public IReadOnlyDictionary<string, string> ColumnTypeMappings { get; init; }
@@ -59,11 +57,6 @@ public abstract class TableInfor<T>
         if (ValueConverters != null && ValueConverters.TryGetValue(propertyName, out var converter))
         {
             return Nullable.GetUnderlyingType(converter.ProviderClrType) ?? converter.ProviderClrType;
-        }
-
-        if (PropertyTypes != null && PropertyTypes.TryGetValue(propertyName, out var type))
-        {
-            return Nullable.GetUnderlyingType(type) ?? type;
         }
 
         var property = PropertiesCache<T>.GetProperty(propertyName);

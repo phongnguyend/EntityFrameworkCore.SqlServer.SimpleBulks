@@ -19,8 +19,6 @@ public class SqlTableInforBuilder<T>
 
     private IReadOnlyList<string> _insertablePropertyNames;
 
-    private IReadOnlyDictionary<string, Type> _propertyTypes;
-
     private IReadOnlyDictionary<string, string> _columnNameMappings;
 
     private IReadOnlyDictionary<string, string> _columnTypeMappings;
@@ -75,12 +73,6 @@ public class SqlTableInforBuilder<T>
         return this;
     }
 
-    public SqlTableInforBuilder<T> PropertyTypes(IReadOnlyDictionary<string, Type> propertyTypes)
-    {
-        _propertyTypes = propertyTypes;
-        return this;
-    }
-
     public SqlTableInforBuilder<T> ColumnNameMappings(IReadOnlyDictionary<string, string> columnNameMappings)
     {
         _columnNameMappings = columnNameMappings;
@@ -128,7 +120,6 @@ public class SqlTableInforBuilder<T>
             PrimaryKeys = _primaryKeys,
             PropertyNames = _propertyNames,
             InsertablePropertyNames = _insertablePropertyNames,
-            PropertyTypes = _propertyTypes,
             ColumnNameMappings = _columnNameMappings,
             ColumnTypeMappings = _columnTypeMappings,
             ValueConverters = _valueConverters,
