@@ -20,39 +20,46 @@ public abstract class BaseTest : IDisposable
         _context.Database.EnsureCreated();
         _connection = new SqlConnection(connectionString);
 
-        TableMapper.Register(new SqlTableInfor<SingleKeyRow<int>>(schema, "SingleKeyRows")
+        TableMapper.Configure<SingleKeyRow<int>>(config =>
         {
-            PrimaryKeys = ["Id"],
-            OutputId = new OutputId
-            {
-                Name = "Id",
-                Mode = OutputIdMode.ServerGenerated,
-            }
+            config
+            .Schema(schema)
+            .TableName("SingleKeyRows")
+            .PrimaryKeys(x => x.Id)
+            .OutputId(x => x.Id, OutputIdMode.ServerGenerated);
         });
 
-        TableMapper.Register(new SqlTableInfor<CompositeKeyRow<int, int>>(schema, "CompositeKeyRows")
+        TableMapper.Configure<CompositeKeyRow<int, int>>(config =>
         {
-            PrimaryKeys = ["Id1", "Id2"],
+            config
+            .Schema(schema)
+            .TableName("CompositeKeyRows")
+            .PrimaryKeys(x => new { x.Id1, x.Id2 });
         });
 
-        TableMapper.Register(new SqlTableInfor<ConfigurationEntry>(schema, "ConfigurationEntry")
+        TableMapper.Configure<ConfigurationEntry>(config =>
         {
-            PrimaryKeys = ["Id"],
-            OutputId = new OutputId
-            {
-                Name = "Id",
-                Mode = OutputIdMode.ServerGenerated,
-            }
+            config
+            .Schema(schema)
+            .TableName("ConfigurationEntry")
+            .PrimaryKeys(x => x.Id)
+            .OutputId(x => x.Id, OutputIdMode.ServerGenerated);
         });
 
-        TableMapper.Register(new SqlTableInfor<Customer>(schema, "Customers")
+        TableMapper.Configure<Customer>(config =>
         {
-            PropertyNames = ["Id", "FirstName", "LastName", "CurrentCountryIsoCode", "Index", "Season", "SeasonAsString"]
+            config
+            .Schema(schema)
+            .TableName("Customers")
+            .PropertyNames(["Id", "FirstName", "LastName", "CurrentCountryIsoCode", "Index", "Season", "SeasonAsString"]);
         });
 
-        TableMapper.Register(new SqlTableInfor<Contact>(schema, "Contacts")
+        TableMapper.Configure<Contact>(config =>
         {
-            PropertyNames = ["Id", "EmailAddress", "PhoneNumber", "CountryIsoCode", "Index", "Season", "SeasonAsString", "CustomerId"]
+            config
+            .Schema(schema)
+            .TableName("Contacts")
+            .PropertyNames(["Id", "EmailAddress", "PhoneNumber", "CountryIsoCode", "Index", "Season", "SeasonAsString", "CustomerId"]);
         });
     }
 
