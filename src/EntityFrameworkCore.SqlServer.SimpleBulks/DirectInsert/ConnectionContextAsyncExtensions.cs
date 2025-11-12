@@ -10,13 +10,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 
 public static class ConnectionContextAsyncExtensions
 {
+    public static Task DirectInsertAsync<T>(this ConnectionContext connectionContext, T data, SqlTableInfor<T> table = null, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    {
+        var temp = table ?? TableMapper.Resolve<T>();
+
+        return connectionContext.CreateBulkInsertBuilder<T>()
+       .WithColumns(temp.InsertablePropertyNames)
+       .ToTable(temp)
+          .WithBulkOptions(options)
+            .SingleInsertAsync(data, cancellationToken);
+    }
+
     public static Task DirectInsertAsync<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
-  .WithColumns(columnNamesSelector)
-          .ToTable(table ?? TableMapper.Resolve<T>())
-     .WithBulkOptions(options)
- .SingleInsertAsync(data, cancellationToken);
+       .WithColumns(columnNamesSelector)
+       .ToTable(table ?? TableMapper.Resolve<T>())
+          .WithBulkOptions(options)
+            .SingleInsertAsync(data, cancellationToken);
     }
 
 
@@ -24,9 +35,8 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateBulkInsertBuilder<T>()
    .WithColumns(columnNames)
-        .ToTable(table ?? TableMapper.Resolve<T>())
-   .WithBulkOptions(options)
-    .SingleInsertAsync(data, cancellationToken);
+  .ToTable(table ?? TableMapper.Resolve<T>())
+     .WithBulkOptions(options)
+ .SingleInsertAsync(data, cancellationToken);
     }
-
 }

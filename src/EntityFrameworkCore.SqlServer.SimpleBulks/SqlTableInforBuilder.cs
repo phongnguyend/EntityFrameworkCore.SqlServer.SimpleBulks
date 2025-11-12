@@ -146,6 +146,11 @@ public class SqlTableInforBuilder<T>
 
     public SqlTableInfor<T> Build()
     {
+        if (_outputId?.Mode == OutputIdMode.ServerGenerated && _insertablePropertyNames.Contains(_outputId.Name))
+        {
+            _insertablePropertyNames.Remove(_outputId.Name);
+        }
+
         var tableInfor = new SqlTableInfor<T>(_schema, _name)
         {
             PrimaryKeys = _primaryKeys,
