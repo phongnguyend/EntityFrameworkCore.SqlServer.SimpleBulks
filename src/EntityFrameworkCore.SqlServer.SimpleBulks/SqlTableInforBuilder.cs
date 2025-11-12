@@ -20,11 +20,11 @@ public class SqlTableInforBuilder<T>
 
     private List<string> _insertablePropertyNames;
 
-    private IReadOnlyDictionary<string, string> _columnNameMappings;
+    private Dictionary<string, string> _columnNameMappings = new();
 
-    private IReadOnlyDictionary<string, string> _columnTypeMappings;
+    private Dictionary<string, string> _columnTypeMappings = new();
 
-    private IReadOnlyDictionary<string, ValueConverter> _valueConverters;
+    private Dictionary<string, ValueConverter> _valueConverters = new();
 
     private OutputId _outputId;
 
@@ -59,24 +59,6 @@ public class SqlTableInforBuilder<T>
         var primaryKey = primaryKeysSelector.Body.GetMemberName();
         var primaryKeys = string.IsNullOrEmpty(primaryKey) ? primaryKeysSelector.Body.GetMemberNames() : [primaryKey];
         return PrimaryKeys(primaryKeys);
-    }
-
-    public SqlTableInforBuilder<T> ColumnNameMappings(IReadOnlyDictionary<string, string> columnNameMappings)
-    {
-        _columnNameMappings = columnNameMappings;
-        return this;
-    }
-
-    public SqlTableInforBuilder<T> ColumnTypeMappings(IReadOnlyDictionary<string, string> columnTypeMappings)
-    {
-        _columnTypeMappings = columnTypeMappings;
-        return this;
-    }
-
-    public SqlTableInforBuilder<T> ValueConverters(IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        _valueConverters = valueConverters;
-        return this;
     }
 
     public SqlTableInforBuilder<T> OutputId(string name, OutputIdMode outputIdMode)
@@ -140,13 +122,26 @@ public class SqlTableInforBuilder<T>
         return ReadOnlyProperty(propertyName);
     }
 
-    public SqlTableInforBuilder<T> ConfigureProperty(string propertyName,
-        string columnName = null,
-        string columnType = null,
-        ValueConverter valueConverter = null)
+    public SqlTableInforBuilder<T> ConfigureProperty(string propertyName, string columnName = null, string columnType = null)
     {
+        if (columnName != null)
+        {
+            _columnNameMappings[propertyName] = columnName;
+        }
+
+        if (columnType != null)
+        {
+            _columnTypeMappings[propertyName] = columnType;
+        }
 
         return this;
+    }
+
+    public SqlTableInforBuilder<T> ConfigureProperty(Expression<Func<T, object>> nameSelector, string columnName = null, string columnType = null)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+
+        return ConfigureProperty(propertyName, columnName, columnType);
     }
 
     public SqlTableInfor<T> Build()
