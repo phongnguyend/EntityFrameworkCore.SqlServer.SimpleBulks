@@ -112,24 +112,29 @@ TableMapper.Register(new SqlTableInfor<CompositeKeyRow>("CompositeKeyRows"));
 
 var connection = new ConnectionContext(new SqlConnection(connectionString), null);
 
+// Insert all columns
+await connection.BulkInsertAsync(rows);
+await connection.BulkInsertAsync(compositeKeyRows);
+
+// Insert selected columns only
 await connection.BulkInsertAsync(rows,
-           row => new { row.Column1, row.Column2, row.Column3 });
+    row => new { row.Column1, row.Column2, row.Column3 });
 await connection.BulkInsertAsync(compositeKeyRows,
-           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
 
 await connection.BulkUpdateAsync(rows,
-           row => new { row.Column3, row.Column2 });
+    row => new { row.Column3, row.Column2 });
 await connection.BulkUpdateAsync(compositeKeyRows,
-           row => new { row.Column3, row.Column2 });
+    row => new { row.Column3, row.Column2 });
 
 await connection.BulkMergeAsync(rows,
-           row => row.Id,
-           row => new { row.Column1, row.Column2 },
-           row => new { row.Column1, row.Column2, row.Column3 });
+    row => row.Id,
+    row => new { row.Column1, row.Column2 },
+    row => new { row.Column1, row.Column2, row.Column3 });
 await connection.BulkMergeAsync(compositeKeyRows,
-           row => new { row.Id1, row.Id2 },
-           row => new { row.Column1, row.Column2, row.Column3 },
-           row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
+    row => new { row.Id1, row.Id2 },
+    row => new { row.Column1, row.Column2, row.Column3 },
+    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 });
                         
 await connection.BulkDeleteAsync(rows);
 await connection.BulkDeleteAsync(compositeKeyRows);
@@ -144,23 +149,23 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 var connection = new ConnectionContext(new SqlConnection(connectionString), null);
 
 await connection.BulkInsertAsync(rows,
-           [ "Column1", "Column2", "Column3" ]);
+    [ "Column1", "Column2", "Column3" ]);
 await connection.BulkInsertAsync(compositeKeyRows,
-           [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
+    [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 
 await connection.BulkUpdateAsync(rows,
-           [ "Column3", "Column2" ]);
+    [ "Column3", "Column2" ]);
 await connection.BulkUpdateAsync(compositeKeyRows,
-           [ "Column3", "Column2" ]);
+    [ "Column3", "Column2" ]);
 
 await connection.BulkMergeAsync(rows,
-           ["Id"],
-           [ "Column1", "Column2" ],
-           [ "Column1", "Column2", "Column3" ]);
+    ["Id"],
+    [ "Column1", "Column2" ],
+    [ "Column1", "Column2", "Column3" ]);
 await connection.BulkMergeAsync(compositeKeyRows,
-           [ "Id1", "Id2" ],
-           [ "Column1", "Column2", "Column3" ],
-           [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
+    [ "Id1", "Id2" ],
+    [ "Column1", "Column2", "Column3" ],
+    [ "Id1", "Id2", "Column1", "Column2", "Column3" ]);
 ```
 ### Using Builder Approach in case you need both Dynamic & Lambda Expression
 ```c#

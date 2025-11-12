@@ -49,6 +49,7 @@ namespace ConnectionExtensionsExamples.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id1")
                         .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<DateTimeOffset>("CreatedDateTime")
@@ -61,7 +62,8 @@ namespace ConnectionExtensionsExamples.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Key1");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()

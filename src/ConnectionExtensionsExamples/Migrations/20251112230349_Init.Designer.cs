@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectionExtensionsExamples.Migrations
 {
     [DbContext(typeof(DemoDbContext))]
-    [Migration("20251105083904_Init")]
+    [Migration("20251112230349_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -52,6 +52,7 @@ namespace ConnectionExtensionsExamples.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
+                        .HasColumnName("Id1")
                         .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<DateTimeOffset>("CreatedDateTime")
@@ -64,7 +65,8 @@ namespace ConnectionExtensionsExamples.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Key")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Key1");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()

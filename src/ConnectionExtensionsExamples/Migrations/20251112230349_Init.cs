@@ -30,11 +30,11 @@ namespace ConnectionExtensionsExamples.Migrations
                 name: "ConfigurationEntries",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
+                    Id1 = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "newsequentialid()"),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     CreatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     UpdatedDateTime = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    Key = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Key1 = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsSensitive = table.Column<bool>(type: "bit", nullable: false),
@@ -43,7 +43,7 @@ namespace ConnectionExtensionsExamples.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ConfigurationEntries", x => x.Id);
+                    table.PrimaryKey("PK_ConfigurationEntries", x => x.Id1);
                 });
 
             migrationBuilder.CreateTable(
