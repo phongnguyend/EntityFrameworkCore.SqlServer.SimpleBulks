@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
@@ -15,9 +16,9 @@ public class SqlTableInforBuilder<T>
 
     private IReadOnlyList<string> _primaryKeys;
 
-    private IReadOnlyList<string> _propertyNames;
+    private List<string> _propertyNames;
 
-    private IReadOnlyList<string> _insertablePropertyNames;
+    private List<string> _insertablePropertyNames;
 
     private IReadOnlyDictionary<string, string> _columnNameMappings;
 
@@ -28,6 +29,12 @@ public class SqlTableInforBuilder<T>
     private OutputId _outputId;
 
     private Func<T, string, SqlParameter> _parameterConverter;
+
+    public SqlTableInforBuilder()
+    {
+        _propertyNames = PropertiesCache<T>.GetProperties().Select(x => x.Key).ToList();
+        _insertablePropertyNames = PropertiesCache<T>.GetProperties().Select(x => x.Key).ToList();
+    }
 
     public SqlTableInforBuilder<T> Schema(string schema)
     {
@@ -52,25 +59,6 @@ public class SqlTableInforBuilder<T>
         var primaryKey = primaryKeysSelector.Body.GetMemberName();
         var primaryKeys = string.IsNullOrEmpty(primaryKey) ? primaryKeysSelector.Body.GetMemberNames() : [primaryKey];
         return PrimaryKeys(primaryKeys);
-    }
-
-    public SqlTableInforBuilder<T> PropertyNames(IReadOnlyList<string> propertyNames)
-    {
-        _propertyNames = propertyNames;
-        return this;
-    }
-
-    public SqlTableInforBuilder<T> PropertyNames(Expression<Func<T, object>> propertyNamesSelector)
-    {
-        var propertyName = propertyNamesSelector.Body.GetMemberName();
-        var propertyNames = string.IsNullOrEmpty(propertyName) ? propertyNamesSelector.Body.GetMemberNames() : [propertyName];
-        return PropertyNames(propertyNames);
-    }
-
-    public SqlTableInforBuilder<T> InsertablePropertyNames(IReadOnlyList<string> insertablePropertyNames)
-    {
-        _insertablePropertyNames = insertablePropertyNames;
-        return this;
     }
 
     public SqlTableInforBuilder<T> ColumnNameMappings(IReadOnlyDictionary<string, string> columnNameMappings)
@@ -111,6 +99,28 @@ public class SqlTableInforBuilder<T>
     {
         _parameterConverter = converter;
         return this;
+    }
+
+    public SqlTableInforBuilder<T> IgnoreProperty(string name)
+    {
+        if (_propertyNames != null && _propertyNames.Contains(name))
+        {
+            _propertyNames.Remove(name);
+        }
+
+        if (_insertablePropertyNames != null && _insertablePropertyNames.Contains(name))
+        {
+            _insertablePropertyNames.Remove(name);
+        }
+
+        return this;
+    }
+
+    public SqlTableInforBuilder<T> IgnoreProperty(Expression<Func<T, object>> nameSelector)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+
+        return IgnoreProperty(propertyName);
     }
 
     public SqlTableInfor<T> Build()

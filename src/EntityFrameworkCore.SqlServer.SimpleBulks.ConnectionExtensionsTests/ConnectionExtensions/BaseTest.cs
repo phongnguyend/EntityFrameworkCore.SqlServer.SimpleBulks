@@ -51,15 +51,15 @@ public abstract class BaseTest : IDisposable
             config
             .Schema(schema)
             .TableName("Customers")
-            .PropertyNames(["Id", "FirstName", "LastName", "CurrentCountryIsoCode", "Index", "Season", "SeasonAsString"]);
+            .IgnoreProperty(x => x.Contacts);
         });
 
         TableMapper.Configure<Contact>(config =>
         {
             config
             .Schema(schema)
-            .TableName("Contacts")
-            .PropertyNames(["Id", "EmailAddress", "PhoneNumber", "CountryIsoCode", "Index", "Season", "SeasonAsString", "CustomerId"]);
+            .TableName("Contacts").
+            IgnoreProperty(x => x.Customer);
         });
     }
 
