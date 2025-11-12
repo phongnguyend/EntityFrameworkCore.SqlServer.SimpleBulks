@@ -123,6 +123,32 @@ public class SqlTableInforBuilder<T>
         return IgnoreProperty(propertyName);
     }
 
+    public SqlTableInforBuilder<T> ReadOnlyProperty(string name)
+    {
+        if (_insertablePropertyNames != null && _insertablePropertyNames.Contains(name))
+        {
+            _insertablePropertyNames.Remove(name);
+        }
+
+        return this;
+    }
+
+    public SqlTableInforBuilder<T> ReadOnlyProperty(Expression<Func<T, object>> nameSelector)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+
+        return ReadOnlyProperty(propertyName);
+    }
+
+    public SqlTableInforBuilder<T> ConfigureProperty(string propertyName,
+        string columnName = null,
+        string columnType = null,
+        ValueConverter valueConverter = null)
+    {
+
+        return this;
+    }
+
     public SqlTableInfor<T> Build()
     {
         var tableInfor = new SqlTableInfor<T>(_schema, _name)
