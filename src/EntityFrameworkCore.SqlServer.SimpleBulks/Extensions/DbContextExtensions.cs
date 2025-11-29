@@ -107,10 +107,27 @@ public static class DbContextExtensions
                     DefaultValueSql = entityProp.GetDefaultValueSql(),
                     IsPrimaryKey = entityProp.IsPrimaryKey(),
                     IsRowVersion = entityProp.IsRowVersion(),
-                    ValueConverter = entityProp.GetValueConverter(),
+                    ValueConverter = GetValueConverter(entityProp),
                 }).ToArray();
             return data;
         });
+    }
+
+    private static ValueConverter GetValueConverter(IProperty property)
+    {
+        var converter = property.GetValueConverter();
+
+        if (converter == null)
+        {
+            return null;
+        }
+
+        return new ValueConverter
+        {
+            ProviderClrType = converter.ProviderClrType,
+            ConvertToProvider = converter.ConvertToProvider,
+            ConvertFromProvider = converter.ConvertFromProvider
+        };
     }
 
     public static IReadOnlyDictionary<string, string> GetColumnNames(this DbContext dbContext, Type type)
