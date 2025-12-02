@@ -106,9 +106,22 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
-// Register Type - Table Name globaly
-TableMapper.Register(new SqlTableInfor<Row>("Rows"));
-TableMapper.Register(new SqlTableInfor<CompositeKeyRow>("CompositeKeyRows"));
+// Configure Mapping globaly
+
+TableMapper.Configure<Row>(config =>
+{
+    config
+    .TableName("Rows")
+    .PrimaryKeys(x => x.Id)
+    .OutputId(x => x.Id, OutputIdMode.ServerGenerated);
+});
+
+TableMapper.Configure<CompositeKeyRow>(config =>
+{
+    config
+    .TableName("CompositeKeyRows")
+    .PrimaryKeys(x => new { x.Id1, x.Id2 });
+});
 
 var connection = new ConnectionContext(new SqlConnection(connectionString), null);
 
