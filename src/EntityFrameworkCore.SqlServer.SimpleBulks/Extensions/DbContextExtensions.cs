@@ -8,7 +8,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Frozen;
@@ -90,27 +89,88 @@ public static class DbContextExtensions
         var cacheKey = new CacheKey(dbContext.GetType(), type);
         return _propertiesCache.GetOrAdd(cacheKey, (key) =>
         {
-            var typeProperties = key.EntityType.GetProperties().Select(x => new { x.Name, x.PropertyType });
-            var entityProperties = dbContext.Model.FindEntityType(key.EntityType)
-                           .GetProperties();
+            var entityType = dbContext.Model.FindEntityType(key.EntityType);
+            var tableId = StoreObjectIdentifier.Create(entityType, StoreObjectType.Table).Value;
 
-            var data = typeProperties.Join(entityProperties,
-                prop => prop.Name,
-                entityProp => entityProp.Name,
-                (prop, entityProp) => new ColumnInfor
+            var data = GetColumnInfos(key.EntityType, entityType.GetProperties(), tableId);
+
+            var complexProperties = entityType.GetComplexProperties();
+
+            foreach (var complexProperty in complexProperties)
+            {
+                AddComplexProperty(data, complexProperty, tableId, complexProperty.Name + ".");
+            }
+
+            var ownedProperties = entityType.GetNavigations().Where(n => n.TargetEntityType.IsOwned());
+
+            foreach (var ownedProperty in ownedProperties)
+            {
+                if (ownedProperty.IsCollection)
                 {
-                    PropertyName = prop.Name,
-                    PropertyType = prop.PropertyType,
-                    ColumnName = entityProp.GetColumnName(),
-                    ColumnType = entityProp.GetColumnType(),
-                    ValueGenerated = entityProp.ValueGenerated,
-                    DefaultValueSql = entityProp.GetDefaultValueSql(),
-                    IsPrimaryKey = entityProp.IsPrimaryKey(),
-                    IsRowVersion = entityProp.IsRowVersion(),
-                    ValueConverter = GetValueConverter(entityProp),
-                }).ToArray();
+                    continue;
+                }
+
+                AddOwnedProperty(data, ownedProperty.TargetEntityType, tableId, ownedProperty.Name + ".");
+            }
+
             return data;
         });
+    }
+
+    private static List<ColumnInfor> GetColumnInfos(Type type, IEnumerable<IProperty> entityProperties, StoreObjectIdentifier storeObjectIdentifier, string prefix = "")
+    {
+        var typeProperties = type.GetProperties().Select(x => new { x.Name, x.PropertyType });
+
+        var data = typeProperties.Join(entityProperties,
+            prop => prop.Name,
+            entityProp => entityProp.Name,
+            (prop, entityProp) => new ColumnInfor
+            {
+                PropertyName = prefix + prop.Name,
+                PropertyType = prop.PropertyType,
+                ColumnName = entityProp.GetColumnName(storeObjectIdentifier),
+                ColumnType = entityProp.GetColumnType(),
+                ValueGenerated = entityProp.ValueGenerated,
+                DefaultValueSql = entityProp.GetDefaultValueSql(),
+                IsPrimaryKey = entityProp.IsPrimaryKey(),
+                IsRowVersion = entityProp.IsRowVersion(),
+                ValueConverter = GetValueConverter(entityProp),
+            }).ToList();
+
+        return data;
+    }
+
+    private static void AddComplexProperty(List<ColumnInfor> columnInfors, IComplexProperty complexProperty, StoreObjectIdentifier storeObjectIdentifier, string prefix = "")
+    {
+        var entityProperties = complexProperty.ComplexType.GetProperties();
+
+        columnInfors.AddRange(GetColumnInfos(complexProperty.ClrType, entityProperties, storeObjectIdentifier, prefix));
+
+        var nestedComplexProperties = complexProperty.ComplexType.GetComplexProperties();
+
+        foreach (var nestedComplexProperty in nestedComplexProperties)
+        {
+            AddComplexProperty(columnInfors, nestedComplexProperty, storeObjectIdentifier, prefix + nestedComplexProperty.Name + ".");
+        }
+    }
+
+    private static void AddOwnedProperty(List<ColumnInfor> columnInfors, IEntityType ownedProperty, StoreObjectIdentifier storeObjectIdentifier, string prefix = "")
+    {
+        var entityProperties = ownedProperty.GetProperties();
+
+        columnInfors.AddRange(GetColumnInfos(ownedProperty.ClrType, entityProperties, storeObjectIdentifier, prefix));
+
+        var ownedProperties = ownedProperty.GetNavigations().Where(n => n.TargetEntityType.IsOwned());
+
+        foreach (var nestedOwnedProperty in ownedProperties)
+        {
+            if (nestedOwnedProperty.IsCollection)
+            {
+                continue;
+            }
+
+            AddOwnedProperty(columnInfors, nestedOwnedProperty.TargetEntityType, storeObjectIdentifier, prefix + nestedOwnedProperty.Name + ".");
+        }
     }
 
     private static ValueConverter GetValueConverter(IProperty property)

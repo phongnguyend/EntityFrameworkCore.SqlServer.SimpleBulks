@@ -15,6 +15,12 @@ public class TestDbContext : DbContext
 
     public DbSet<Contact> Contacts { get; set; }
 
+    public DbSet<ComplexTypeOrder> ComplexTypeOrders { get; set; }
+
+    public DbSet<OwnedTypeOrder> OwnedTypeOrders { get; set; }
+
+    public DbSet<ComplexOwnedTypeOrder> ComplexOwnedTypeOrders { get; set; }
+
     public TestDbContext(string connectionString, string schema)
     {
         _connectionString = connectionString;

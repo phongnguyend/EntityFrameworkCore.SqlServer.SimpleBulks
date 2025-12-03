@@ -1,0 +1,6 @@
+﻿CREATE TABLE ComplexTypeOrders (
+	[Id] int NULL,
+	[ShippingAddress.Street] nvarchar(max) NULL,
+	[ShippingAddress.Location.Lat] float NULL,
+	[ShippingAddress.Location.Lng] float NULL,
+);

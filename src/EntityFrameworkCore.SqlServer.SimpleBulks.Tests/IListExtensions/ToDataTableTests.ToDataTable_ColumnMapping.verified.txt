@@ -1,0 +1,7 @@
+﻿CREATE TABLE ConfigurationEntries (
+	[Id1] uniqueidentifier NULL,
+	[Key1] nvarchar(max) NULL,
+	[Value] nvarchar(max) NULL,
+	[Description] nvarchar(max) NULL,
+	[CreatedDateTime] datetimeoffset NULL,
+);

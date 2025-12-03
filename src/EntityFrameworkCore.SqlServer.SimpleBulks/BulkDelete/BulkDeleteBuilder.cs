@@ -101,7 +101,7 @@ public class BulkDeleteBuilder<T>
     {
         var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
-            return $"[{_table.GetDbColumnName(x)}] = @{x}";
+            return $"[{_table.GetDbColumnName(x)}] = {_table.CreateParameterName(x)}";
         }));
 
         var deleteStatement = $"DELETE FROM {_table.SchemaQualifiedTableName} WHERE " + whereCondition;
@@ -197,7 +197,7 @@ public class BulkDeleteBuilder<T>
     {
         var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
         {
-            return $"[{_table.GetDbColumnName(x)}] = @{x}";
+            return $"[{_table.GetDbColumnName(x)}] = {_table.CreateParameterName(x)}";
         }));
 
         var deleteStatement = $"DELETE FROM {_table.SchemaQualifiedTableName} WHERE " + whereCondition;

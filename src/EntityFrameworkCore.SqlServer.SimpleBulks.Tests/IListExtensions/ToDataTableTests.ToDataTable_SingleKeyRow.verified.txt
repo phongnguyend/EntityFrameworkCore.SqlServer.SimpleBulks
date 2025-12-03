@@ -1,0 +1,8 @@
+﻿CREATE TABLE SingleKeyRows (
+	[Id] int NULL,
+	[Column1] int NULL,
+	[Column2] nvarchar(max) NULL,
+	[Column3] datetime2 NULL,
+	[Season] int NULL,
+	[SeasonAsString] nvarchar(max) NULL,
+);
