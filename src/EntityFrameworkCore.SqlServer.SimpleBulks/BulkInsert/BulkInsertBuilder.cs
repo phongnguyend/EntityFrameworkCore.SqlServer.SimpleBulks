@@ -197,7 +197,7 @@ public class BulkInsertBuilder<T>
             }
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
         else if (ReturnGeneratedId && _outputIdMode == OutputIdMode.ClientGenerated)
         {
@@ -211,7 +211,7 @@ public class BulkInsertBuilder<T>
             setId(dataToInsert, SequentialGuidGenerator.Next());
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
         else
         {
@@ -222,7 +222,7 @@ public class BulkInsertBuilder<T>
                 insertStatementBuilder.AppendLine($"OUTPUT inserted.[{_table.GetDbColumnName(_outputIdColumn)}]");
             }
 
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
 
         var insertStatement = insertStatementBuilder.ToString();
@@ -409,7 +409,7 @@ public class BulkInsertBuilder<T>
             }
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
         else if (ReturnGeneratedId && _outputIdMode == OutputIdMode.ClientGenerated)
         {
@@ -423,7 +423,7 @@ public class BulkInsertBuilder<T>
             setId(dataToInsert, SequentialGuidGenerator.Next());
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({string.Join(", ", columnsToInsert.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
         else
         {
@@ -434,7 +434,7 @@ public class BulkInsertBuilder<T>
                 insertStatementBuilder.AppendLine($"OUTPUT inserted.[{_table.GetDbColumnName(_outputIdColumn)}]");
             }
 
-            insertStatementBuilder.AppendLine($"VALUES ({string.Join(", ", columnsToInsert.Select(x => $"@{x}"))})");
+            insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert)})");
         }
 
         var insertStatement = insertStatementBuilder.ToString();

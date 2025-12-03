@@ -1,6 +1,8 @@
 ﻿using DbContextExtensionsExamples.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DbContextExtensionsExamples;
 
@@ -13,6 +15,8 @@ public class DemoDbContext : DbContext
     public DbSet<CompositeKeyRow> CompositeKeyRows { get; set; }
 
     public DbSet<ConfigurationEntry> ConfigurationEntries { get; set; }
+
+    public DbSet<Order> Orders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -31,4 +35,29 @@ public class DemoDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
+}
+
+public class Order
+{
+    public int Id { get; set; }
+
+    [Required]
+    public Address ShippingAddress { get; set; }
+}
+
+[ComplexType]
+public class Address
+{
+    public string Street { get; set; }
+
+    [Required]
+    public Location Location { get; set; }
+}
+
+[ComplexType]
+public class Location
+{
+    public double Lat { get; set; }
+
+    public double Lng { get; set; }
 }

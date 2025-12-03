@@ -1,9 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,9 +19,7 @@ public static class IListExtensions
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var prop = PropertiesCache<T>.GetProperty(propName);
-
-            table.Columns.Add(prop.Name, GetProviderClrType(prop, valueConverters));
+            table.Columns.Add(propName, PropertiesCache<T>.GetPropertyUnderlyingType(propName, valueConverters));
         }
 
         if (addIndexNumberColumn)
@@ -43,9 +39,7 @@ public static class IListExtensions
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var prop = PropertiesCache<T>.GetProperty(propName);
-
-                row[prop.Name] = GetProviderValue(prop, item, valueConverters) ?? DBNull.Value;
+                row[propName] = PropertiesCache<T>.GetPropertyValue(propName, item, valueConverters) ?? DBNull.Value;
             }
 
             if (addIndexNumberColumn)
@@ -66,25 +60,5 @@ public static class IListExtensions
         {
             return data.ToDataTable(propertyNames, valueConverters, addIndexNumberColumn, cancellationToken);
         }, cancellationToken);
-    }
-
-    private static Type GetProviderClrType(PropertyInfo property, IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
-        {
-            return converter.ProviderClrType;
-        }
-
-        return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-    }
-
-    private static object GetProviderValue<T>(PropertyInfo property, T item, IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
-        {
-            return converter.ConvertToProvider(property.GetValue(item));
-        }
-
-        return property.GetValue(item);
     }
 }

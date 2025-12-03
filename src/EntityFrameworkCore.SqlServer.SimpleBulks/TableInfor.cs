@@ -2,10 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
@@ -54,18 +53,27 @@ public abstract class TableInfor<T>
 
     public Type GetProviderClrType(string propertyName)
     {
-        if (ValueConverters != null && ValueConverters.TryGetValue(propertyName, out var converter))
+        return PropertiesCache<T>.GetPropertyUnderlyingType(propertyName, ValueConverters);
+    }
+
+    public object GetProviderValue(string name, T item)
+    {
+        return PropertiesCache<T>.GetPropertyValue(name, item, ValueConverters);
+    }
+
+    public string CreateParameterName(string propertyName)
+    {
+        if (propertyName.Contains('.'))
         {
-            return Nullable.GetUnderlyingType(converter.ProviderClrType) ?? converter.ProviderClrType;
+            return $"@{propertyName.Replace(".", "_")}";
         }
 
-        var property = PropertiesCache<T>.GetProperty(propertyName);
-        if (property != null)
-        {
-            return Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-        }
+        return $"@{propertyName}";
+    }
 
-        throw new ArgumentException($"Property '{propertyName}' not found.");
+    public string CreateParameterNames(IReadOnlyCollection<string> propertyNames)
+    {
+        return string.Join(", ", propertyNames.Select(CreateParameterName));
     }
 
     public abstract List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool autoAdd);
@@ -93,12 +101,10 @@ public class DbContextTableInfor<T> : TableInfor<T>
 
         foreach (var propName in propertyNames)
         {
-            var prop = PropertiesCache<T>.GetProperty(propName);
-
-            if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
+            if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(propName, out var columnType))
             {
                 var mapping = mappingSource.FindMapping(columnType);
-                var para = (SqlParameter)mapping.CreateParameter(command, $"@{prop.Name}", GetProviderValue(prop, data) ?? DBNull.Value);
+                var para = (SqlParameter)mapping.CreateParameter(command, CreateParameterName(propName), GetProviderValue(propName, data) ?? DBNull.Value);
 
                 parameters.Add(new ParameterInfo
                 {
@@ -116,16 +122,6 @@ public class DbContextTableInfor<T> : TableInfor<T>
 
         return parameters;
 
-    }
-
-    private object GetProviderValue(PropertyInfo property, T item)
-    {
-        if (ValueConverters != null && ValueConverters.TryGetValue(property.Name, out var converter))
-        {
-            return converter.ConvertToProvider(property.GetValue(item));
-        }
-
-        return property.GetValue(item);
     }
 }
 
@@ -151,11 +147,7 @@ public class SqlTableInfor<T> : TableInfor<T>
 
             if (para == null)
             {
-                var prop = PropertiesCache<T>.GetProperty(propName);
-
-                var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
-
-                para = new SqlParameter($"@{prop.Name}", prop.GetValue(data) ?? DBNull.Value);
+                para = new SqlParameter(CreateParameterName(propName), GetProviderValue(propName, data) ?? DBNull.Value);
 
                 var paraInfo = new ParameterInfo
                 {
@@ -163,12 +155,13 @@ public class SqlTableInfor<T> : TableInfor<T>
                     Parameter = para
                 };
 
-                if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(prop.Name, out var columnType))
+                if (ColumnTypeMappings != null && ColumnTypeMappings.TryGetValue(propName, out var columnType))
                 {
                     paraInfo.Type = columnType;
                 }
                 else
                 {
+                    var type = GetProviderClrType(propName);
                     paraInfo.Type = type.ToSqlDbType();
                 }
 

@@ -1,12 +1,9 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -113,11 +110,9 @@ public class BulkMatchBuilder<T>
 
             foreach (var propName in _returnedColumns)
             {
-                var prop = PropertiesCache<T>.GetProperty(propName);
-
-                if (!Equals(reader[prop.Name], DBNull.Value))
+                if (!Equals(reader[propName], DBNull.Value))
                 {
-                    prop.SetValue(obj, GetValue(prop, reader, _table.ValueConverters), null);
+                    PropertiesCache<T>.SetPropertyValue(propName, obj, reader[propName], _table.ValueConverters);
                 }
             }
 
@@ -188,11 +183,9 @@ public class BulkMatchBuilder<T>
 
             foreach (var propName in _returnedColumns)
             {
-                var prop = PropertiesCache<T>.GetProperty(propName);
-
-                if (!Equals(reader[prop.Name], DBNull.Value))
+                if (!Equals(reader[propName], DBNull.Value))
                 {
-                    prop.SetValue(obj, GetValue(prop, reader, _table.ValueConverters), null);
+                    PropertiesCache<T>.SetPropertyValue(propName, obj, reader[propName], _table.ValueConverters);
                 }
             }
 
@@ -202,20 +195,5 @@ public class BulkMatchBuilder<T>
         Log($"End matching.");
 
         return results;
-    }
-
-    private static object GetValue(PropertyInfo property, SqlDataReader reader, IReadOnlyDictionary<string, ValueConverter> valueConverters)
-    {
-        if (valueConverters != null && valueConverters.TryGetValue(property.Name, out var converter))
-        {
-            return converter.ConvertFromProvider(reader[property.Name]);
-        }
-
-        var type = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
-
-        var tempValue = reader[property.Name];
-        var value = type.IsEnum && tempValue != null ? Enum.Parse(type, tempValue.ToString()) : tempValue;
-
-        return value;
     }
 }

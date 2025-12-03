@@ -7,6 +7,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectDelete;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 using EntityFrameworkCore.SqlServer.SimpleBulks.DirectUpdate;
+using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,44 @@ using System.Linq;
 
 using (var dbct = new DemoDbContext())
 {
+    //var test = dbct.GetProperties(typeof(Order));
+
+
     dbct.Database.Migrate();
+
+    List<Order> orders = [
+        new Order
+        {
+        ShippingAddress = new Address
+        {
+
+            Street = "123 Main St",
+            Location = new Location
+            {
+                Lat = 40.7128,
+                Lng = -74.0060
+            }
+        },
+
+    },        new Order
+        {
+        ShippingAddress = new Address
+        {
+
+            Street = "123 Main St",
+            Location = new Location
+            {
+                Lat = 40.7128,
+                Lng = -74.0060
+            }
+        } }
+    ];
+
+    await dbct.BulkInsertAsync(orders,
+    new BulkInsertOptions()
+    {
+        LogTo = Console.WriteLine
+    });
 
     var deleteResult = await dbct.BulkDeleteAsync(dbct.Set<ConfigurationEntry>().AsNoTracking().ToList(),
         new BulkDeleteOptions()

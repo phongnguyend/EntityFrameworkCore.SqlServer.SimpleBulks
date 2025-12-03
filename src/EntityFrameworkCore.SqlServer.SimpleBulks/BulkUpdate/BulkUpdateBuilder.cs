@@ -171,7 +171,7 @@ public class BulkUpdateBuilder<T>
             sqlOperator = "+=";
         }
 
-        return $"[{_table.GetDbColumnName(sqlProp)}] {sqlOperator} @{sqlProp}";
+        return $"[{_table.GetDbColumnName(sqlProp)}] {sqlOperator} {_table.CreateParameterName(sqlProp)}";
     }
 
     private static string RemoveOperator(string prop)

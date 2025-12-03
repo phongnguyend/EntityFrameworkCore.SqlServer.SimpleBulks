@@ -237,7 +237,7 @@ public class BulkMergeBuilder<T>
                  return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
              }));
 
-        var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
+        var parameterNames = _table.CreateParameterNames(propertyNames);
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
@@ -517,7 +517,7 @@ public class BulkMergeBuilder<T>
          return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
      }));
 
-        var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
+        var parameterNames = _table.CreateParameterNames(propertyNames);
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
