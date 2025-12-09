@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -74,6 +75,11 @@ public class BulkMergeBuilder<T>
     {
         _options = options ?? BulkMergeOptions.DefaultOptions;
         return this;
+    }
+
+    private PropertyInfo GetIdProperty()
+    {
+        return PropertiesCache<T>.GetProperty(_outputIdColumn);
     }
 
     public BulkMergeResult Execute(IReadOnlyCollection<T> data)
@@ -197,7 +203,7 @@ public class BulkMergeBuilder<T>
 
         if (returnDbGeneratedId)
         {
-            var idProperty = PropertiesCache<T>.GetProperty(_outputIdColumn);
+            var idProperty = GetIdProperty();
 
             long idx = 0;
             foreach (var row in data)
@@ -237,7 +243,7 @@ public class BulkMergeBuilder<T>
                  return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
              }));
 
-        var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
+        var parameterNames = _table.CreateParameterNames(propertyNames);
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
@@ -299,7 +305,7 @@ public class BulkMergeBuilder<T>
                 {
                     if (returnDbGeneratedId)
                     {
-                        var idProperty = PropertiesCache<T>.GetProperty(_outputIdColumn);
+                        var idProperty = GetIdProperty();
                         idProperty.SetValue(data, reader[outputIdDbColumnName]);
                     }
 
@@ -477,7 +483,7 @@ public class BulkMergeBuilder<T>
 
         if (returnDbGeneratedId)
         {
-            var idProperty = PropertiesCache<T>.GetProperty(_outputIdColumn);
+            var idProperty = GetIdProperty();
 
             long idx = 0;
             foreach (var row in data)
@@ -517,7 +523,7 @@ public class BulkMergeBuilder<T>
          return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
      }));
 
-        var parameterNames = string.Join(", ", propertyNames.Select(x => "@" + x));
+        var parameterNames = _table.CreateParameterNames(propertyNames);
         var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
@@ -579,7 +585,7 @@ public class BulkMergeBuilder<T>
                 {
                     if (returnDbGeneratedId)
                     {
-                        var idProperty = PropertiesCache<T>.GetProperty(_outputIdColumn);
+                        var idProperty = GetIdProperty();
                         idProperty.SetValue(data, reader[outputIdDbColumnName]);
                     }
 

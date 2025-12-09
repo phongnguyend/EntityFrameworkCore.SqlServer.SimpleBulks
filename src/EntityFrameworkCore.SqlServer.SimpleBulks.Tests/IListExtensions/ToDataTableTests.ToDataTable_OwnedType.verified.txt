@@ -1,0 +1,6 @@
+﻿CREATE TABLE OwnedTypeOrders (
+	[Id] int NULL,
+	[ShippingAddress.Street] nvarchar(max) NULL,
+	[ShippingAddress.Location.Lat] float NULL,
+	[ShippingAddress.Location.Lng] float NULL,
+);
