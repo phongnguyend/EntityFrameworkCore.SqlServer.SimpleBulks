@@ -30,6 +30,8 @@ public abstract class TableInfor<T>
 
     public OutputId OutputId { get; init; }
 
+    public Discriminator Discriminator { get; init; }
+
     public TableInfor(string schema, string tableName)
     {
         Schema = schema;
@@ -53,12 +55,22 @@ public abstract class TableInfor<T>
 
     public Type GetProviderClrType(string propertyName)
     {
+        if (Discriminator != null && Discriminator.PropertyName == propertyName)
+        {
+            return Discriminator.PropertyType;
+        }
+
         return PropertiesCache<T>.GetPropertyUnderlyingType(propertyName, ValueConverters);
     }
 
-    public object GetProviderValue(string name, T item)
+    public object GetProviderValue(string propertyName, T item)
     {
-        return PropertiesCache<T>.GetPropertyValue(name, item, ValueConverters);
+        if (Discriminator != null && Discriminator.PropertyName == propertyName)
+        {
+            return Discriminator.PropertyValue;
+        }
+
+        return PropertiesCache<T>.GetPropertyValue(propertyName, item, ValueConverters);
     }
 
     public string CreateParameterName(string propertyName)
@@ -71,12 +83,66 @@ public abstract class TableInfor<T>
         return $"@{propertyName}";
     }
 
-    public string CreateParameterNames(IReadOnlyCollection<string> propertyNames)
+    public string CreateParameterNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
     {
-        return string.Join(", ", propertyNames.Select(CreateParameterName));
+        var copiedPropertyNames = propertyNames.ToList();
+
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+        }
+
+        return string.Join(", ", copiedPropertyNames.Select(CreateParameterName));
     }
 
-    public abstract List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool autoAdd);
+    public string CreateColumnNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
+    {
+        var copiedPropertyNames = propertyNames.ToList();
+
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+        }
+        return string.Join(", ", copiedPropertyNames.Select(x => $"[{x}]"));
+    }
+
+    public string CreateColumnNames(IReadOnlyCollection<string> propertyNames, string tableName, bool includeDiscriminator)
+    {
+        var copiedPropertyNames = propertyNames.ToList();
+
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+        }
+
+        return string.Join(", ", copiedPropertyNames.Select(x => $"{tableName}.[{x}]"));
+    }
+
+    public string CreateDbColumnNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
+    {
+        var copiedPropertyNames = propertyNames.ToList();
+
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+        }
+
+        return string.Join(", ", copiedPropertyNames.Select(x => $"[{GetDbColumnName(x)}]"));
+    }
+
+    public string CreateDbColumnNames(IReadOnlyCollection<string> propertyNames, string tableName, bool includeDiscriminator)
+    {
+        var copiedPropertyNames = propertyNames.ToList();
+
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+        }
+
+        return string.Join(", ", copiedPropertyNames.Select(x => $"{tableName}.[{GetDbColumnName(x)}]"));
+    }
+
+    public abstract List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool includeDiscriminator, bool autoAdd);
 }
 
 public class DbContextTableInfor<T> : TableInfor<T>
@@ -93,7 +159,7 @@ public class DbContextTableInfor<T> : TableInfor<T>
         _dbContext = dbContext;
     }
 
-    public override List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool autoAdd)
+    public override List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool includeDiscriminator, bool autoAdd)
     {
         var parameters = new List<ParameterInfo>();
 
@@ -120,6 +186,24 @@ public class DbContextTableInfor<T> : TableInfor<T>
             }
         }
 
+        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            var mapping = mappingSource.FindMapping(Discriminator.ColumnType);
+            var para = (SqlParameter)mapping.CreateParameter(command, CreateParameterName(Discriminator.PropertyName), Discriminator.PropertyValue ?? DBNull.Value);
+
+            parameters.Add(new ParameterInfo
+            {
+                Name = para.ParameterName,
+                Type = Discriminator.ColumnType,
+                Parameter = para
+            });
+
+            if (autoAdd)
+            {
+                command.Parameters.Add(para);
+            }
+        }
+
         return parameters;
 
     }
@@ -137,7 +221,7 @@ public class SqlTableInfor<T> : TableInfor<T>
     {
     }
 
-    public override List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool autoAdd)
+    public override List<ParameterInfo> CreateSqlParameters(SqlCommand command, T data, IReadOnlyCollection<string> propertyNames, bool includeDiscriminator, bool autoAdd)
     {
         var parameters = new List<ParameterInfo>();
 

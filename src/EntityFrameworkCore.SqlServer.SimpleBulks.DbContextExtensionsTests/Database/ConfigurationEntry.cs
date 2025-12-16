@@ -25,3 +25,7 @@ public class ConfigurationEntry
     [NotMapped]
     public string TestNotMapped { get; set; }
 }
+
+public class ExtendedConfigurationEntry : ConfigurationEntry
+{
+}

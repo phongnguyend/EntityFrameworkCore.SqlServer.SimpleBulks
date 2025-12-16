@@ -40,3 +40,7 @@ public class SingleKeyRow<TId>
 
     public OwnedTypeAddress OwnedShippingAddress { get; set; }
 }
+
+public class ExtendedSingleKeyRow<TId> : SingleKeyRow<TId>
+{
+}

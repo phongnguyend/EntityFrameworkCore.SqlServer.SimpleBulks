@@ -18,6 +18,10 @@ public class DemoDbContext : DbContext
 
     public DbSet<Order> Orders { get; set; }
 
+    public DbSet<Blog> Blogs { get; set; }
+
+    public DbSet<RssBlog> RssBlogs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(_connectionString);
@@ -60,4 +64,15 @@ public class Location
     public double Lat { get; set; }
 
     public double Lng { get; set; }
+}
+
+public class Blog
+{
+    public int BlogId { get; set; }
+    public string Url { get; set; }
+}
+
+public class RssBlog : Blog
+{
+    public string RssUrl { get; set; }
 }

@@ -9,11 +9,11 @@ public abstract class BaseTest : IDisposable
     protected readonly SqlServerFixture _fixture;
     protected readonly TestDbContext _context;
 
-    protected BaseTest(ITestOutputHelper output, SqlServerFixture fixture, string dbPrefixName, string schema = "")
+    protected BaseTest(ITestOutputHelper output, SqlServerFixture fixture, string dbPrefixName)
     {
         _output = output;
         _fixture = fixture;
-        _context = GetDbContext(dbPrefixName, schema);
+        _context = GetDbContext(dbPrefixName);
         _context.Database.EnsureCreated();
     }
 
@@ -22,8 +22,19 @@ public abstract class BaseTest : IDisposable
         _context.Database.EnsureDeleted();
     }
 
-    protected TestDbContext GetDbContext(string dbPrefixName, string schema)
+    protected TestDbContext GetDbContext(string dbPrefixName)
     {
-        return new TestDbContext(_fixture.GetConnectionString(dbPrefixName), schema);
+        string schema = Environment.GetEnvironmentVariable("SCHEMA") ?? "";
+        bool enableDiscriminator = (Environment.GetEnvironmentVariable("DISCRIMINATOR") ?? "") == "true";
+
+        Console.WriteLine($"Schema: {schema}, Enable Discriminator: {enableDiscriminator}");
+
+        return new TestDbContext(_fixture.GetConnectionString(dbPrefixName), schema, enableDiscriminator);
+    }
+
+    public void LogTo(string log)
+    {
+        _output.WriteLine(log);
+        Console.WriteLine(log);
     }
 }

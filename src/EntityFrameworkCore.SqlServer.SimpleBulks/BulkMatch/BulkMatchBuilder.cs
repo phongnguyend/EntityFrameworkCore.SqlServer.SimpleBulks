@@ -60,19 +60,48 @@ public class BulkMatchBuilder<T>
         return this;
     }
 
-    public List<T> Execute(IReadOnlyCollection<T> machedValues)
+    private List<string> GetKeys()
     {
-        var temptableName = $"[#{Guid.NewGuid()}]";
+        var copiedPropertyNames = _matchedColumns.ToList();
 
-        var dataTable = machedValues.ToDataTable(_matchedColumns, valueConverters: _table.ValueConverters);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
+        if (_table.Discriminator != null && !copiedPropertyNames.Contains(_table.Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(_table.Discriminator.PropertyName);
+        }
 
-        var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
+        return copiedPropertyNames;
+    }
+
+    private string CreateJoinCondition(DataTable dataTable)
+    {
+        var keys = GetKeys();
+
+        return string.Join(" AND ", keys.Select(x =>
         {
             string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
             $" COLLATE {_options.Collation}" : string.Empty;
             return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
         }));
+    }
+
+    private string CreateSelectStatement(string colunmName)
+    {
+        return $"a.[{_table.GetDbColumnName(colunmName)}] as [{colunmName}]";
+    }
+
+    private void Log(string message)
+    {
+        _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
+    }
+
+    public List<T> Execute(IReadOnlyCollection<T> machedValues)
+    {
+        var temptableName = $"[#{Guid.NewGuid()}]";
+
+        var dataTable = machedValues.ToDataTable(_matchedColumns, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
+
+        var joinCondition = CreateJoinCondition(dataTable);
 
         var selectQueryBuilder = new StringBuilder();
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");
@@ -124,29 +153,14 @@ public class BulkMatchBuilder<T>
         return results;
     }
 
-    private string CreateSelectStatement(string colunmName)
-    {
-        return $"a.[{_table.GetDbColumnName(colunmName)}] as [{colunmName}]";
-    }
-
-    private void Log(string message)
-    {
-        _options?.LogTo?.Invoke($"{DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss.fff zzz} [BulkMatch]: {message}");
-    }
-
     public async Task<List<T>> ExecuteAsync(IReadOnlyCollection<T> machedValues, CancellationToken cancellationToken = default)
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var dataTable = await machedValues.ToDataTableAsync(_matchedColumns, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
+        var dataTable = await machedValues.ToDataTableAsync(_matchedColumns, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
-        var joinCondition = string.Join(" AND ", _matchedColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-            $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
-        }));
+        var joinCondition = CreateJoinCondition(dataTable);
 
         var selectQueryBuilder = new StringBuilder();
         selectQueryBuilder.AppendLine($"SELECT {string.Join(", ", _returnedColumns.Select(x => CreateSelectStatement(x)))} ");

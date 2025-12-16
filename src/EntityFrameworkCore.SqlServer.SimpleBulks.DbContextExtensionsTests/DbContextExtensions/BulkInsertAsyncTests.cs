@@ -78,14 +78,14 @@ public class BulkInsertAsyncTests : BaseTest
                 },
                 new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         await _context.BulkInsertAsync(compositeKeyRows,
        row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
 
@@ -322,7 +322,7 @@ public class BulkInsertAsyncTests : BaseTest
        new BulkInsertOptions()
        {
            KeepIdentity = true,
-           LogTo = _output.WriteLine
+           LogTo = LogTo
        });
 
         // Assert
@@ -360,7 +360,7 @@ public class BulkInsertAsyncTests : BaseTest
         await _context.BulkInsertAsync(configurationEntries,
       new BulkInsertOptions()
       {
-          LogTo = _output.WriteLine
+          LogTo = LogTo
       });
 
         // Assert
