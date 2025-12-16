@@ -1,0 +1,33 @@
+name: .Net Test DbContextExtensions
+
+on:
+  push:
+    paths: 
+      - 'src/**'
+  pull_request:
+    paths: 
+      - 'src/**'
+  workflow_dispatch:
+  
+jobs:
+  build:
+
+    defaults: 
+      run:
+        working-directory: src
+        
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+  
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.100
+
+    - name: Tests
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+    - name: DbContextExtensionsTests
+      run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests/EntityFrameworkCore.SqlServer.SimpleBulks.DbContextExtensionsTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
