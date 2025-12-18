@@ -32,6 +32,7 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesWithoutRowVersionsCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, ValueConverter>> _valueConvertersCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, Discriminator> _discriminatorCache = [];
 
     public static TableInfor<T> GetTableInfor<T>(this DbContext dbContext)
     {
@@ -57,10 +58,41 @@ public static class DbContextExtensions
                 {
                     Name = outputIdColumn.PropertyName,
                     Mode = outputIdColumn.PropertyType == typeof(Guid) && string.IsNullOrEmpty(outputIdColumn.DefaultValueSql) ? OutputIdMode.ClientGenerated : OutputIdMode.ServerGenerated
-                }
+                },
+                Discriminator = GetDiscriminator(entityType)
             };
             return tableInfo;
         });
+    }
+
+    public static Discriminator GetDiscriminator(this DbContext dbContext, Type type)
+    {
+        return _discriminatorCache.GetOrAdd(new CacheKey(dbContext.GetType(), type), (key) =>
+        {
+            var entityType = dbContext.Model.FindEntityType(key.EntityType);
+            return GetDiscriminator(entityType);
+        });
+    }
+
+    private static Discriminator GetDiscriminator(this IEntityType entityType)
+    {
+        var discriminatorProperty = entityType.GetDiscriminatorPropertyName();
+
+        if (string.IsNullOrEmpty(discriminatorProperty))
+        {
+            return null;
+        }
+
+        var property = entityType.GetProperty(discriminatorProperty);
+
+        return new Discriminator
+        {
+            PropertyName = discriminatorProperty,
+            PropertyType = property?.ClrType,
+            PropertyValue = entityType.GetDiscriminatorValue(),
+            ColumnName = property?.GetColumnName(),
+            ColumnType = property?.GetColumnType()
+        };
     }
 
     public static bool IsEntityType(this DbContext dbContext, Type type)
@@ -195,8 +227,16 @@ public static class DbContextExtensions
         var cacheKey = new CacheKey(dbContext.GetType(), type);
         return _columnNamesCache.GetOrAdd(cacheKey, (key) =>
         {
-            var properties = dbContext.GetProperties(key.EntityType);
-            return properties.ToFrozenDictionary(x => x.PropertyName, x => x.ColumnName);
+            var mapping = dbContext.GetProperties(key.EntityType).ToDictionary(x => x.PropertyName, x => x.ColumnName);
+
+            var discriminator = dbContext.GetDiscriminator(type);
+
+            if (discriminator != null)
+            {
+                mapping[discriminator.PropertyName] = discriminator.ColumnName;
+            }
+
+            return mapping.ToFrozenDictionary();
         });
     }
 
@@ -205,8 +245,16 @@ public static class DbContextExtensions
         var cacheKey = new CacheKey(dbContext.GetType(), type);
         return _columnTypesCache.GetOrAdd(cacheKey, (key) =>
         {
-            var properties = dbContext.GetProperties(key.EntityType);
-            return properties.ToFrozenDictionary(x => x.PropertyName, x => x.ColumnType);
+            var mapping = dbContext.GetProperties(key.EntityType).ToDictionary(x => x.PropertyName, x => x.ColumnType);
+
+            var discriminator = dbContext.GetDiscriminator(type);
+
+            if (discriminator != null)
+            {
+                mapping[discriminator.PropertyName] = discriminator.ColumnType;
+            }
+
+            return mapping.ToFrozenDictionary();
         });
     }
 

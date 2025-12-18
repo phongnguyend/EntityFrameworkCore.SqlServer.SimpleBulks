@@ -6,6 +6,7 @@ public class TestDbContext : DbContext
 {
     private readonly string _connectionString;
     private readonly string _schema;
+    private readonly bool _enableDiscriminator;
 
     public DbSet<SingleKeyRow<int>> SingleKeyRows { get; set; }
 
@@ -15,10 +16,11 @@ public class TestDbContext : DbContext
 
     public DbSet<Contact> Contacts { get; set; }
 
-    public TestDbContext(string connectionString, string schema)
+    public TestDbContext(string connectionString, string schema, bool enableDiscriminator)
     {
         _connectionString = connectionString;
         _schema = schema;
+        _enableDiscriminator = enableDiscriminator;
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,7 +32,6 @@ public class TestDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
         if (!string.IsNullOrEmpty(_schema))
         {
             modelBuilder.HasDefaultSchema(_schema);
@@ -50,6 +51,14 @@ public class TestDbContext : DbContext
 
         modelBuilder.Entity<Contact>().Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
         modelBuilder.Entity<Contact>().Property(x => x.SeasonAsString).HasConversion(v => v.ToString(), v => (Season)Enum.Parse(typeof(Season), v));
+
+
+        if (_enableDiscriminator)
+        {
+            modelBuilder.Entity<ExtendedSingleKeyRow<int>>();
+            modelBuilder.Entity<ExtendedCompositeKeyRow<int, int>>();
+            modelBuilder.Entity<ExtendedConfigurationEntry>();
+        }
 
         base.OnModelCreating(modelBuilder);
     }

@@ -77,13 +77,13 @@ public class BulkDeleteAsyncTests : BaseTest
         var deleteResult1 = await _context.BulkDeleteAsync(rows,
            new BulkDeleteOptions()
            {
-               LogTo = _output.WriteLine
+               LogTo = LogTo
            });
 
         var deleteResult2 = await _context.BulkDeleteAsync(compositeKeyRows,
          new BulkDeleteOptions()
          {
-             LogTo = _output.WriteLine
+             LogTo = LogTo
          });
 
         tran.Commit();

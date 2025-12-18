@@ -78,13 +78,13 @@ public class DirectDeleteAsyncTests : BaseTest
         var deleteResult1 = await _context.DirectDeleteAsync(row,
       new BulkDeleteOptions()
       {
-          LogTo = _output.WriteLine
+          LogTo = LogTo
       });
 
         var deleteResult2 = await _context.DirectDeleteAsync(compositeKeyRow,
                new BulkDeleteOptions()
                {
-                   LogTo = _output.WriteLine
+                   LogTo = LogTo
                });
 
         tran.Commit();
@@ -114,13 +114,13 @@ public class DirectDeleteAsyncTests : BaseTest
         var deleteResult1 = await _context.DirectDeleteAsync(row,
                new BulkDeleteOptions()
                {
-                   LogTo = _output.WriteLine
+                   LogTo = LogTo
                });
 
         var deleteResult2 = await _context.DirectDeleteAsync(compositeKeyRow,
         new BulkDeleteOptions()
         {
-            LogTo = _output.WriteLine
+            LogTo = LogTo
         });
 
         tran.Rollback();

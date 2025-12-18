@@ -101,14 +101,14 @@ public class BulkUpdateAsyncTests : BaseTest
                 row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
                 new BulkUpdateOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         var updateResult2 = await _context.BulkUpdateAsync(compositeKeyRows,
                 row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
                 new BulkUpdateOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         rows.Add(new SingleKeyRow<int>
@@ -183,7 +183,7 @@ public class BulkUpdateAsyncTests : BaseTest
                 },
                 new BulkMergeOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         await _context.BulkMergeAsync(compositeKeyRows,
@@ -192,7 +192,7 @@ public class BulkUpdateAsyncTests : BaseTest
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 new BulkMergeOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Commit();
@@ -261,14 +261,14 @@ public class BulkUpdateAsyncTests : BaseTest
               ["Column3", "Column2", "Season", "SeasonAsString"],
               new BulkUpdateOptions()
               {
-                  LogTo = _output.WriteLine
+                  LogTo = LogTo
               });
 
         var updateResult2 = await _context.BulkUpdateAsync(compositeKeyRows,
             ["Column3", "Column2", "Season", "SeasonAsString"],
             new BulkUpdateOptions()
             {
-                LogTo = _output.WriteLine
+                LogTo = LogTo
             });
 
         rows.Add(new SingleKeyRow<int>
@@ -330,7 +330,7 @@ public class BulkUpdateAsyncTests : BaseTest
           "OwnedShippingAddress.Location.Lng"],
             new BulkMergeOptions()
             {
-                LogTo = _output.WriteLine
+                LogTo = LogTo
             });
         await _context.BulkMergeAsync(compositeKeyRows,
             ["Id1", "Id2"],
@@ -338,7 +338,7 @@ public class BulkUpdateAsyncTests : BaseTest
             ["Id1", "Id2", "Column1", "Column2", "Column3", "Season", "SeasonAsString"],
             new BulkMergeOptions()
             {
-                LogTo = _output.WriteLine
+                LogTo = LogTo
             });
 
         tran.Commit();

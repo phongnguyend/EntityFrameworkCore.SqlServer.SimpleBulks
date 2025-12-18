@@ -21,6 +21,10 @@ public class TestDbContext : DbContext
 
     public DbSet<ComplexOwnedTypeOrder> ComplexOwnedTypeOrders { get; set; }
 
+    public DbSet<Blog> Blogs { get; set; }
+
+    public DbSet<RssBlog> RssBlogs { get; set; }
+
     public TestDbContext(string connectionString, string schema)
     {
         _connectionString = connectionString;
@@ -57,4 +61,15 @@ public class TestDbContext : DbContext
 
         base.OnModelCreating(modelBuilder);
     }
+}
+
+public class Blog
+{
+    public int BlogId { get; set; }
+    public string Url { get; set; }
+}
+
+public class RssBlog : Blog
+{
+    public string RssUrl { get; set; }
 }

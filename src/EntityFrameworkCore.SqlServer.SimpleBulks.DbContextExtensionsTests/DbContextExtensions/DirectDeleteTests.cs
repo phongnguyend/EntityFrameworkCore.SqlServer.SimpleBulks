@@ -78,13 +78,13 @@ public class DirectDeleteTests : BaseTest
         var deleteResult1 = _context.DirectDelete(row,
                   new BulkDeleteOptions()
                   {
-                      LogTo = _output.WriteLine
+                      LogTo = LogTo
                   });
 
         var deleteResult2 = _context.DirectDelete(compositeKeyRow,
                 new BulkDeleteOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Commit();
@@ -114,13 +114,13 @@ public class DirectDeleteTests : BaseTest
         var deleteResult1 = _context.DirectDelete(row,
                   new BulkDeleteOptions()
                   {
-                      LogTo = _output.WriteLine
+                      LogTo = LogTo
                   });
 
         var deleteResult2 = _context.DirectDelete(compositeKeyRow,
                 new BulkDeleteOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Rollback();

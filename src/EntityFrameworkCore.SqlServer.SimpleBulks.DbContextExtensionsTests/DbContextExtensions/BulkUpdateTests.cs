@@ -101,14 +101,14 @@ public class BulkUpdateTests : BaseTest
                 row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
              new BulkUpdateOptions()
              {
-                 LogTo = _output.WriteLine
+                 LogTo = LogTo
              });
 
         var updateResult2 = _context.BulkUpdate(compositeKeyRows,
           row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
     new BulkUpdateOptions()
     {
-        LogTo = _output.WriteLine
+        LogTo = LogTo
     });
 
         rows.Add(new SingleKeyRow<int>
@@ -183,7 +183,7 @@ public class BulkUpdateTests : BaseTest
             },
               new BulkMergeOptions()
               {
-                  LogTo = _output.WriteLine
+                  LogTo = LogTo
               });
 
         _context.BulkMerge(compositeKeyRows,
@@ -192,7 +192,7 @@ public class BulkUpdateTests : BaseTest
  row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
          new BulkMergeOptions()
          {
-             LogTo = _output.WriteLine
+             LogTo = LogTo
          });
 
         tran.Commit();
@@ -261,14 +261,14 @@ public class BulkUpdateTests : BaseTest
               ["Column3", "Column2", "Season", "SeasonAsString"],
     new BulkUpdateOptions()
     {
-        LogTo = _output.WriteLine
+        LogTo = LogTo
     });
 
         var updateResult2 = _context.BulkUpdate(compositeKeyRows,
             ["Column3", "Column2", "Season", "SeasonAsString"],
             new BulkUpdateOptions()
             {
-                LogTo = _output.WriteLine
+                LogTo = LogTo
             });
 
         rows.Add(new SingleKeyRow<int>
@@ -330,7 +330,7 @@ public class BulkUpdateTests : BaseTest
           "OwnedShippingAddress.Location.Lng"],
  new BulkMergeOptions()
  {
-     LogTo = _output.WriteLine
+     LogTo = LogTo
  });
         _context.BulkMerge(compositeKeyRows,
       ["Id1", "Id2"],
@@ -338,7 +338,7 @@ public class BulkUpdateTests : BaseTest
        ["Id1", "Id2", "Column1", "Column2", "Column3", "Season", "SeasonAsString"],
           new BulkMergeOptions()
           {
-              LogTo = _output.WriteLine
+              LogTo = LogTo
           });
 
         tran.Commit();

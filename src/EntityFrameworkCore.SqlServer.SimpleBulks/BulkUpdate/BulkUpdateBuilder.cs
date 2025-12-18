@@ -60,94 +60,6 @@ public class BulkUpdateBuilder<T>
         return this;
     }
 
-    public BulkUpdateResult Execute(IReadOnlyCollection<T> data)
-    {
-        if (data.Count() == 1)
-        {
-            return SingleUpdate(data.First());
-        }
-
-        var temptableName = $"[#{Guid.NewGuid()}]";
-
-        var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
-        propertyNamesIncludeId.AddRange(_idColumns);
-
-        var dataTable = data.ToDataTable(propertyNamesIncludeId, valueConverters: _table.ValueConverters);
-        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
-
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-            $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
-        }));
-
-        var updateStatementBuilder = new StringBuilder();
-        updateStatementBuilder.AppendLine("UPDATE a SET");
-        updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
-        updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
-
-        _connectionContext.EnsureOpen();
-
-        Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
-        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
-        {
-            createTemptableCommand.ExecuteNonQuery();
-        }
-        Log("End creating temp table.");
-
-        Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
-        _connectionContext.SqlBulkCopy(dataTable, temptableName, null, _options);
-        Log("End executing SqlBulkCopy.");
-
-        var sqlUpdateStatement = updateStatementBuilder.ToString();
-
-        Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
-        var affectedRows = updateCommand.ExecuteNonQuery();
-        Log("End updating.");
-
-        return new BulkUpdateResult
-        {
-            AffectedRows = affectedRows
-        };
-    }
-
-    public BulkUpdateResult SingleUpdate(T dataToUpdate)
-    {
-        var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
-        {
-            return CreateSetStatement(x);
-        }));
-
-        var updateStatementBuilder = new StringBuilder();
-        updateStatementBuilder.AppendLine($"UPDATE {_table.SchemaQualifiedTableName} SET");
-        updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x))));
-        updateStatementBuilder.AppendLine($"WHERE {whereCondition}");
-
-        var sqlUpdateStatement = updateStatementBuilder.ToString();
-
-        var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
-        propertyNamesIncludeId.AddRange(_idColumns);
-
-        Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
-
-        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
-
-        LogParameters(_table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId, autoAdd: true));
-
-        _connectionContext.EnsureOpen();
-
-        var affectedRow = updateCommand.ExecuteNonQuery();
-
-        Log($"End updating.");
-
-        return new BulkUpdateResult
-        {
-            AffectedRows = affectedRow
-        };
-    }
-
     private string CreateSetStatement(string prop, string leftTable, string rightTable)
     {
         string sqlOperator = "=";
@@ -198,9 +110,123 @@ public class BulkUpdateBuilder<T>
         }
     }
 
+    private List<string> GetKeys()
+    {
+        var copiedPropertyNames = _idColumns.ToList();
+
+        if (_table.Discriminator != null && !copiedPropertyNames.Contains(_table.Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(_table.Discriminator.PropertyName);
+        }
+
+        return copiedPropertyNames;
+    }
+
+    private string CreateJoinCondition(DataTable dataTable)
+    {
+        var keys = GetKeys();
+
+        return string.Join(" and ", keys.Select(x =>
+        {
+            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
+            $" COLLATE {_options.Collation}" : string.Empty;
+            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
+        }));
+    }
+
+    private string CreateWhereCondition()
+    {
+        var keys = GetKeys();
+
+        return string.Join(" AND ", keys.Select(x =>
+        {
+            return CreateSetStatement(x);
+        }));
+    }
+
+    public BulkUpdateResult Execute(IReadOnlyCollection<T> data)
+    {
+        if (data.Count == 1)
+        {
+            return SingleUpdate(data.First());
+        }
+
+        var temptableName = $"[#{Guid.NewGuid()}]";
+
+        var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
+        propertyNamesIncludeId.AddRange(_idColumns);
+
+        var dataTable = data.ToDataTable(propertyNamesIncludeId, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
+        var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
+
+        var joinCondition = CreateJoinCondition(dataTable);
+
+        var updateStatementBuilder = new StringBuilder();
+        updateStatementBuilder.AppendLine("UPDATE a SET");
+        updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x, "a", "b"))));
+        updateStatementBuilder.AppendLine($"FROM {_table.SchemaQualifiedTableName} a JOIN {temptableName} b ON " + joinCondition);
+
+        _connectionContext.EnsureOpen();
+
+        Log($"Begin creating temp table:{Environment.NewLine}{sqlCreateTemptable}");
+        using (var createTemptableCommand = _connectionContext.CreateTextCommand(sqlCreateTemptable, _options))
+        {
+            createTemptableCommand.ExecuteNonQuery();
+        }
+        Log("End creating temp table.");
+
+        Log($"Begin executing SqlBulkCopy. TableName: {temptableName}");
+        _connectionContext.SqlBulkCopy(dataTable, temptableName, null, _options);
+        Log("End executing SqlBulkCopy.");
+
+        var sqlUpdateStatement = updateStatementBuilder.ToString();
+
+        Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
+        var affectedRows = updateCommand.ExecuteNonQuery();
+        Log("End updating.");
+
+        return new BulkUpdateResult
+        {
+            AffectedRows = affectedRows
+        };
+    }
+
+    public BulkUpdateResult SingleUpdate(T dataToUpdate)
+    {
+        var whereCondition = CreateWhereCondition();
+
+        var updateStatementBuilder = new StringBuilder();
+        updateStatementBuilder.AppendLine($"UPDATE {_table.SchemaQualifiedTableName} SET");
+        updateStatementBuilder.AppendLine(string.Join("," + Environment.NewLine, _columnNames.Select(x => CreateSetStatement(x))));
+        updateStatementBuilder.AppendLine($"WHERE {whereCondition}");
+
+        var sqlUpdateStatement = updateStatementBuilder.ToString();
+
+        var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
+        propertyNamesIncludeId.AddRange(_idColumns);
+
+        Log($"Begin updating:{Environment.NewLine}{sqlUpdateStatement}");
+
+        using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
+
+        LogParameters(_table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId, includeDiscriminator: true, autoAdd: true));
+
+        _connectionContext.EnsureOpen();
+
+        var affectedRow = updateCommand.ExecuteNonQuery();
+
+        Log($"End updating.");
+
+        return new BulkUpdateResult
+        {
+            AffectedRows = affectedRow
+        };
+    }
+
     public async Task<BulkUpdateResult> ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
-        if (data.Count() == 1)
+        if (data.Count == 1)
         {
             return await SingleUpdateAsync(data.First(), cancellationToken);
         }
@@ -210,15 +236,10 @@ public class BulkUpdateBuilder<T>
         var propertyNamesIncludeId = _columnNames.Select(RemoveOperator).ToList();
         propertyNamesIncludeId.AddRange(_idColumns);
 
-        var dataTable = await data.ToDataTableAsync(propertyNamesIncludeId, valueConverters: _table.ValueConverters, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(propertyNamesIncludeId, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-            $" COLLATE {_options.Collation}" : string.Empty;
-            return $"a.[{_table.GetDbColumnName(x)}]{collation} = b.[{x}]{collation}";
-        }));
+        var joinCondition = CreateJoinCondition(dataTable);
 
         var updateStatementBuilder = new StringBuilder();
         updateStatementBuilder.AppendLine("UPDATE a SET");
@@ -253,10 +274,7 @@ public class BulkUpdateBuilder<T>
 
     public async Task<BulkUpdateResult> SingleUpdateAsync(T dataToUpdate, CancellationToken cancellationToken = default)
     {
-        var whereCondition = string.Join(" AND ", _idColumns.Select(x =>
-        {
-            return CreateSetStatement(x);
-        }));
+        var whereCondition = CreateWhereCondition();
 
         var updateStatementBuilder = new StringBuilder();
         updateStatementBuilder.AppendLine($"UPDATE {_table.SchemaQualifiedTableName} SET");
@@ -272,7 +290,7 @@ public class BulkUpdateBuilder<T>
 
         using var updateCommand = _connectionContext.CreateTextCommand(sqlUpdateStatement, _options);
 
-        LogParameters(_table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId, autoAdd: true));
+        LogParameters(_table.CreateSqlParameters(updateCommand, dataToUpdate, propertyNamesIncludeId, includeDiscriminator: true, autoAdd: true));
 
         await _connectionContext.EnsureOpenAsync(cancellationToken);
 

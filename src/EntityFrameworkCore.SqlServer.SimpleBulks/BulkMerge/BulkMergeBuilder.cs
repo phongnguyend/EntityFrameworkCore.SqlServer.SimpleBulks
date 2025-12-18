@@ -82,9 +82,45 @@ public class BulkMergeBuilder<T>
         return PropertiesCache<T>.GetProperty(_outputIdColumn);
     }
 
+    private List<string> GetKeys()
+    {
+        var copiedPropertyNames = _idColumns.ToList();
+
+        if (_table.Discriminator != null && !copiedPropertyNames.Contains(_table.Discriminator.PropertyName))
+        {
+            copiedPropertyNames.Add(_table.Discriminator.PropertyName);
+        }
+
+        return copiedPropertyNames;
+    }
+
+    private string CreateJoinCondition()
+    {
+        var keys = GetKeys();
+
+        return string.Join(" and ", keys.Select(x =>
+        {
+            string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
+            $" collate {_options.Collation}" : string.Empty;
+            return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
+        }));
+    }
+
+    private string CreateJoinCondition(System.Data.DataTable dataTable)
+    {
+        var keys = GetKeys();
+
+        return string.Join(" and ", keys.Select(x =>
+        {
+            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
+            $" collate {_options.Collation}" : string.Empty;
+            return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
+        }));
+    }
+
     public BulkMergeResult Execute(IReadOnlyCollection<T> data)
     {
-        if (data.Count() == 1)
+        if (data.Count == 1)
         {
             return SingleMerge(data.First());
         }
@@ -103,17 +139,12 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = data.ToDataTable(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId);
+        var dataTable = data.ToDataTable(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, discriminator: _table.Discriminator);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
 
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-           {
-               string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-     $" collate {_options.Collation}" : string.Empty;
-               return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
-           }));
+        var joinCondition = CreateJoinCondition(dataTable);
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
@@ -131,8 +162,8 @@ public class BulkMergeBuilder<T>
         if (_insertColumnNames.Any())
         {
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
+            mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
         }
 
         if (returnDbGeneratedId)
@@ -236,15 +267,10 @@ public class BulkMergeBuilder<T>
 
         var mergeStatementBuilder = new StringBuilder();
 
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-             {
-                 string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
-                 $" collate {_options.Collation}" : string.Empty;
-                 return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
-             }));
+        var joinCondition = CreateJoinCondition();
 
-        var parameterNames = _table.CreateParameterNames(propertyNames);
-        var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
+        var parameterNames = _table.CreateParameterNames(propertyNames, includeDiscriminator: true);
+        var columnNames = _table.CreateColumnNames(propertyNames, includeDiscriminator: true);
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
@@ -262,8 +288,8 @@ public class BulkMergeBuilder<T>
         if (_insertColumnNames.Any())
         {
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
+            mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
         }
 
         if (returnDbGeneratedId)
@@ -293,7 +319,7 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connectionContext.CreateTextCommand(sqlMergeStatement, _options))
         {
-            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, autoAdd: true));
+            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, includeDiscriminator: true, autoAdd: true));
 
             using var reader = updateCommand.ExecuteReader();
 
@@ -364,7 +390,7 @@ public class BulkMergeBuilder<T>
 
     public async Task<BulkMergeResult> ExecuteAsync(IReadOnlyCollection<T> data, CancellationToken cancellationToken = default)
     {
-        if (data.Count() == 1)
+        if (data.Count == 1)
         {
             return await SingleMergeAsync(data.First(), cancellationToken);
         }
@@ -383,17 +409,12 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
 
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-        {
-            string collation = !string.IsNullOrEmpty(_options.Collation) && dataTable.Columns[x].DataType == typeof(string) ?
-            $" collate {_options.Collation}" : string.Empty;
-            return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
-        }));
+        var joinCondition = CreateJoinCondition(dataTable);
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
@@ -411,8 +432,8 @@ public class BulkMergeBuilder<T>
         if (_insertColumnNames.Any())
         {
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
+            mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
         }
 
         if (returnDbGeneratedId)
@@ -516,15 +537,10 @@ public class BulkMergeBuilder<T>
 
         var mergeStatementBuilder = new StringBuilder();
 
-        var joinCondition = string.Join(" and ", _idColumns.Select(x =>
-     {
-         string collation = !string.IsNullOrEmpty(_options.Collation) && _table.GetProviderClrType(x) == typeof(string) ?
-       $" collate {_options.Collation}" : string.Empty;
-         return $"s.[{x}]{collation} = t.[{_table.GetDbColumnName(x)}]{collation}";
-     }));
+        var joinCondition = CreateJoinCondition();
 
-        var parameterNames = _table.CreateParameterNames(propertyNames);
-        var columnNames = string.Join(", ", propertyNames.Select(x => "[" + x + "]"));
+        var parameterNames = _table.CreateParameterNames(propertyNames, includeDiscriminator: true);
+        var columnNames = _table.CreateColumnNames(propertyNames, includeDiscriminator: true);
 
         var hint = _options.WithHoldLock ? " WITH (HOLDLOCK)" : string.Empty;
 
@@ -542,8 +558,8 @@ public class BulkMergeBuilder<T>
         if (_insertColumnNames.Any())
         {
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
-            mergeStatementBuilder.AppendLine($"    THEN INSERT ({string.Join(", ", _insertColumnNames.Select(x => $"[{_table.GetDbColumnName(x)}]"))})");
-            mergeStatementBuilder.AppendLine($"         VALUES ({string.Join(", ", _insertColumnNames.Select(x => $"s.[{x}]"))})");
+            mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
+            mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
         }
 
         if (returnDbGeneratedId)
@@ -573,7 +589,7 @@ public class BulkMergeBuilder<T>
 
         using (var updateCommand = _connectionContext.CreateTextCommand(sqlMergeStatement, _options))
         {
-            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, autoAdd: true));
+            LogParameters(_table.CreateSqlParameters(updateCommand, data, propertyNames, includeDiscriminator: true, autoAdd: true));
 
             using var reader = await updateCommand.ExecuteReaderAsync(cancellationToken);
 
@@ -604,5 +620,4 @@ public class BulkMergeBuilder<T>
 
         return result;
     }
-
 }

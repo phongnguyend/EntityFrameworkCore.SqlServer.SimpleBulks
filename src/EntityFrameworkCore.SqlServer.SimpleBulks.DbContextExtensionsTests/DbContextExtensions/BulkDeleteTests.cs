@@ -77,13 +77,13 @@ public class BulkDeleteTests : BaseTest
         var deleteResult1 = _context.BulkDelete(rows,
      new BulkDeleteOptions()
      {
-         LogTo = _output.WriteLine
+         LogTo = LogTo
      });
 
         var deleteResult2 = _context.BulkDelete(compositeKeyRows,
     new BulkDeleteOptions()
     {
-        LogTo = _output.WriteLine
+        LogTo = LogTo
     });
 
         tran.Commit();
