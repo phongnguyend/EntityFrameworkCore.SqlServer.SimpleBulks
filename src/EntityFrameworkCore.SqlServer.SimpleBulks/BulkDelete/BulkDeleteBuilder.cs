@@ -12,7 +12,7 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 public class BulkDeleteBuilder<T>
 {
     private TableInfor<T> _table;
-    private IReadOnlyCollection<string> _idColumns;
+    private IReadOnlyCollection<string> _deleteKeys;
     private BulkDeleteOptions _options = BulkDeleteOptions.DefaultOptions;
     private readonly ConnectionContext _connectionContext;
 
@@ -29,14 +29,14 @@ public class BulkDeleteBuilder<T>
 
     public BulkDeleteBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
-        _idColumns = idColumns;
+        _deleteKeys = idColumns;
         return this;
     }
 
     public BulkDeleteBuilder<T> WithId(Expression<Func<T, object>> idSelector)
     {
         var idColumn = idSelector.Body.GetMemberName();
-        _idColumns = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
+        _deleteKeys = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
         return this;
     }
 
@@ -46,16 +46,9 @@ public class BulkDeleteBuilder<T>
         return this;
     }
 
-    private List<string> GetKeys()
+    private IReadOnlyCollection<string> GetKeys()
     {
-        var copiedPropertyNames = _idColumns.ToList();
-
-        if (_table.Discriminator != null && !copiedPropertyNames.Contains(_table.Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(_table.Discriminator.PropertyName);
-        }
-
-        return copiedPropertyNames;
+        return _table.IncludeDiscriminator(_deleteKeys);
     }
 
     private string CreateJoinCondition(DataTable dataTable)
@@ -88,7 +81,7 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = data.ToDataTable(_idColumns, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
+        var dataTable = data.ToDataTable(_deleteKeys, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);
@@ -137,7 +130,7 @@ public class BulkDeleteBuilder<T>
 
         using var deleteCommand = _connectionContext.CreateTextCommand(deleteStatement, _options);
 
-        LogParameters(_table.CreateSqlParameters(deleteCommand, dataToDelete, _idColumns, includeDiscriminator: true, autoAdd: true));
+        LogParameters(_table.CreateSqlParameters(deleteCommand, dataToDelete, _deleteKeys, includeDiscriminator: true, autoAdd: true));
 
         _connectionContext.EnsureOpen();
 
@@ -177,7 +170,7 @@ public class BulkDeleteBuilder<T>
         }
 
         var temptableName = $"[#{Guid.NewGuid()}]";
-        var dataTable = await data.ToDataTableAsync(_idColumns, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(_deleteKeys, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);
@@ -225,7 +218,7 @@ public class BulkDeleteBuilder<T>
 
         using var deleteCommand = _connectionContext.CreateTextCommand(deleteStatement, _options);
 
-        LogParameters(_table.CreateSqlParameters(deleteCommand, dataToDelete, _idColumns, includeDiscriminator: true, autoAdd: true));
+        LogParameters(_table.CreateSqlParameters(deleteCommand, dataToDelete, _deleteKeys, includeDiscriminator: true, autoAdd: true));
 
         await _connectionContext.EnsureOpenAsync(cancellationToken);
 

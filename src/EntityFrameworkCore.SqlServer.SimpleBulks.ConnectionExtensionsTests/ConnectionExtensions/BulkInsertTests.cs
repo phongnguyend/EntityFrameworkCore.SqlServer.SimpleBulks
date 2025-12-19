@@ -8,8 +8,6 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.ConnectionExtensionsTests.Co
 [Collection("SqlServerCollection")]
 public class BulkInsertTests : BaseTest
 {
-    private string _schema = "";
-
     public BulkInsertTests(ITestOutputHelper output, SqlServerFixture fixture) : base(output, fixture, "EFCoreSimpleBulksTests.BulkInsert")
     {
     }
@@ -53,7 +51,7 @@ public class BulkInsertTests : BaseTest
 
         var options = new BulkInsertOptions
         {
-            LogTo = _output.WriteLine
+            LogTo = LogTo
         };
 
         if (useLinq)
@@ -106,7 +104,7 @@ public class BulkInsertTests : BaseTest
                         row.NullableFloat,
                         row.NullableString
                     },
-                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
                     {
                         OutputId = new OutputId
                         {
@@ -118,7 +116,7 @@ public class BulkInsertTests : BaseTest
 
                 connectionContext.BulkInsert(compositeKeyRows,
                     row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows"),
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows"),
                     options);
             }
 
@@ -139,7 +137,7 @@ public class BulkInsertTests : BaseTest
             {
                 connectionContext.BulkInsert(rows,
                     ["Column1", "Column2", "Column3"],
-                    new SqlTableInfor<SingleKeyRow<int>>(_schema, "SingleKeyRows")
+                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
                     {
                         OutputId = new OutputId
                         {
@@ -151,7 +149,7 @@ public class BulkInsertTests : BaseTest
 
                 connectionContext.BulkInsert(compositeKeyRows,
                     ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(_schema, "CompositeKeyRows"),
+                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows"),
                     options: options);
             }
 
