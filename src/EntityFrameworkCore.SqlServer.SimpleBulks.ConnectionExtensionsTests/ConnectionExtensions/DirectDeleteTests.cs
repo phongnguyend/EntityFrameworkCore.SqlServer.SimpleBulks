@@ -38,11 +38,9 @@ public class DirectDeleteTests : BaseTest
             });
         }
 
-        _context.BulkInsert(rows,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season });
+        _context.BulkInsert(rows);
 
-        _context.BulkInsert(compositeKeyRows,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season });
+        _context.BulkInsert(compositeKeyRows);
 
         tran.Commit();
     }
@@ -64,13 +62,13 @@ public class DirectDeleteTests : BaseTest
         var deleteResult1 = connectionContext.DirectDelete(row,
                   options: new BulkDeleteOptions()
                   {
-                      LogTo = _output.WriteLine
+                      LogTo = LogTo
                   });
 
         var deleteResult2 = connectionContext.DirectDelete(compositeKeyRow,
                 options: new BulkDeleteOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Commit();
@@ -104,13 +102,13 @@ public class DirectDeleteTests : BaseTest
         var deleteResult1 = connectionContext.DirectDelete(row,
                   options: new BulkDeleteOptions()
                   {
-                      LogTo = _output.WriteLine
+                      LogTo = LogTo
                   });
 
         var deleteResult2 = connectionContext.DirectDelete(compositeKeyRow,
                 options: new BulkDeleteOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Rollback();

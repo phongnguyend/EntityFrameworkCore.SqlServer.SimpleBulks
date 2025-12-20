@@ -83,61 +83,49 @@ public abstract class TableInfor<T>
         return $"@{propertyName}";
     }
 
+    public IReadOnlyCollection<string> IncludeDiscriminator(IReadOnlyCollection<string> propertyNames)
+    {
+        if (Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
+        {
+            var copiedPropertyNames = propertyNames.ToList();
+            copiedPropertyNames.Add(Discriminator.PropertyName);
+            return copiedPropertyNames;
+        }
+
+        return propertyNames;
+    }
+
     public string CreateParameterNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
     {
-        var copiedPropertyNames = propertyNames.ToList();
-
-        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(Discriminator.PropertyName);
-        }
+        var copiedPropertyNames = includeDiscriminator ? IncludeDiscriminator(propertyNames) : propertyNames;
 
         return string.Join(", ", copiedPropertyNames.Select(CreateParameterName));
     }
 
     public string CreateColumnNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
     {
-        var copiedPropertyNames = propertyNames.ToList();
+        var copiedPropertyNames = includeDiscriminator ? IncludeDiscriminator(propertyNames) : propertyNames;
 
-        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(Discriminator.PropertyName);
-        }
         return string.Join(", ", copiedPropertyNames.Select(x => $"[{x}]"));
     }
 
     public string CreateColumnNames(IReadOnlyCollection<string> propertyNames, string tableName, bool includeDiscriminator)
     {
-        var copiedPropertyNames = propertyNames.ToList();
-
-        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(Discriminator.PropertyName);
-        }
+        var copiedPropertyNames = includeDiscriminator ? IncludeDiscriminator(propertyNames) : propertyNames;
 
         return string.Join(", ", copiedPropertyNames.Select(x => $"{tableName}.[{x}]"));
     }
 
     public string CreateDbColumnNames(IReadOnlyCollection<string> propertyNames, bool includeDiscriminator)
     {
-        var copiedPropertyNames = propertyNames.ToList();
-
-        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(Discriminator.PropertyName);
-        }
+        var copiedPropertyNames = includeDiscriminator ? IncludeDiscriminator(propertyNames) : propertyNames;
 
         return string.Join(", ", copiedPropertyNames.Select(x => $"[{GetDbColumnName(x)}]"));
     }
 
     public string CreateDbColumnNames(IReadOnlyCollection<string> propertyNames, string tableName, bool includeDiscriminator)
     {
-        var copiedPropertyNames = propertyNames.ToList();
-
-        if (includeDiscriminator && Discriminator != null && !propertyNames.Contains(Discriminator.PropertyName))
-        {
-            copiedPropertyNames.Add(Discriminator.PropertyName);
-        }
+        var copiedPropertyNames = includeDiscriminator ? IncludeDiscriminator(propertyNames) : propertyNames;
 
         return string.Join(", ", copiedPropertyNames.Select(x => $"{tableName}.[{GetDbColumnName(x)}]"));
     }

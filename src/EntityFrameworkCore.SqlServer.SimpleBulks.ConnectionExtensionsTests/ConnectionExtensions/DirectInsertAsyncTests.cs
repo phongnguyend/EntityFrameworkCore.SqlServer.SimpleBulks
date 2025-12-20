@@ -40,14 +40,14 @@ public class DirectInsertAsyncTests : BaseTest
                 row => new { row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
 
@@ -103,14 +103,14 @@ public class DirectInsertAsyncTests : BaseTest
                 row => new { row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Commit();
@@ -167,14 +167,14 @@ public class DirectInsertAsyncTests : BaseTest
                 row => new { row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
                 row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         tran.Rollback();
@@ -206,7 +206,7 @@ public class DirectInsertAsyncTests : BaseTest
                 options: new BulkInsertOptions()
                 {
                     KeepIdentity = true,
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         // Assert
@@ -236,7 +236,7 @@ public class DirectInsertAsyncTests : BaseTest
             x => new { x.Key, x.Value, x.CreatedDateTime, x.UpdatedDateTime, x.IsSensitive, x.Description },
                 options: new BulkInsertOptions()
                 {
-                    LogTo = _output.WriteLine
+                    LogTo = LogTo
                 });
 
         // Assert
