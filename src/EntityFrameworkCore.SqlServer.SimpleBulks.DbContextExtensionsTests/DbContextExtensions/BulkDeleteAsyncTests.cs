@@ -67,24 +67,85 @@ public class BulkDeleteAsyncTests : BaseTest
     [Theory]
     [InlineData(1)]
     [InlineData(100)]
-    public async Task Bulk_Delete_Using_Linq_With_Transaction(int length)
+    public async Task BulkDelete_PrimaryKeys(int length)
     {
         var tran = _context.Database.BeginTransaction();
 
         var rows = _context.SingleKeyRows.AsNoTracking().Take(length).ToList();
         var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(length).ToList();
 
-        var deleteResult1 = await _context.BulkDeleteAsync(rows,
-           new BulkDeleteOptions()
-           {
-               LogTo = LogTo
-           });
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = LogTo
+        };
 
-        var deleteResult2 = await _context.BulkDeleteAsync(compositeKeyRows,
-         new BulkDeleteOptions()
-         {
-             LogTo = LogTo
-         });
+        var deleteResult1 = await _context.BulkDeleteAsync(rows, options);
+
+        var deleteResult2 = await _context.BulkDeleteAsync(compositeKeyRows, options);
+
+        tran.Commit();
+
+        // Assert
+        var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+        var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Equal(length, deleteResult1.AffectedRows);
+        Assert.Equal(length, deleteResult2.AffectedRows);
+
+        Assert.Equal(100 - length, dbRows.Count);
+        Assert.Equal(100 - length, dbCompositeKeyRows.Count);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(100)]
+    public async Task BulkDelete_SpecifiedKeys(int length)
+    {
+        var tran = _context.Database.BeginTransaction();
+
+        var rows = _context.SingleKeyRows.AsNoTracking().Take(length).ToList();
+        var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(length).ToList();
+
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = LogTo
+        };
+
+        var deleteResult1 = await _context.BulkDeleteAsync(rows, x => x.Id, options);
+
+        var deleteResult2 = await _context.BulkDeleteAsync(compositeKeyRows, x => new { x.Id1, x.Id2 }, options);
+
+        tran.Commit();
+
+        // Assert
+        var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+        var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Equal(length, deleteResult1.AffectedRows);
+        Assert.Equal(length, deleteResult2.AffectedRows);
+
+        Assert.Equal(100 - length, dbRows.Count);
+        Assert.Equal(100 - length, dbCompositeKeyRows.Count);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(100)]
+    public async Task BulkDelete_SpecifiedKeys_DynamicString(int length)
+    {
+        var tran = _context.Database.BeginTransaction();
+
+        var rows = _context.SingleKeyRows.AsNoTracking().Take(length).ToList();
+        var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(length).ToList();
+
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = LogTo
+        };
+
+        var deleteResult1 = await _context.BulkDeleteAsync(rows, ["Id"], options);
+
+        var deleteResult2 = await _context.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"], options);
 
         tran.Commit();
 

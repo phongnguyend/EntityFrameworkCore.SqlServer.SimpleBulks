@@ -39,11 +39,9 @@ public class BulkDeleteTests : BaseTest
     }
 
     [Theory]
-    [InlineData(true, true)]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    [InlineData(false, false)]
-    public void Bulk_Delete_Without_Transaction(bool useLinq, bool omitTableName)
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BulkDelete_PrimaryKeys(bool omitTableName)
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -55,51 +53,113 @@ public class BulkDeleteTests : BaseTest
             LogTo = LogTo
         };
 
-        if (useLinq)
+        if (omitTableName)
         {
-            if (omitTableName)
-            {
-                connectionContext.BulkDelete(rows, options: options);
-                connectionContext.BulkDelete(compositeKeyRows, options: options);
-            }
-            else
-            {
-                connectionContext.BulkDelete(rows,
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
-                    options: options);
-                connectionContext.BulkDelete(compositeKeyRows,
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
-                    options: options);
-            }
+            connectionContext.BulkDelete(rows, options: options);
+            connectionContext.BulkDelete(compositeKeyRows, options: options);
         }
         else
         {
-            if (omitTableName)
-            {
-                connectionContext.BulkDelete(rows, options: options);
-                connectionContext.BulkDelete(compositeKeyRows, options: options);
-            }
-            else
-            {
-                connectionContext.BulkDelete(rows,
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
-                    options);
-                connectionContext.BulkDelete(compositeKeyRows,
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
-                    options);
-            }
+            connectionContext.BulkDelete(rows,
+                new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
+                {
+                    PrimaryKeys = ["Id"],
+                },
+                options: options);
+            connectionContext.BulkDelete(compositeKeyRows,
+                new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
+                {
+                    PrimaryKeys = ["Id1", "Id2"],
+                },
+                options: options);
+        }
+
+        // Assert
+        var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+        var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Single(dbRows);
+        Assert.Single(dbCompositeKeyRows);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BulkDelete_SpecifiedKeys(bool omitTableName)
+    {
+        var connectionContext = new ConnectionContext(_connection, null);
+
+        var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
+        var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
+
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = LogTo
+        };
+
+        if (omitTableName)
+        {
+            connectionContext.BulkDelete(rows, x => x.Id, options: options);
+            connectionContext.BulkDelete(compositeKeyRows, x => new { x.Id1, x.Id2 }, options: options);
+        }
+        else
+        {
+            connectionContext.BulkDelete(rows, x => x.Id,
+                new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
+                {
+                    PrimaryKeys = ["Id"],
+                },
+                options: options);
+            connectionContext.BulkDelete(compositeKeyRows, x => new { x.Id1, x.Id2 },
+                new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
+                {
+                    PrimaryKeys = ["Id1", "Id2"],
+                },
+                options: options);
+        }
+
+        // Assert
+        var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
+        var dbCompositeKeyRows = _context.CompositeKeyRows.AsNoTracking().ToList();
+
+        Assert.Single(dbRows);
+        Assert.Single(dbCompositeKeyRows);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void BulkDelete_SpecifiedKeys_DynamicString(bool omitTableName)
+    {
+        var connectionContext = new ConnectionContext(_connection, null);
+
+        var rows = _context.SingleKeyRows.AsNoTracking().Take(99).ToList();
+        var compositeKeyRows = _context.CompositeKeyRows.AsNoTracking().Take(99).ToList();
+
+        var options = new BulkDeleteOptions()
+        {
+            LogTo = LogTo
+        };
+
+        if (omitTableName)
+        {
+            connectionContext.BulkDelete(rows, ["Id"], options: options);
+            connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"], options: options);
+        }
+        else
+        {
+            connectionContext.BulkDelete(rows, ["Id"],
+                new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
+                {
+                    PrimaryKeys = ["Id"],
+                },
+                options: options);
+            connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"],
+                new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
+                {
+                    PrimaryKeys = ["Id1", "Id2"],
+                },
+                options: options);
         }
 
         // Assert
