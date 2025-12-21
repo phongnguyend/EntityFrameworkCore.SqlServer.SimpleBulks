@@ -33,4 +33,28 @@ public static class DbContextAsyncExtensions
              .WithBulkOptions(options)
              .ExecuteAsync(data, cancellationToken);
     }
+
+    public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    {
+        var table = dbContext.GetTableInfor<T>();
+
+        return dbContext.CreateBulkUpdateBuilder<T>()
+             .WithId(keySelector)
+             .WithColumns(columnNamesSelector)
+             .ToTable(table)
+             .WithBulkOptions(options)
+             .ExecuteAsync(data, cancellationToken);
+    }
+
+    public static Task<BulkUpdateResult> BulkUpdateAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null, CancellationToken cancellationToken = default)
+    {
+        var table = dbContext.GetTableInfor<T>();
+
+        return dbContext.CreateBulkUpdateBuilder<T>()
+             .WithId(keys)
+             .WithColumns(columnNames)
+             .ToTable(table)
+             .WithBulkOptions(options)
+             .ExecuteAsync(data, cancellationToken);
+    }
 }

@@ -30,4 +30,27 @@ public static class DbContextExtensions
              .WithBulkOptions(options)
              .Execute(data);
     }
+
+    public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
+    {
+        var table = dbContext.GetTableInfor<T>();
+        return dbContext.CreateBulkUpdateBuilder<T>()
+             .WithId(keySelector)
+             .WithColumns(columnNamesSelector)
+             .ToTable(table)
+             .WithBulkOptions(options)
+             .Execute(data);
+    }
+
+    public static BulkUpdateResult BulkUpdate<T>(this DbContext dbContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null)
+    {
+        var table = dbContext.GetTableInfor<T>();
+
+        return dbContext.CreateBulkUpdateBuilder<T>()
+             .WithId(keys)
+             .WithColumns(columnNames)
+             .ToTable(table)
+             .WithBulkOptions(options)
+             .Execute(data);
+    }
 }
