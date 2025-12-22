@@ -27,4 +27,13 @@ public static class DbContextExtensions
             .WithBulkOptions(options)
             .Execute(data);
     }
+
+    public static void BulkInsert<T>(this DbContext dbContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, BulkInsertOptions options = null)
+    {
+        dbContext.CreateBulkInsertBuilder<T>()
+            .WithColumns(columnNames)
+            .ToTable(dbContext.GetTableInfor<T>())
+            .WithBulkOptions(options)
+            .Execute(data);
+    }
 }

@@ -29,4 +29,13 @@ public static class DbContextAsyncExtensions
               .WithBulkOptions(options)
               .ExecuteAsync(data, cancellationToken);
     }
+
+    public static Task BulkInsertAsync<T>(this DbContext dbContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    {
+        return dbContext.CreateBulkInsertBuilder<T>()
+              .WithColumns(columnNames)
+              .ToTable(dbContext.GetTableInfor<T>())
+              .WithBulkOptions(options)
+              .ExecuteAsync(data, cancellationToken);
+    }
 }
