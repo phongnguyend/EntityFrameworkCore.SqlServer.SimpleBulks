@@ -21,7 +21,7 @@ public class BulkInsertTests : BaseTest
     [InlineData(100, true, false)]
     [InlineData(100, false, true)]
     [InlineData(100, false, false)]
-    public void Bulk_Insert_Without_Transaction(int length, bool useLinq, bool omitTableName)
+    public void BulkInsert_Without_Transaction(int length, bool useLinq, bool omitTableName)
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -172,6 +172,89 @@ public class BulkInsertTests : BaseTest
             Assert.Equal(compositeKeyRows[i].Column1, dbCompositeKeyRows[i].Column1);
             Assert.Equal(compositeKeyRows[i].Column2, dbCompositeKeyRows[i].Column2);
             Assert.Equal(compositeKeyRows[i].Column3, dbCompositeKeyRows[i].Column3);
+        }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(100)]
+    public void BulkInsert_KeepIdentity(int length)
+    {
+        var connectionContext = new ConnectionContext(_connection, null);
+
+        var configurationEntries = new List<ConfigurationEntry>();
+
+        for (int i = 0; i < length; i++)
+        {
+            configurationEntries.Add(new ConfigurationEntry
+            {
+                Id = Guid.NewGuid(),
+                Key = $"Key{i}",
+                Value = $"Value{i}",
+                Description = string.Empty,
+                CreatedDateTime = DateTimeOffset.Now,
+            });
+        }
+
+        connectionContext.BulkInsert(configurationEntries,
+            options: new BulkInsertOptions()
+            {
+                KeepIdentity = true,
+                LogTo = LogTo
+            });
+
+        // Assert
+        configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
+        var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
+
+        for (int i = 0; i < length; i++)
+        {
+            Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
+            Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
+            Assert.Equal(configurationEntries[i].Value, configurationEntriesInDb[i].Value);
+            Assert.Equal(configurationEntries[i].Description, configurationEntriesInDb[i].Description);
+            Assert.Equal(configurationEntries[i].CreatedDateTime, configurationEntriesInDb[i].CreatedDateTime);
+        }
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(100)]
+    public void BulkInsert_Return_DbGeneratedId(int length)
+    {
+        var connectionContext = new ConnectionContext(_connection, null);
+
+        var configurationEntries = new List<ConfigurationEntry>();
+
+        for (int i = 0; i < length; i++)
+        {
+            configurationEntries.Add(new ConfigurationEntry
+            {
+                Key = $"Key{i}",
+                Value = $"Value{i}",
+                Description = string.Empty,
+                CreatedDateTime = DateTimeOffset.Now,
+            });
+        }
+
+        connectionContext.BulkInsert(configurationEntries,
+              options: new BulkInsertOptions()
+              {
+                  LogTo = LogTo
+              });
+
+        // Assert
+        configurationEntries = configurationEntries.OrderBy(x => x.Id).ToList();
+        var configurationEntriesInDb = _context.Set<ConfigurationEntry>().AsNoTracking().ToList().OrderBy(x => x.Id).ToList();
+
+        for (int i = 0; i < length; i++)
+        {
+            Assert.NotEqual(Guid.Empty, configurationEntriesInDb[i].Id);
+            Assert.Equal(configurationEntries[i].Id, configurationEntriesInDb[i].Id);
+            Assert.Equal(configurationEntries[i].Key, configurationEntriesInDb[i].Key);
+            Assert.Equal(configurationEntries[i].Value, configurationEntriesInDb[i].Value);
+            Assert.Equal(configurationEntries[i].Description, configurationEntriesInDb[i].Description);
+            Assert.Equal(configurationEntries[i].CreatedDateTime, configurationEntriesInDb[i].CreatedDateTime);
         }
     }
 }

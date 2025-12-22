@@ -2,6 +2,7 @@
 using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,18 +16,27 @@ public static class DbContextAsyncExtensions
         var table = dbContext.GetTableInfor<T>();
 
         return dbContext.CreateBulkInsertBuilder<T>()
-          .WithColumns(table.InsertablePropertyNames)
-          .ToTable(table)
-          .WithBulkOptions(options)
-          .SingleInsertAsync(data, cancellationToken);
+            .WithColumns(table.InsertablePropertyNames)
+            .ToTable(table)
+            .WithBulkOptions(options)
+            .SingleInsertAsync(data, cancellationToken);
     }
 
     public static Task DirectInsertAsync<T>(this DbContext dbContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
     {
         return dbContext.CreateBulkInsertBuilder<T>()
-      .WithColumns(columnNamesSelector)
- .ToTable(dbContext.GetTableInfor<T>())
-  .WithBulkOptions(options)
-   .SingleInsertAsync(data, cancellationToken);
+            .WithColumns(columnNamesSelector)
+            .ToTable(dbContext.GetTableInfor<T>())
+            .WithBulkOptions(options)
+            .SingleInsertAsync(data, cancellationToken);
+    }
+
+    public static Task DirectInsertAsync<T>(this DbContext dbContext, T data, IReadOnlyCollection<string> columnNames, BulkInsertOptions options = null, CancellationToken cancellationToken = default)
+    {
+        return dbContext.CreateBulkInsertBuilder<T>()
+            .WithColumns(columnNames)
+            .ToTable(dbContext.GetTableInfor<T>())
+            .WithBulkOptions(options)
+            .SingleInsertAsync(data, cancellationToken);
     }
 }
