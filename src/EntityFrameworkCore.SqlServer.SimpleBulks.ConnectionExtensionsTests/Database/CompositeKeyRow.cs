@@ -13,4 +13,6 @@ public class CompositeKeyRow<TId1, TId2>
     public DateTime Column3 { get; set; }
 
     public Season? Season { get; set; }
+
+    public Season? SeasonAsString { get; set; }
 }

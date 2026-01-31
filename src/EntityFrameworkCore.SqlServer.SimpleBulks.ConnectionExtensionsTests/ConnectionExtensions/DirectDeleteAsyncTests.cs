@@ -24,7 +24,8 @@ public class DirectDeleteAsyncTests : BaseTest
                 Column1 = i,
                 Column2 = "" + i,
                 Column3 = DateTime.Now,
-                Season = Season.Winter
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -34,7 +35,8 @@ public class DirectDeleteAsyncTests : BaseTest
                 Column1 = i,
                 Column2 = "" + i,
                 Column3 = DateTime.Now,
-                Season = Season.Winter
+                Season = Season.Winter,
+                SeasonAsString = Season.Winter
             });
         }
 

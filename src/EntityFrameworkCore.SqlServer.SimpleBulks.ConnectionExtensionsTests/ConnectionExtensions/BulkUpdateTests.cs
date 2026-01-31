@@ -22,7 +22,9 @@ public class BulkUpdateTests : BaseTest
             {
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Autumn,
+                SeasonAsString = Season.Autumn
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -31,7 +33,9 @@ public class BulkUpdateTests : BaseTest
                 Id2 = i,
                 Column1 = i,
                 Column2 = "" + i,
-                Column3 = DateTime.Now
+                Column3 = DateTime.Now,
+                Season = Season.Autumn,
+                SeasonAsString = Season.Autumn
             });
         }
 
@@ -87,18 +91,12 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
+                    _singleKeyRowTableInfor,
                     options: updateOptions);
 
                 connectionContext.BulkUpdate(compositeKeyRows,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
+                    _compositeKeyRowTableInfor,
                     options: updateOptions);
             }
         }
@@ -118,18 +116,12 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows,
                     ["Column3", "Column2"],
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
+                    _singleKeyRowTableInfor,
                     options: updateOptions);
 
                 connectionContext.BulkUpdate(compositeKeyRows,
                     ["Column3", "Column2"],
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
+                    _compositeKeyRowTableInfor,
                     options: updateOptions);
             }
         }
@@ -198,18 +190,12 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows, x => x.Id,
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
+                    _singleKeyRowTableInfor,
                     options: updateOptions);
 
                 connectionContext.BulkUpdate(compositeKeyRows, x => new { x.Id1, x.Id2 },
                     row => new { row.Column3, row.Column2 },
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
+                    _compositeKeyRowTableInfor,
                     options: updateOptions);
             }
         }
@@ -229,18 +215,12 @@ public class BulkUpdateTests : BaseTest
             {
                 connectionContext.BulkUpdate(rows, ["Id"],
                     ["Column3", "Column2"],
-                    new SqlTableInfor<SingleKeyRow<int>>(GetSchema(), "SingleKeyRows")
-                    {
-                        PrimaryKeys = ["Id"],
-                    },
+                    _singleKeyRowTableInfor,
                     options: updateOptions);
 
                 connectionContext.BulkUpdate(compositeKeyRows, ["Id1", "Id2"],
                     ["Column3", "Column2"],
-                    new SqlTableInfor<CompositeKeyRow<int, int>>(GetSchema(), "CompositeKeyRows")
-                    {
-                        PrimaryKeys = ["Id1", "Id2"],
-                    },
+                    _compositeKeyRowTableInfor,
                     options: updateOptions);
             }
         }
