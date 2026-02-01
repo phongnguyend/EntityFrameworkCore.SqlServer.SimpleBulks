@@ -36,3 +36,7 @@ public class SingleKeyRow<TId>
 
     public string? NullableString { get; set; }
 }
+
+public class ExtendedSingleKeyRow<TId> : SingleKeyRow<TId>
+{
+}

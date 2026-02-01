@@ -29,6 +29,8 @@ public class SqlTableInforBuilder<T>
 
     private Func<T, string, SqlParameter> _parameterConverter;
 
+    private Discriminator _discriminator;
+
     public SqlTableInforBuilder()
     {
         _propertyNames = PropertiesCache<T>.GetProperties().Select(x => x.Key).ToList();
@@ -104,25 +106,56 @@ public class SqlTableInforBuilder<T>
         return IgnoreProperty(propertyName);
     }
 
-    public SqlTableInforBuilder<T> ReadOnlyProperty(string name)
+    public SqlTableInforBuilder<T> ConfigureProperty(string propertyName, string columnName = null, string columnType = null, bool? readOnly = null)
     {
-        if (_insertablePropertyNames != null && _insertablePropertyNames.Contains(name))
+        if (columnName != null)
         {
-            _insertablePropertyNames.Remove(name);
+            _columnNameMappings[propertyName] = columnName;
+        }
+
+        if (columnType != null)
+        {
+            _columnTypeMappings[propertyName] = columnType;
+        }
+
+        if (readOnly == true && _insertablePropertyNames != null && _insertablePropertyNames.Contains(propertyName))
+        {
+            _insertablePropertyNames.Remove(propertyName);
         }
 
         return this;
     }
 
-    public SqlTableInforBuilder<T> ReadOnlyProperty(Expression<Func<T, object>> nameSelector)
+    public SqlTableInforBuilder<T> ConfigureProperty(Expression<Func<T, object>> nameSelector, string columnName = null, string columnType = null, bool? readOnly = null)
     {
         var propertyName = nameSelector.Body.GetMemberName();
 
-        return ReadOnlyProperty(propertyName);
+        return ConfigureProperty(propertyName, columnName, columnType, readOnly);
     }
 
-    public SqlTableInforBuilder<T> ConfigureProperty(string propertyName, string columnName = null, string columnType = null)
+    public SqlTableInforBuilder<T> ConfigurePropertyConversion<TProperty, TProvider>(Expression<Func<T, TProperty>> nameSelector, Func<TProperty, TProvider?> convertToProvider, Func<TProvider?, TProperty?> convertFromProvider)
     {
+        var propertyName = nameSelector.Body.GetMemberName();
+        _valueConverters[propertyName] = new ValueConverter
+        {
+            ProviderClrType = typeof(TProvider),
+            ConvertToProvider = obj => convertToProvider((TProperty?)obj),
+            ConvertFromProvider = obj => convertFromProvider((TProvider?)obj),
+        };
+        return this;
+    }
+
+    public SqlTableInforBuilder<T> ConfigureDiscriminator(string propertyName, object value, string columnName = null, string columnType = null)
+    {
+        _discriminator = new Discriminator
+        {
+            PropertyName = propertyName,
+            PropertyType = value.GetType(),
+            PropertyValue = value,
+            ColumnName = columnName,
+            ColumnType = columnType,
+        };
+
         if (columnName != null)
         {
             _columnNameMappings[propertyName] = columnName;
@@ -136,23 +169,10 @@ public class SqlTableInforBuilder<T>
         return this;
     }
 
-    public SqlTableInforBuilder<T> ConfigureProperty(Expression<Func<T, object>> nameSelector, string columnName = null, string columnType = null)
+    public SqlTableInforBuilder<T> ConfigureDiscriminator<TProperty>(Expression<Func<T, TProperty>> nameSelector, TProperty value, string columnName = null, string columnType = null)
     {
         var propertyName = nameSelector.Body.GetMemberName();
-
-        return ConfigureProperty(propertyName, columnName, columnType);
-    }
-
-    public SqlTableInforBuilder<T> ConfigurePropertyConversion<TProperty, TProvider>(Expression<Func<T, TProperty>> nameSelector, Func<TProperty, TProvider?> convertToProvider, Func<TProvider?, TProperty?> convertFromProvider)
-    {
-        var propertyName = nameSelector.Body.GetMemberName();
-        _valueConverters[propertyName] = new ValueConverter
-        {
-            ProviderClrType = typeof(TProvider),
-            ConvertToProvider = obj => convertToProvider((TProperty?)obj),
-            ConvertFromProvider = obj => convertFromProvider((TProvider?)obj),
-        };
-        return this;
+        return ConfigureDiscriminator(propertyName, value, columnName, columnType);
     }
 
     public SqlTableInfor<T> Build()
@@ -172,6 +192,7 @@ public class SqlTableInforBuilder<T>
             ValueConverters = _valueConverters,
             OutputId = _outputId,
             ParameterConverter = _parameterConverter,
+            Discriminator = _discriminator
         };
         return tableInfor;
     }
