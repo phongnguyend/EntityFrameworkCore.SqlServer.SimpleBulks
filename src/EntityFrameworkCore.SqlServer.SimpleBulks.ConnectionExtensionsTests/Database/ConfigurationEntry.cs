@@ -21,3 +21,7 @@ public class ConfigurationEntry
 
     public bool IsSensitive { get; set; }
 }
+
+public class ExtendedConfigurationEntry : ConfigurationEntry
+{
+}

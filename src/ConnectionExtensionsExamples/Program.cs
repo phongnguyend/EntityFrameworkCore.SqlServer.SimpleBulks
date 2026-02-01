@@ -23,7 +23,7 @@ TableMapper.Configure<ConfigurationEntry>(config =>
     .ConfigureProperty(x => x.Id, columnName: "Id1")
     .ConfigureProperty(x => x.Key, columnName: "Key1")
     .IgnoreProperty(x => x.TestNotMapped)
-    .ReadOnlyProperty(x => x.RowVersion)
+    .ConfigureProperty(x => x.RowVersion, readOnly: true)
     .ConfigureProperty(x => x.SeasonAsString, columnType: "nvarchar(max)")
     .ConfigurePropertyConversion(x => x.SeasonAsString, y => y.ToString(), z => (Season)Enum.Parse(typeof(Season), z))
     .ParameterConverter((data, propertyName) =>
