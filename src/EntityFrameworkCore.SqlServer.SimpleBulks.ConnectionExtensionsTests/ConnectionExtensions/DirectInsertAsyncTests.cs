@@ -23,7 +23,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Spring
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -33,7 +34,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Spring
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         var options = new BulkInsertOptions
@@ -42,11 +44,11 @@ public class DirectInsertAsyncTests : BaseTest
         };
 
         await connectionContext.DirectInsertAsync(row,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: options);
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: options);
 
 
@@ -62,6 +64,7 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(row.Column2, dbRows[0].Column2);
         Assert.Equal(row.Column3, dbRows[0].Column3);
         Assert.Equal(row.Season, dbRows[0].Season);
+        Assert.Equal(row.SeasonAsString, dbRows[0].SeasonAsString);
 
         Assert.Equal(compositeKeyRow.Id1, dbCompositeKeyRows[0].Id1);
         Assert.Equal(compositeKeyRow.Id2, dbCompositeKeyRows[0].Id2);
@@ -69,6 +72,7 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(compositeKeyRow.Column2, dbCompositeKeyRows[0].Column2);
         Assert.Equal(compositeKeyRow.Column3, dbCompositeKeyRows[0].Column3);
         Assert.Equal(compositeKeyRow.Season, dbCompositeKeyRows[0].Season);
+        Assert.Equal(compositeKeyRow.SeasonAsString, dbCompositeKeyRows[0].SeasonAsString);
     }
 
     [Fact]
@@ -85,7 +89,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Summer
+            Season = Season.Summer,
+            SeasonAsString = Season.Summer
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -95,18 +100,19 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Summer
+            Season = Season.Summer,
+            SeasonAsString = Season.Summer
         };
 
         await connectionContext.DirectInsertAsync(row,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: new BulkInsertOptions()
                 {
                     LogTo = LogTo
                 });
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: new BulkInsertOptions()
                 {
                     LogTo = LogTo
@@ -126,6 +132,7 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(row.Column2, dbRows[0].Column2);
         Assert.Equal(row.Column3, dbRows[0].Column3);
         Assert.Equal(row.Season, dbRows[0].Season);
+        Assert.Equal(row.SeasonAsString, dbRows[0].SeasonAsString);
 
         Assert.Equal(compositeKeyRow.Id1, dbCompositeKeyRows[0].Id1);
         Assert.Equal(compositeKeyRow.Id2, dbCompositeKeyRows[0].Id2);
@@ -133,6 +140,7 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(compositeKeyRow.Column2, dbCompositeKeyRows[0].Column2);
         Assert.Equal(compositeKeyRow.Column3, dbCompositeKeyRows[0].Column3);
         Assert.Equal(compositeKeyRow.Season, dbCompositeKeyRows[0].Season);
+        Assert.Equal(compositeKeyRow.SeasonAsString, dbCompositeKeyRows[0].SeasonAsString);
     }
 
     [Fact]
@@ -149,7 +157,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Autumn
+            Season = Season.Autumn,
+            SeasonAsString = Season.Autumn
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -159,18 +168,19 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Autumn
+            Season = Season.Autumn,
+            SeasonAsString = Season.Autumn
         };
 
         await connectionContext.DirectInsertAsync(row,
-                row => new { row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: new BulkInsertOptions()
                 {
                     LogTo = LogTo
                 });
 
         await connectionContext.DirectInsertAsync(compositeKeyRow,
-                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season },
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3, row.Season, row.SeasonAsString },
                 options: new BulkInsertOptions()
                 {
                     LogTo = LogTo
@@ -257,7 +267,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Spring
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         var compositeKeyRow = new CompositeKeyRow<int, int>
@@ -267,7 +278,8 @@ public class DirectInsertAsyncTests : BaseTest
             Column1 = 1,
             Column2 = "" + 1,
             Column3 = DateTime.Now,
-            Season = Season.Spring
+            Season = Season.Spring,
+            SeasonAsString = Season.Spring
         };
 
         var options = new BulkInsertOptions
@@ -281,6 +293,7 @@ public class DirectInsertAsyncTests : BaseTest
             "Column2",
             "Column3",
             "Season",
+            "SeasonAsString",
             ],
             options: options);
 
@@ -291,7 +304,8 @@ public class DirectInsertAsyncTests : BaseTest
             "Column1",
             "Column2",
             "Column3",
-            "Season"
+            "Season",
+            "SeasonAsString"
             ],
             options: options);
 
@@ -308,6 +322,7 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(row.Column2, dbRows[0].Column2);
         Assert.Equal(row.Column3, dbRows[0].Column3);
         Assert.Equal(row.Season, dbRows[0].Season);
+        Assert.Equal(row.SeasonAsString, dbRows[0].SeasonAsString);
 
         Assert.Equal(compositeKeyRow.Id1, dbCompositeKeyRows[0].Id1);
         Assert.Equal(compositeKeyRow.Id2, dbCompositeKeyRows[0].Id2);
@@ -315,5 +330,6 @@ public class DirectInsertAsyncTests : BaseTest
         Assert.Equal(compositeKeyRow.Column2, dbCompositeKeyRows[0].Column2);
         Assert.Equal(compositeKeyRow.Column3, dbCompositeKeyRows[0].Column3);
         Assert.Equal(compositeKeyRow.Season, dbCompositeKeyRows[0].Season);
+        Assert.Equal(compositeKeyRow.SeasonAsString, dbCompositeKeyRows[0].SeasonAsString);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using EntityFrameworkCore.SqlServer.SimpleBulks.Extensions;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,6 +141,18 @@ public class SqlTableInforBuilder<T>
         var propertyName = nameSelector.Body.GetMemberName();
 
         return ConfigureProperty(propertyName, columnName, columnType);
+    }
+
+    public SqlTableInforBuilder<T> ConfigurePropertyConversion<TProperty, TProvider>(Expression<Func<T, TProperty>> nameSelector, Func<TProperty, TProvider?> convertToProvider, Func<TProvider?, TProperty?> convertFromProvider)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+        _valueConverters[propertyName] = new ValueConverter
+        {
+            ProviderClrType = typeof(TProvider),
+            ConvertToProvider = obj => convertToProvider((TProperty?)obj),
+            ConvertFromProvider = obj => convertFromProvider((TProvider?)obj),
+        };
+        return this;
     }
 
     public SqlTableInfor<T> Build()
