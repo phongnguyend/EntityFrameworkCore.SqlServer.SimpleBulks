@@ -10,6 +10,7 @@
     <File Path=".editorconfig" />
     <File Path="Directory.Build.props" />
     <File Path="global.json" />
+    <File Path="notes.txt" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="EntityFrameworkCore.SqlServer.SimpleBulks/EntityFrameworkCore.SqlServer.SimpleBulks.csproj" />
