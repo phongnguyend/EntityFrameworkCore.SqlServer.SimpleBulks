@@ -24,7 +24,25 @@ public class BulkUpdateAsyncTests : BaseTest
                 Column2 = "" + i,
                 Column3 = DateTime.Now,
                 Season = Season.Autumn,
-                SeasonAsString = Season.Autumn
+                SeasonAsString = Season.Autumn,
+                ComplexShippingAddress = new ComplexTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new ComplexTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                },
+                OwnedShippingAddress = new OwnedTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new OwnedTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                }
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -62,6 +80,24 @@ public class BulkUpdateAsyncTests : BaseTest
         {
             row.Column2 = "abc";
             row.Column3 = DateTime.Now;
+            row.ComplexShippingAddress = new ComplexTypeAddress
+            {
+                Street = "Updated Street",
+                Location = new ComplexTypeLocation
+                {
+                    Lat = 50.0,
+                    Lng = -80.0
+                }
+            };
+            row.OwnedShippingAddress = new OwnedTypeAddress
+            {
+                Street = "Updated Street",
+                Location = new OwnedTypeLocation
+                {
+                    Lat = 50.0,
+                    Lng = -80.0
+                }
+            };
         }
 
         foreach (var row in compositeKeyRows)
@@ -80,7 +116,17 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    row => new { row.Column3, row.Column2 },
+                    row => new
+                    {
+                        row.Column3,
+                        row.Column2,
+                        row.ComplexShippingAddress.Street,
+                        row.ComplexShippingAddress.Location.Lat,
+                        row.ComplexShippingAddress.Location.Lng,
+                        a = row.OwnedShippingAddress.Street,
+                        b = row.OwnedShippingAddress.Location.Lat,
+                        c = row.OwnedShippingAddress.Location.Lng
+                    },
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
@@ -90,7 +136,17 @@ public class BulkUpdateAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    row => new { row.Column3, row.Column2 },
+                    row => new
+                    {
+                        row.Column3,
+                        row.Column2,
+                        row.ComplexShippingAddress.Street,
+                        row.ComplexShippingAddress.Location.Lat,
+                        row.ComplexShippingAddress.Location.Lng,
+                        a = row.OwnedShippingAddress.Street,
+                        b = row.OwnedShippingAddress.Location.Lat,
+                        c = row.OwnedShippingAddress.Location.Lng
+                    },
                     _singleKeyRowTableInfor,
                     options: updateOptions);
 
@@ -105,7 +161,16 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    ["Column3", "Column2"],
+                    [
+                        "Column3",
+                        "Column2",
+                        "ComplexShippingAddress.Street",
+                        "ComplexShippingAddress.Location.Lat",
+                        "ComplexShippingAddress.Location.Lng",
+                        "OwnedShippingAddress.Street",
+                        "OwnedShippingAddress.Location.Lat",
+                        "OwnedShippingAddress.Location.Lng"
+                    ],
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows,
@@ -115,7 +180,16 @@ public class BulkUpdateAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkUpdateAsync(rows,
-                    ["Column3", "Column2"],
+                    [
+                        "Column3",
+                        "Column2",
+                        "ComplexShippingAddress.Street",
+                        "ComplexShippingAddress.Location.Lat",
+                        "ComplexShippingAddress.Location.Lng",
+                        "OwnedShippingAddress.Street",
+                        "OwnedShippingAddress.Location.Lat",
+                        "OwnedShippingAddress.Location.Lng"
+                    ],
                     _singleKeyRowTableInfor,
                     options: updateOptions);
 
@@ -136,6 +210,12 @@ public class BulkUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
             Assert.Equal(rows[i].Column2, dbRows[i].Column2);
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -161,6 +241,24 @@ public class BulkUpdateAsyncTests : BaseTest
         {
             row.Column2 = "abc";
             row.Column3 = DateTime.Now;
+            row.ComplexShippingAddress = new ComplexTypeAddress
+            {
+                Street = "Updated Street",
+                Location = new ComplexTypeLocation
+                {
+                    Lat = 50.0,
+                    Lng = -80.0
+                }
+            };
+            row.OwnedShippingAddress = new OwnedTypeAddress
+            {
+                Street = "Updated Street",
+                Location = new OwnedTypeLocation
+                {
+                    Lat = 50.0,
+                    Lng = -80.0
+                }
+            };
         }
 
         foreach (var row in compositeKeyRows)
@@ -179,7 +277,17 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows, x => x.Id,
-                    row => new { row.Column3, row.Column2 },
+                    row => new
+                    {
+                        row.Column3,
+                        row.Column2,
+                        row.ComplexShippingAddress.Street,
+                        row.ComplexShippingAddress.Location.Lat,
+                        row.ComplexShippingAddress.Location.Lng,
+                        a = row.OwnedShippingAddress.Street,
+                        b = row.OwnedShippingAddress.Location.Lat,
+                        c = row.OwnedShippingAddress.Location.Lng
+                    },
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows, x => new { x.Id1, x.Id2 },
@@ -189,7 +297,17 @@ public class BulkUpdateAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkUpdateAsync(rows, x => x.Id,
-                    row => new { row.Column3, row.Column2 },
+                    row => new
+                    {
+                        row.Column3,
+                        row.Column2,
+                        row.ComplexShippingAddress.Street,
+                        row.ComplexShippingAddress.Location.Lat,
+                        row.ComplexShippingAddress.Location.Lng,
+                        a = row.OwnedShippingAddress.Street,
+                        b = row.OwnedShippingAddress.Location.Lat,
+                        c = row.OwnedShippingAddress.Location.Lng
+                    },
                     _singleKeyRowTableInfor,
                     options: updateOptions);
 
@@ -204,7 +322,16 @@ public class BulkUpdateAsyncTests : BaseTest
             if (omitTableName)
             {
                 await connectionContext.BulkUpdateAsync(rows, ["Id"],
-                    ["Column3", "Column2"],
+                    [
+                        "Column3",
+                        "Column2",
+                        "ComplexShippingAddress.Street",
+                        "ComplexShippingAddress.Location.Lat",
+                        "ComplexShippingAddress.Location.Lng",
+                        "OwnedShippingAddress.Street",
+                        "OwnedShippingAddress.Location.Lat",
+                        "OwnedShippingAddress.Location.Lng"
+                    ],
                     options: updateOptions);
 
                 await connectionContext.BulkUpdateAsync(compositeKeyRows, ["Id1", "Id2"],
@@ -214,7 +341,16 @@ public class BulkUpdateAsyncTests : BaseTest
             else
             {
                 await connectionContext.BulkUpdateAsync(rows, ["Id"],
-                    ["Column3", "Column2"],
+                    [
+                        "Column3",
+                        "Column2",
+                        "ComplexShippingAddress.Street",
+                        "ComplexShippingAddress.Location.Lat",
+                        "ComplexShippingAddress.Location.Lng",
+                        "OwnedShippingAddress.Street",
+                        "OwnedShippingAddress.Location.Lat",
+                        "OwnedShippingAddress.Location.Lng"
+                    ],
                     _singleKeyRowTableInfor,
                     options: updateOptions);
 
@@ -235,6 +371,12 @@ public class BulkUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column1, dbRows[i].Column1);
             Assert.Equal(rows[i].Column2, dbRows[i].Column2);
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);

@@ -29,7 +29,25 @@ public class DirectUpdateAsyncTests : BaseTest
                 Column2 = "" + i,
                 Column3 = DateTime.Now,
                 Season = Season.Winter,
-                SeasonAsString = Season.Winter
+                SeasonAsString = Season.Winter,
+                ComplexShippingAddress = new ComplexTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new ComplexTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                },
+                OwnedShippingAddress = new OwnedTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new OwnedTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                }
             });
 
             compositeKeyRows.Add(new CompositeKeyRow<int, int>
@@ -72,6 +90,24 @@ public class DirectUpdateAsyncTests : BaseTest
         row.Column3 = DateTime.Now;
         row.Season = Season.Spring;
         row.SeasonAsString = Season.Spring;
+        row.ComplexShippingAddress = new ComplexTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new ComplexTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
+        row.OwnedShippingAddress = new OwnedTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new OwnedTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
@@ -85,7 +121,19 @@ public class DirectUpdateAsyncTests : BaseTest
         };
 
         var updateResult1 = await connectionContext.DirectUpdateAsync(row,
-            row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
+            row => new
+            {
+                row.Column3,
+                row.Column2,
+                row.Season,
+                row.SeasonAsString,
+                row.ComplexShippingAddress.Street,
+                row.ComplexShippingAddress.Location.Lat,
+                row.ComplexShippingAddress.Location.Lng,
+                a = row.OwnedShippingAddress.Street,
+                b = row.OwnedShippingAddress.Location.Lat,
+                c = row.OwnedShippingAddress.Location.Lng
+            },
             options: options);
 
         var updateResult2 = await connectionContext.DirectUpdateAsync(compositeKeyRow,
@@ -109,6 +157,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
             Assert.Equal(rows[i].Season, dbRows[i].Season);
             Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -141,6 +195,24 @@ public class DirectUpdateAsyncTests : BaseTest
         row.Column3 = DateTime.Now;
         row.Season = Season.Summer;
         row.SeasonAsString = Season.Summer;
+        row.ComplexShippingAddress = new ComplexTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new ComplexTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
+        row.OwnedShippingAddress = new OwnedTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new OwnedTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
@@ -154,7 +226,18 @@ public class DirectUpdateAsyncTests : BaseTest
         };
 
         var updateResult1 = await connectionContext.DirectUpdateAsync(row,
-            ["Column3", "Column2", "Season", "SeasonAsString"],
+            [
+                "Column3",
+                "Column2",
+                "Season",
+                "SeasonAsString",
+                "ComplexShippingAddress.Street",
+                "ComplexShippingAddress.Location.Lat",
+                "ComplexShippingAddress.Location.Lng",
+                "OwnedShippingAddress.Street",
+                "OwnedShippingAddress.Location.Lat",
+                "OwnedShippingAddress.Location.Lng"
+            ],
             options: options);
 
         var updateResult2 = await connectionContext.DirectUpdateAsync(compositeKeyRow,
@@ -178,6 +261,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
             Assert.Equal(rows[i].Season, dbRows[i].Season);
             Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -210,6 +299,24 @@ public class DirectUpdateAsyncTests : BaseTest
         row.Column3 = DateTime.Now;
         row.Season = Season.Spring;
         row.SeasonAsString = Season.Spring;
+        row.ComplexShippingAddress = new ComplexTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new ComplexTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
+        row.OwnedShippingAddress = new OwnedTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new OwnedTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
@@ -223,7 +330,19 @@ public class DirectUpdateAsyncTests : BaseTest
         };
 
         var updateResult1 = await connectionContext.DirectUpdateAsync(row, x => x.Id,
-            row => new { row.Column3, row.Column2, row.Season, row.SeasonAsString },
+            row => new
+            {
+                row.Column3,
+                row.Column2,
+                row.Season,
+                row.SeasonAsString,
+                row.ComplexShippingAddress.Street,
+                row.ComplexShippingAddress.Location.Lat,
+                row.ComplexShippingAddress.Location.Lng,
+                a = row.OwnedShippingAddress.Street,
+                b = row.OwnedShippingAddress.Location.Lat,
+                c = row.OwnedShippingAddress.Location.Lng
+            },
             options: options);
 
         var updateResult2 = await connectionContext.DirectUpdateAsync(compositeKeyRow, x => new { x.Id1, x.Id2 },
@@ -247,6 +366,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
             Assert.Equal(rows[i].Season, dbRows[i].Season);
             Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -279,6 +404,24 @@ public class DirectUpdateAsyncTests : BaseTest
         row.Column3 = DateTime.Now;
         row.Season = Season.Summer;
         row.SeasonAsString = Season.Summer;
+        row.ComplexShippingAddress = new ComplexTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new ComplexTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
+        row.OwnedShippingAddress = new OwnedTypeAddress
+        {
+            Street = "Updated Street",
+            Location = new OwnedTypeLocation
+            {
+                Lat = 50.0,
+                Lng = -80.0
+            }
+        };
 
         var compositeKeyRow = compositeKeyRows.Skip(index).First();
         compositeKeyRow.Column2 = "abc";
@@ -292,7 +435,18 @@ public class DirectUpdateAsyncTests : BaseTest
         };
 
         var updateResult1 = await connectionContext.DirectUpdateAsync(row, ["Id"],
-            ["Column3", "Column2", "Season", "SeasonAsString"],
+            [
+                "Column3",
+                "Column2",
+                "Season",
+                "SeasonAsString",
+                "ComplexShippingAddress.Street",
+                "ComplexShippingAddress.Location.Lat",
+                "ComplexShippingAddress.Location.Lng",
+                "OwnedShippingAddress.Street",
+                "OwnedShippingAddress.Location.Lat",
+                "OwnedShippingAddress.Location.Lng"
+            ],
             options: options);
 
         var updateResult2 = await connectionContext.DirectUpdateAsync(compositeKeyRow, ["Id1", "Id2"],
@@ -316,6 +470,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].Column3, dbRows[i].Column3);
             Assert.Equal(rows[i].Season, dbRows[i].Season);
             Assert.Equal(rows[i].SeasonAsString, dbRows[i].SeasonAsString);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Street, dbRows[i].ComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lat, dbRows[i].ComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].ComplexShippingAddress?.Location?.Lng, dbRows[i].ComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
