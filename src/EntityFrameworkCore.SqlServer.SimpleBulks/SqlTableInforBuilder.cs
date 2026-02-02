@@ -133,6 +133,36 @@ public class SqlTableInforBuilder<T>
         return ConfigureProperty(propertyName, columnName, columnType, readOnly);
     }
 
+    public SqlTableInforBuilder<T> ConfigureComplexProperty(string propertyName)
+    {
+        IgnoreProperty(propertyName);
+
+        var prefix = propertyName + ".";
+
+        var properties = PropertiesCache<T>.GetProperty(propertyName)?.PropertyType.GetProperties();
+        var propertyNames = properties?.Select(p => prefix + p.Name).ToList();
+
+        foreach (var property in propertyNames)
+        {
+            if (_columnNameMappings.ContainsKey(property))
+                continue;
+
+            _columnNameMappings[property] = property.Replace(".", "_");
+        }
+
+        _propertyNames.AddRange(propertyNames);
+        _insertablePropertyNames.AddRange(propertyNames);
+
+        return this;
+    }
+
+    public SqlTableInforBuilder<T> ConfigureComplexProperty(Expression<Func<T, object>> nameSelector)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+
+        return ConfigureComplexProperty(propertyName);
+    }
+
     public SqlTableInforBuilder<T> ConfigurePropertyConversion<TProperty, TProvider>(Expression<Func<T, TProperty>> nameSelector, Func<TProperty, TProvider?> convertToProvider, Func<TProvider?, TProperty?> convertFromProvider)
     {
         var propertyName = nameSelector.Body.GetMemberName();

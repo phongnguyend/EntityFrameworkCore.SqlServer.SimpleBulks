@@ -35,6 +35,10 @@ public class SingleKeyRow<TId>
     public float? NullableFloat { get; set; }
 
     public string? NullableString { get; set; }
+
+    public ComplexTypeAddress ComplexShippingAddress { get; set; }
+
+    public OwnedTypeAddress OwnedShippingAddress { get; set; }
 }
 
 public class ExtendedSingleKeyRow<TId> : SingleKeyRow<TId>
