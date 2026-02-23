@@ -283,14 +283,19 @@ public class PropertiesCache<T>
 
     public static object GetPropertyValue(string propName, T item, IReadOnlyDictionary<string, ValueConverter> valueConverters)
     {
-        var value = GetPropertyValueOptimized(propName, item);
-
         if (valueConverters != null && valueConverters.TryGetValue(propName, out var converter))
         {
+            if (converter is JsonValueConverter jsonValueConverter)
+            {
+                return JsonPropertyWriter.Write(item, jsonValueConverter.FlattenedJsonProperties);
+            }
+
+            var value = GetPropertyValueOptimized(propName, item);
+
             return converter.ConvertToProvider(value);
         }
 
-        return value;
+        return GetPropertyValueOptimized(propName, item);
     }
 
     public static void SetPropertyValueReflection(string name, T item, object value)

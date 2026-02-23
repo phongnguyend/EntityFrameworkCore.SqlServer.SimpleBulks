@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
+namespace DbContextExtensionsExamples.Entities;
 
 public class ComplexTypeOrder
 {
     public int Id { get; set; }
 
+    [Required]
     public ComplexTypeAddress ShippingAddress { get; set; }
 }
 
@@ -29,5 +31,6 @@ public class JsonComplexTypeOrder
 {
     public int Id { get; set; }
 
+    [Required]
     public ComplexTypeAddress ShippingAddress { get; set; }
 }

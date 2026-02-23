@@ -21,6 +21,12 @@ public class TestDbContext : DbContext
 
     public DbSet<ComplexOwnedTypeOrder> ComplexOwnedTypeOrders { get; set; }
 
+    public DbSet<JsonComplexTypeOrder> JsonComplexTypeOrders { get; set; }
+
+    public DbSet<JsonOwnedTypeOrder> JsonOwnedTypeOrders { get; set; }
+
+    public DbSet<JsonComplexOwnedTypeOrder> JsonComplexOwnedTypeOrders { get; set; }
+
     public DbSet<Blog> Blogs { get; set; }
 
     public DbSet<RssBlog> RssBlogs { get; set; }
@@ -41,7 +47,7 @@ public class TestDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        if(!string.IsNullOrEmpty(_schema))
+        if (!string.IsNullOrEmpty(_schema))
         {
             modelBuilder.HasDefaultSchema(_schema);
         }
@@ -58,6 +64,46 @@ public class TestDbContext : DbContext
         modelBuilder.Entity<Customer>().Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
 
         modelBuilder.Entity<Contact>().Property(x => x.Id).HasDefaultValueSql("newsequentialid()");
+
+        modelBuilder.Entity<JsonComplexTypeOrder>().ComplexProperty(x => x.ShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.ComplexProperty(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonOwnedTypeOrder>().OwnsOne(x => x.ShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.OwnsOne(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonComplexOwnedTypeOrder>().ComplexProperty(x => x.ComplexShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.ComplexProperty(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonComplexOwnedTypeOrder>().OwnsOne(x => x.OwnedShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.OwnsOne(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
 
         base.OnModelCreating(modelBuilder);
     }

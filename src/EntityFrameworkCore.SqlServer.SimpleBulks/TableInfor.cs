@@ -32,6 +32,10 @@ public abstract class TableInfor
 
     public Discriminator Discriminator { get; init; }
 
+    public IReadOnlyDictionary<string, IReadOnlyList<JsonProperty>> JsonProperties { get; init; }
+
+    public IReadOnlyDictionary<string, IReadOnlyDictionary<string, JsonProperty>> FlattenedJsonProperties { get; init; }
+    
     public string GetDbColumnName(string propertyName)
     {
         if (ColumnNameMappings == null)

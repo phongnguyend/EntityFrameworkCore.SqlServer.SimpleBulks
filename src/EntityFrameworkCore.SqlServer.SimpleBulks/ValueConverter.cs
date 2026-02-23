@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
 public class ValueConverter
 {
+    public string PropertyName { get; init; }
+
     public Type ProviderClrType { get; init; }
 
     public Func<object?, object?> ConvertToProvider { get; init; }
@@ -13,11 +16,11 @@ public class ValueConverter
     public ValueConverter()
     {
     }
+}
 
-    public ValueConverter(Type providerClrType, Func<object?, object?> convertToProvider, Func<object?, object?> convertFromProvider)
-    {
-        ProviderClrType = providerClrType;
-        ConvertToProvider = convertToProvider;
-        ConvertFromProvider = convertFromProvider;
-    }
+public class JsonValueConverter : ValueConverter
+{
+    public IReadOnlyList<JsonProperty>? JsonProperties { get; init; }
+
+    public IReadOnlyDictionary<string, JsonProperty> FlattenedJsonProperties { get; init; }
 }

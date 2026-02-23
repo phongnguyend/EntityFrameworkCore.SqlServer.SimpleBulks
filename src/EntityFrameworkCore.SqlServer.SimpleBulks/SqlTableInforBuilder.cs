@@ -168,6 +168,7 @@ public class SqlTableInforBuilder<T>
         var propertyName = nameSelector.Body.GetMemberName();
         _valueConverters[propertyName] = new ValueConverter
         {
+            PropertyName = propertyName,
             ProviderClrType = typeof(TProvider),
             ConvertToProvider = obj => convertToProvider((TProperty?)obj),
             ConvertFromProvider = obj => convertFromProvider((TProvider?)obj),
