@@ -60,10 +60,8 @@ public class BulkDeleteAsyncTests : BaseTest
         _context.BulkInsert(compositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task BulkDelete_PrimaryKeys(bool omitTableName)
+    [Fact]
+    public async Task BulkDelete_PrimaryKeys()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -75,20 +73,8 @@ public class BulkDeleteAsyncTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            await connectionContext.BulkDeleteAsync(rows, options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows, options: options);
-        }
-        else
-        {
-            await connectionContext.BulkDeleteAsync(rows,
-                _singleKeyRowTableInfor,
-                options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows,
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        await connectionContext.BulkDeleteAsync(rows, options: options);
+        await connectionContext.BulkDeleteAsync(compositeKeyRows, options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
@@ -98,10 +84,8 @@ public class BulkDeleteAsyncTests : BaseTest
         Assert.Single(dbCompositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task BulkDelete_SpecifiedKeys(bool omitTableName)
+    [Fact]
+    public async Task BulkDelete_SpecifiedKeys()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -113,20 +97,8 @@ public class BulkDeleteAsyncTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            await connectionContext.BulkDeleteAsync(rows, x => x.Id, options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows, x => new { x.Id1, x.Id2 }, options: options);
-        }
-        else
-        {
-            await connectionContext.BulkDeleteAsync(rows, x => x.Id,
-                _singleKeyRowTableInfor,
-                options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows, x => new { x.Id1, x.Id2 },
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        await connectionContext.BulkDeleteAsync(rows, x => x.Id, options: options);
+        await connectionContext.BulkDeleteAsync(compositeKeyRows, x => new { x.Id1, x.Id2 }, options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
@@ -136,10 +108,8 @@ public class BulkDeleteAsyncTests : BaseTest
         Assert.Single(dbCompositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task BulkDelete_SpecifiedKeys_DynamicString(bool omitTableName)
+    [Fact]
+    public async Task BulkDelete_SpecifiedKeys_DynamicString()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -151,20 +121,8 @@ public class BulkDeleteAsyncTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            await connectionContext.BulkDeleteAsync(rows, ["Id"], options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"], options: options);
-        }
-        else
-        {
-            await connectionContext.BulkDeleteAsync(rows, ["Id"],
-                _singleKeyRowTableInfor,
-                options: options);
-            await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"],
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        await connectionContext.BulkDeleteAsync(rows, ["Id"], options: options);
+        await connectionContext.BulkDeleteAsync(compositeKeyRows, ["Id1", "Id2"], options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();

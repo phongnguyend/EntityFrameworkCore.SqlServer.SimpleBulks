@@ -13,7 +13,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNamesSelector)
-            .WithMappingContext(MappingContextCache.GetMappingContext<T>())
+            .WithMappingContext(MappingContextCache.GetMappingContext<T>(options))
             .WithTempTableOptions(options)
             .ExecuteAsync(data, cancellationToken);
     }
@@ -22,7 +22,7 @@ public static class ConnectionContextAsyncExtensions
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNames)
-            .WithMappingContext(MappingContextCache.GetMappingContext<T>())
+            .WithMappingContext(MappingContextCache.GetMappingContext<T>(options))
             .WithTempTableOptions(options)
             .ExecuteAsync(data, cancellationToken);
     }

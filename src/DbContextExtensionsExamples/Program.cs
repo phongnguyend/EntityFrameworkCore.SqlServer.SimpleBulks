@@ -58,7 +58,16 @@ using (var dbct = new DemoDbContext())
         x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
         new BulkUpdateOptions()
         {
-            LogTo = Console.WriteLine
+            LogTo = Console.WriteLine,
+            ConfigureSetStatement = ctx =>
+            {
+                if (ctx.PropertyName == "SeasonAsInt")
+                {
+                    return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+                }
+
+                return null;
+            }
         });
 
     Console.WriteLine($"Updated: {updateResult.AffectedRows} row(s)");
@@ -74,11 +83,20 @@ using (var dbct = new DemoDbContext())
 
     var mergeResult = await dbct.BulkMergeAsync(configurationEntries,
         x => x.Id,
-        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+        x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt },
         x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime, x.SeasonAsInt, x.SeasonAsString },
         new BulkMergeOptions()
         {
-            LogTo = Console.WriteLine
+            LogTo = Console.WriteLine,
+            ConfigureSetStatement = ctx =>
+            {
+                if (ctx.PropertyName == "SeasonAsInt")
+                {
+                    return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+                }
+
+                return null;
+            }
         });
 
     Console.WriteLine($"Updated: {mergeResult.UpdatedRows} row(s)");
@@ -110,7 +128,16 @@ using (var dbct = new DemoDbContext())
         x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
         new BulkUpdateOptions()
         {
-            LogTo = Console.WriteLine
+            LogTo = Console.WriteLine,
+            ConfigureSetStatement = ctx =>
+            {
+                if (ctx.PropertyName == "SeasonAsInt")
+                {
+                    return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+                }
+
+                return null;
+            }
         });
 
     await dbct.DirectDeleteAsync(configurationEntry,

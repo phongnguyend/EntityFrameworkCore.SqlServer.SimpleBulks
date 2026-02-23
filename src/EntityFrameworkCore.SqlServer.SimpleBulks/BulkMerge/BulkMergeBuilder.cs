@@ -127,7 +127,7 @@ public class BulkMergeBuilder<T>
 
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var propertyNames = _updateColumnNames.Select(RemoveOperator).ToList();
+        var propertyNames = _updateColumnNames.ToList();
         propertyNames.AddRange(_mergeKeys);
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
@@ -253,7 +253,7 @@ public class BulkMergeBuilder<T>
 
         bool returnDbGeneratedId = _options.ReturnDbGeneratedId && !string.IsNullOrEmpty(_outputIdColumn) && _insertColumnNames.Any();
 
-        var propertyNames = _updateColumnNames.Select(RemoveOperator).ToList();
+        var propertyNames = _updateColumnNames.ToList();
         propertyNames.AddRange(_mergeKeys);
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
@@ -346,21 +346,7 @@ public class BulkMergeBuilder<T>
 
     private string CreateSetStatement(string prop, string leftTable, string rightTable)
     {
-        string sqlOperator = "=";
-        string sqlProp = RemoveOperator(prop);
-
-        if (prop.EndsWith("+="))
-        {
-            sqlOperator = "+=";
-        }
-
-        return $"{leftTable}.[{_table.GetDbColumnName(sqlProp)}] {sqlOperator} {rightTable}.[{sqlProp}]";
-    }
-
-    private static string RemoveOperator(string prop)
-    {
-        var rs = prop.Replace("+=", "");
-        return rs;
+        return _table.CreateSetStatement(prop, leftTable, rightTable, _options.ConfigureSetStatement);
     }
 
     private void Log(string message)
@@ -397,7 +383,7 @@ public class BulkMergeBuilder<T>
 
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var propertyNames = _updateColumnNames.Select(RemoveOperator).ToList();
+        var propertyNames = _updateColumnNames.ToList();
         propertyNames.AddRange(_mergeKeys);
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
@@ -523,7 +509,7 @@ public class BulkMergeBuilder<T>
 
         bool returnDbGeneratedId = _options.ReturnDbGeneratedId && !string.IsNullOrEmpty(_outputIdColumn) && _insertColumnNames.Any();
 
-        var propertyNames = _updateColumnNames.Select(RemoveOperator).ToList();
+        var propertyNames = _updateColumnNames.ToList();
         propertyNames.AddRange(_mergeKeys);
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();

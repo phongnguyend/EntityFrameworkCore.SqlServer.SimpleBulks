@@ -8,13 +8,13 @@ using System.Linq;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
-public abstract class TableInfor<T>
+public abstract class TableInfor
 {
-    public string Schema { get; private set; }
+    public string Schema { get; protected set; }
 
-    public string Name { get; private set; }
+    public string Name { get; protected set; }
 
-    public string SchemaQualifiedTableName { get; private set; }
+    public string SchemaQualifiedTableName { get; protected set; }
 
     public IReadOnlyList<string> PrimaryKeys { get; init; }
 
@@ -32,6 +32,79 @@ public abstract class TableInfor<T>
 
     public Discriminator Discriminator { get; init; }
 
+    public string GetDbColumnName(string propertyName)
+    {
+        if (ColumnNameMappings == null)
+        {
+            return propertyName;
+        }
+
+        return ColumnNameMappings.TryGetValue(propertyName, out string value) ? value : propertyName;
+    }
+
+    public string CreateParameterName(string propertyName)
+    {
+        if (propertyName.Contains('.'))
+        {
+            return $"@{propertyName.Replace(".", "_")}";
+        }
+
+        return $"@{propertyName}";
+    }
+
+    public string CreateSetStatement(string prop, string leftTable, string rightTable, Func<SetStatementContext, string> configureSetStatement)
+    {
+        string left = $"{leftTable}.[{GetDbColumnName(prop)}]";
+        string right = $"{rightTable}.[{prop}]";
+
+        if (configureSetStatement != null)
+        {
+            var rs = configureSetStatement(new SetStatementContext
+            {
+                TableInfor = this,
+                PropertyName = prop,
+                Left = left,
+                Right = right,
+                TargetTableAlias = leftTable,
+                SourceTableAlias = rightTable
+            });
+
+            if (rs != null)
+            {
+                return rs;
+            }
+        }
+
+        return $"{left} = {right}";
+    }
+
+    public string CreateSetStatement(string prop, Func<SetStatementContext, string> configureSetStatement)
+    {
+        string left = $"[{GetDbColumnName(prop)}]";
+        string right = CreateParameterName(prop);
+
+        if (configureSetStatement != null)
+        {
+            var rs = configureSetStatement(new SetStatementContext
+            {
+                TableInfor = this,
+                PropertyName = prop,
+                Left = left,
+                Right = right
+            });
+
+            if (rs != null)
+            {
+                return rs;
+            }
+        }
+
+        return $"{left} = {right}";
+    }
+}
+
+public abstract class TableInfor<T> : TableInfor
+{
     public TableInfor(string schema, string tableName)
     {
         Schema = schema;
@@ -41,16 +114,6 @@ public abstract class TableInfor<T>
 
     public TableInfor(string tableName) : this(null, tableName)
     {
-    }
-
-    public string GetDbColumnName(string propertyName)
-    {
-        if (ColumnNameMappings == null)
-        {
-            return propertyName;
-        }
-
-        return ColumnNameMappings.TryGetValue(propertyName, out string value) ? value : propertyName;
     }
 
     public Type GetProviderClrType(string propertyName)
@@ -71,16 +134,6 @@ public abstract class TableInfor<T>
         }
 
         return PropertiesCache<T>.GetPropertyValue(propertyName, item, ValueConverters);
-    }
-
-    public string CreateParameterName(string propertyName)
-    {
-        if (propertyName.Contains('.'))
-        {
-            return $"@{propertyName.Replace(".", "_")}";
-        }
-
-        return $"@{propertyName}";
     }
 
     public IReadOnlyCollection<string> IncludeDiscriminator(IReadOnlyCollection<string> propertyNames)

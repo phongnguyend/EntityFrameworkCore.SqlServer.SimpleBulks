@@ -11,7 +11,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNamesSelector)
-            .WithMappingContext(MappingContextCache.GetMappingContext<T>())
+            .WithMappingContext(MappingContextCache.GetMappingContext<T>(options))
             .WithTempTableOptions(options)
             .Execute(data);
     }
@@ -20,7 +20,7 @@ public static class ConnectionContextExtensions
     {
         return connectionContext.CreateTempTableBuilder<T>()
             .WithColumns(columnNames)
-            .WithMappingContext(MappingContextCache.GetMappingContext<T>())
+            .WithMappingContext(MappingContextCache.GetMappingContext<T>(options))
             .WithTempTableOptions(options)
             .Execute(data);
     }

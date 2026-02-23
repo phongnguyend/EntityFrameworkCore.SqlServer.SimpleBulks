@@ -8,31 +8,31 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.DirectInsert;
 
 public static class ConnectionContextExtensions
 {
-    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, SqlTableInfor<T> table = null, BulkInsertOptions options = null)
+    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, BulkInsertOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         connectionContext.CreateBulkInsertBuilder<T>()
-            .WithColumns(temp.InsertablePropertyNames)
-            .ToTable(temp)
+            .WithColumns(table.InsertablePropertyNames)
+            .ToTable(table)
             .WithBulkOptions(options)
             .SingleInsert(data);
     }
 
-    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkInsertOptions options = null)
+    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> columnNamesSelector, BulkInsertOptions options = null)
     {
         connectionContext.CreateBulkInsertBuilder<T>()
             .WithColumns(columnNamesSelector)
-            .ToTable(table ?? TableMapper.Resolve<T>())
+            .ToTable(TableMapper.Resolve<T>(options))
             .WithBulkOptions(options)
             .SingleInsert(data);
     }
 
-    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> columnNames, SqlTableInfor<T> table = null, BulkInsertOptions options = null)
+    public static void DirectInsert<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> columnNames, BulkInsertOptions options = null)
     {
         connectionContext.CreateBulkInsertBuilder<T>()
             .WithColumns(columnNames)
-            .ToTable(table ?? TableMapper.Resolve<T>())
+            .ToTable(TableMapper.Resolve<T>(options))
             .WithBulkOptions(options)
             .SingleInsert(data);
     }

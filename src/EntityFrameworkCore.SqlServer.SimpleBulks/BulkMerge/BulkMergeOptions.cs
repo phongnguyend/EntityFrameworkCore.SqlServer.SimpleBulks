@@ -1,4 +1,6 @@
-﻿namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
+﻿using System;
+
+namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMerge;
 
 public class BulkMergeOptions : BulkOptions
 {
@@ -9,4 +11,6 @@ public class BulkMergeOptions : BulkOptions
     public bool WithHoldLock { get; set; }
 
     public bool ReturnDbGeneratedId { get; set; } = true;
+
+    public Func<SetStatementContext, string> ConfigureSetStatement { get; set; }
 }

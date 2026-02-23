@@ -8,24 +8,24 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.Upsert;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, Expression<Func<T, object>> idSelector, Expression<Func<T, object>> updateColumnNamesSelector, Expression<Func<T, object>> insertColumnNamesSelector, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
          .WithId(idSelector)
             .WithUpdateColumns(updateColumnNamesSelector)
            .WithInsertColumns(insertColumnNamesSelector)
-           .ToTable(table ?? TableMapper.Resolve<T>())
+           .ToTable(TableMapper.Resolve<T>(options))
              .WithBulkOptions(options)
              .SingleMerge(data);
     }
 
-    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> idColumns, IReadOnlyCollection<string> updateColumnNames, IReadOnlyCollection<string> insertColumnNames, SqlTableInfor<T> table = null, BulkMergeOptions options = null)
+    public static BulkMergeResult Upsert<T>(this ConnectionContext connectionContext, T data, IReadOnlyCollection<string> idColumns, IReadOnlyCollection<string> updateColumnNames, IReadOnlyCollection<string> insertColumnNames, BulkMergeOptions options = null)
     {
         return connectionContext.CreateBulkMergeBuilder<T>()
       .WithId(idColumns)
           .WithUpdateColumns(updateColumnNames)
     .WithInsertColumns(insertColumnNames)
-       .ToTable(table ?? TableMapper.Resolve<T>())
+       .ToTable(TableMapper.Resolve<T>(options))
   .WithBulkOptions(options)
           .SingleMerge(data);
     }
