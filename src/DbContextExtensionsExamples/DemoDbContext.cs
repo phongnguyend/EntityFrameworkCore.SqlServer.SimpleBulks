@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DbContextExtensionsExamples;
 
@@ -17,11 +15,21 @@ public class DemoDbContext : DbContext
 
     public DbSet<ConfigurationEntry> ConfigurationEntries { get; set; }
 
-    public DbSet<Order> Orders { get; set; }
-
     public DbSet<Blog> Blogs { get; set; }
 
     public DbSet<RssBlog> RssBlogs { get; set; }
+
+    public DbSet<ComplexTypeOrder> ComplexTypeOrders { get; set; }
+
+    public DbSet<OwnedTypeOrder> OwnedTypeOrders { get; set; }
+
+    public DbSet<ComplexOwnedTypeOrder> ComplexOwnedTypeOrders { get; set; }
+
+    public DbSet<JsonComplexTypeOrder> JsonComplexTypeOrders { get; set; }
+
+    public DbSet<JsonOwnedTypeOrder> JsonOwnedTypeOrders { get; set; }
+
+    public DbSet<JsonComplexOwnedTypeOrder> JsonComplexOwnedTypeOrders { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -42,33 +50,48 @@ public class DemoDbContext : DbContext
         modelBuilder.Entity<ConfigurationEntry>().Property(x => x.Id).HasColumnName("Id1");
         modelBuilder.Entity<ConfigurationEntry>().Property(x => x.SeasonAsString).HasConversion(v => v.ToString(), v => (Season)Enum.Parse(typeof(Season), v));
 
+        modelBuilder.Entity<JsonComplexTypeOrder>().ComplexProperty(x => x.ShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.ComplexProperty(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonOwnedTypeOrder>().OwnsOne(x => x.ShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.OwnsOne(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonComplexOwnedTypeOrder>().ComplexProperty(x => x.ComplexShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.ComplexProperty(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
+        modelBuilder.Entity<JsonComplexOwnedTypeOrder>().OwnsOne(x => x.OwnedShippingAddress, x =>
+        {
+            x.ToJson();
+            //x.ToJson("xxx").HasColumnType("json");
+            x.OwnsOne(y => y.Location, y =>
+            {
+                y.HasJsonPropertyName("xxx");
+            });
+        });
+
         base.OnModelCreating(modelBuilder);
     }
-}
-
-public class Order
-{
-    public int Id { get; set; }
-
-    [Required]
-    public Address ShippingAddress { get; set; }
-}
-
-[ComplexType]
-public class Address
-{
-    public string Street { get; set; }
-
-    [Required]
-    public Location Location { get; set; }
-}
-
-[ComplexType]
-public class Location
-{
-    public double Lat { get; set; }
-
-    public double Lng { get; set; }
 }
 
 public class Blog

@@ -17,3 +17,10 @@ public class OwnedTypeLocation
 
     public double Lng { get; set; }
 }
+
+public class JsonOwnedTypeAddress
+{
+    public string Street { get; set; }
+
+    public OwnedTypeLocation Location { get; set; }
+}

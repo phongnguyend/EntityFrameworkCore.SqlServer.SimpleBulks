@@ -47,6 +47,24 @@ public class DirectUpdateAsyncTests : BaseTest
                         Lat = 40.7128 + i,
                         Lng = -74.0060 - i
                     }
+                },
+                JsonComplexShippingAddress = new JsonComplexTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new ComplexTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                },
+                JsonOwnedShippingAddress = new JsonOwnedTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new OwnedTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
                 }
             });
 
@@ -129,6 +147,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Street, dbRows[i].JsonComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lat, dbRows[i].JsonComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lng, dbRows[i].JsonComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Street, dbRows[i].JsonOwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lat, dbRows[i].JsonOwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lng, dbRows[i].JsonOwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -200,6 +224,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Street, dbRows[i].JsonComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lat, dbRows[i].JsonComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lng, dbRows[i].JsonComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Street, dbRows[i].JsonOwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lat, dbRows[i].JsonOwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lng, dbRows[i].JsonOwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -271,6 +301,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Street, dbRows[i].JsonComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lat, dbRows[i].JsonComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lng, dbRows[i].JsonComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Street, dbRows[i].JsonOwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lat, dbRows[i].JsonOwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lng, dbRows[i].JsonOwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);
@@ -342,6 +378,12 @@ public class DirectUpdateAsyncTests : BaseTest
             Assert.Equal(rows[i].OwnedShippingAddress?.Street, dbRows[i].OwnedShippingAddress?.Street);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lat, dbRows[i].OwnedShippingAddress?.Location?.Lat);
             Assert.Equal(rows[i].OwnedShippingAddress?.Location?.Lng, dbRows[i].OwnedShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Street, dbRows[i].JsonComplexShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lat, dbRows[i].JsonComplexShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonComplexShippingAddress?.Location?.Lng, dbRows[i].JsonComplexShippingAddress?.Location?.Lng);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Street, dbRows[i].JsonOwnedShippingAddress?.Street);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lat, dbRows[i].JsonOwnedShippingAddress?.Location?.Lat);
+            Assert.Equal(rows[i].JsonOwnedShippingAddress?.Location?.Lng, dbRows[i].JsonOwnedShippingAddress?.Location?.Lng);
 
             Assert.Equal(compositeKeyRows[i].Id1, dbCompositeKeyRows[i].Id1);
             Assert.Equal(compositeKeyRows[i].Id2, dbCompositeKeyRows[i].Id2);

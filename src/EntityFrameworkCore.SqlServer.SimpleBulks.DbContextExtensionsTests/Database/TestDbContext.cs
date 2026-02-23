@@ -39,6 +39,19 @@ public class TestDbContext : DbContext
 
         modelBuilder.Entity<SingleKeyRow<int>>().Property(x => x.SeasonAsString).HasConversion(v => v.ToString(), v => (Season)Enum.Parse(typeof(Season), v));
 
+        modelBuilder.Entity<SingleKeyRow<int>>().ComplexProperty(x => x.JsonComplexShippingAddress, x =>
+        {
+            if (!_enableDiscriminator)
+            {
+                x.ToJson();
+            }
+        });
+
+        modelBuilder.Entity<SingleKeyRow<int>>().OwnsOne(x => x.JsonOwnedShippingAddress, x =>
+        {
+            x.ToJson();
+        });
+
         modelBuilder.Entity<CompositeKeyRow<int, int>>().HasKey(x => new { x.Id1, x.Id2 });
         modelBuilder.Entity<CompositeKeyRow<int, int>>().Property(x => x.SeasonAsString).HasConversion(v => v.ToString(), v => (Season)Enum.Parse(typeof(Season), v));
 

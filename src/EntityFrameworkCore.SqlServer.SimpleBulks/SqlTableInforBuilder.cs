@@ -168,6 +168,7 @@ public class SqlTableInforBuilder<T>
         var propertyName = nameSelector.Body.GetMemberName();
         _valueConverters[propertyName] = new ValueConverter
         {
+            PropertyName = propertyName,
             ProviderClrType = typeof(TProvider),
             ConvertToProvider = obj => convertToProvider((TProperty?)obj),
             ConvertFromProvider = obj => convertFromProvider((TProvider?)obj),
@@ -204,6 +205,36 @@ public class SqlTableInforBuilder<T>
         var propertyName = nameSelector.Body.GetMemberName();
         return ConfigureDiscriminator(propertyName, value, columnName, columnType);
     }
+
+    public SqlTableInforBuilder<T> ConfigureJsonProperty<TProperty>(string propertyName, Func<TProperty, string?> convertToJson)
+    {
+        _valueConverters[propertyName] = new ValueConverter
+        {
+            PropertyName = propertyName,
+            ProviderClrType = typeof(string),
+            ConvertToProvider = obj => convertToJson((TProperty?)obj)
+        };
+
+        if (!_propertyNames.Contains(propertyName))
+        {
+            _propertyNames.Add(propertyName);
+        }
+
+        if (!_insertablePropertyNames.Contains(propertyName))
+        {
+            _insertablePropertyNames.Add(propertyName);
+        }
+
+        return this;
+    }
+
+    public SqlTableInforBuilder<T> ConfigureJsonProperty<TProperty>(Expression<Func<T, TProperty>> nameSelector, Func<TProperty, string?> convertToJson)
+    {
+        var propertyName = nameSelector.Body.GetMemberName();
+
+        return ConfigureJsonProperty(propertyName, convertToJson);
+    }
+
 
     public SqlTableInfor<T> Build()
     {
