@@ -60,10 +60,8 @@ public class BulkDeleteTests : BaseTest
         _context.BulkInsert(compositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void BulkDelete_PrimaryKeys(bool omitTableName)
+    [Fact]
+    public void BulkDelete_PrimaryKeys()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -75,20 +73,8 @@ public class BulkDeleteTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            connectionContext.BulkDelete(rows, options: options);
-            connectionContext.BulkDelete(compositeKeyRows, options: options);
-        }
-        else
-        {
-            connectionContext.BulkDelete(rows,
-                _singleKeyRowTableInfor,
-                options: options);
-            connectionContext.BulkDelete(compositeKeyRows,
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        connectionContext.BulkDelete(rows, options: options);
+        connectionContext.BulkDelete(compositeKeyRows, options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
@@ -98,10 +84,8 @@ public class BulkDeleteTests : BaseTest
         Assert.Single(dbCompositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void BulkDelete_SpecifiedKeys(bool omitTableName)
+    [Fact]
+    public void BulkDelete_SpecifiedKeys()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -113,20 +97,8 @@ public class BulkDeleteTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            connectionContext.BulkDelete(rows, x => x.Id, options: options);
-            connectionContext.BulkDelete(compositeKeyRows, x => new { x.Id1, x.Id2 }, options: options);
-        }
-        else
-        {
-            connectionContext.BulkDelete(rows, x => x.Id,
-                _singleKeyRowTableInfor,
-                options: options);
-            connectionContext.BulkDelete(compositeKeyRows, x => new { x.Id1, x.Id2 },
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        connectionContext.BulkDelete(rows, x => x.Id, options: options);
+        connectionContext.BulkDelete(compositeKeyRows, x => new { x.Id1, x.Id2 }, options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();
@@ -136,10 +108,8 @@ public class BulkDeleteTests : BaseTest
         Assert.Single(dbCompositeKeyRows);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void BulkDelete_SpecifiedKeys_DynamicString(bool omitTableName)
+    [Fact]
+    public void BulkDelete_SpecifiedKeys_DynamicString()
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -151,20 +121,8 @@ public class BulkDeleteTests : BaseTest
             LogTo = LogTo
         };
 
-        if (omitTableName)
-        {
-            connectionContext.BulkDelete(rows, ["Id"], options: options);
-            connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"], options: options);
-        }
-        else
-        {
-            connectionContext.BulkDelete(rows, ["Id"],
-                _singleKeyRowTableInfor,
-                options: options);
-            connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"],
-                _compositeKeyRowTableInfor,
-                options: options);
-        }
+        connectionContext.BulkDelete(rows, ["Id"], options: options);
+        connectionContext.BulkDelete(compositeKeyRows, ["Id1", "Id2"], options: options);
 
         // Assert
         var dbRows = _context.SingleKeyRows.AsNoTracking().ToList();

@@ -11,6 +11,7 @@ internal static class MappingContextCache
 
     private static readonly ConcurrentDictionary<CacheKey, MappingContext> _dbContextMappingContextCache = [];
     private static readonly ConcurrentDictionary<Type, MappingContext> _typeMappingContextCache = [];
+    private static readonly ConcurrentDictionary<(Type, string), MappingContext> _typeNamedMappingContextCache = [];
 
     public static MappingContext GetMappingContext<T>(this DbContext dbContext)
     {
@@ -57,5 +58,31 @@ internal static class MappingContextCache
 
             return mappingContext;
         });
+    }
+
+    public static MappingContext GetMappingContext<T>(string name)
+    {
+        var key = (typeof(T), name);
+        return _typeNamedMappingContextCache.GetOrAdd(key, (key) =>
+        {
+            if (!TableMapper.TryResolve<T>(name, out var table))
+            {
+                return MappingContext.Default;
+            }
+
+            var mappingContext = new MappingContext
+            {
+                ColumnNameMappings = table.ColumnNameMappings,
+                ColumnTypeMappings = table.ColumnTypeMappings,
+                ValueConverters = table.ValueConverters
+            };
+
+            return mappingContext;
+        });
+    }
+
+    public static MappingContext GetMappingContext<T>(BulkOptions options)
+    {
+        return options?.MappingProfileName == null ? GetMappingContext<T>() : GetMappingContext<T>(options.MappingProfileName);
     }
 }

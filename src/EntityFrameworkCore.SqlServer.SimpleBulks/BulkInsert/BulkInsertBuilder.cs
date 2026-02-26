@@ -86,7 +86,7 @@ public class BulkInsertBuilder<T>
 
         if (_options.KeepIdentity)
         {
-            var columnsToInsert = _columnNames.Select(x => x).ToList();
+            var columnsToInsert = _columnNames.ToList();
             if (!columnsToInsert.Contains(_outputIdColumn))
             {
                 columnsToInsert.Add(_outputIdColumn);
@@ -106,7 +106,7 @@ public class BulkInsertBuilder<T>
 
         if (_outputIdMode == OutputIdMode.ClientGenerated)
         {
-            var columnsToInsert = _columnNames.Select(x => x).ToList();
+            var columnsToInsert = _columnNames.ToList();
             if (!columnsToInsert.Contains(_outputIdColumn))
             {
                 columnsToInsert.Add(_outputIdColumn);
@@ -114,9 +114,11 @@ public class BulkInsertBuilder<T>
 
             var setId = GetSetIdMethod(idProperty);
 
+            var counter = SequentialGuidGenerator.GetTicks();
+
             foreach (var row in data)
             {
-                setId(row, SequentialGuidGenerator.Next());
+                setId(row, SequentialGuidGenerator.Next(ref counter));
             }
 
             dataTable = data.ToDataTable(columnsToInsert, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
@@ -187,7 +189,7 @@ public class BulkInsertBuilder<T>
     {
         var insertStatementBuilder = new StringBuilder();
 
-        var columnsToInsert = _columnNames.Select(x => x).ToList();
+        var columnsToInsert = _columnNames.ToList();
 
         if (_options.KeepIdentity)
         {
@@ -208,7 +210,9 @@ public class BulkInsertBuilder<T>
 
             var idProperty = GetIdProperty();
             var setId = GetSetIdMethod(idProperty);
-            setId(dataToInsert, SequentialGuidGenerator.Next());
+
+            var counter = SequentialGuidGenerator.GetTicks();
+            setId(dataToInsert, SequentialGuidGenerator.Next(ref counter));
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({_table.CreateDbColumnNames(columnsToInsert, includeDiscriminator: true)})");
             insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert, includeDiscriminator: true)})");
@@ -298,7 +302,7 @@ public class BulkInsertBuilder<T>
 
         if (_options.KeepIdentity)
         {
-            var columnsToInsert = _columnNames.Select(x => x).ToList();
+            var columnsToInsert = _columnNames.ToList();
             if (!columnsToInsert.Contains(_outputIdColumn))
             {
                 columnsToInsert.Add(_outputIdColumn);
@@ -318,7 +322,7 @@ public class BulkInsertBuilder<T>
 
         if (_outputIdMode == OutputIdMode.ClientGenerated)
         {
-            var columnsToInsert = _columnNames.Select(x => x).ToList();
+            var columnsToInsert = _columnNames.ToList();
             if (!columnsToInsert.Contains(_outputIdColumn))
             {
                 columnsToInsert.Add(_outputIdColumn);
@@ -326,9 +330,11 @@ public class BulkInsertBuilder<T>
 
             var setId = GetSetIdMethod(idProperty);
 
+            var counter = SequentialGuidGenerator.GetTicks();
+
             foreach (var row in data)
             {
-                setId(row, SequentialGuidGenerator.Next());
+                setId(row, SequentialGuidGenerator.Next(ref counter));
             }
 
             dataTable = await data.ToDataTableAsync(columnsToInsert, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
@@ -399,7 +405,7 @@ public class BulkInsertBuilder<T>
     {
         var insertStatementBuilder = new StringBuilder();
 
-        var columnsToInsert = _columnNames.Select(x => x).ToList();
+        var columnsToInsert = _columnNames.ToList();
 
         if (_options.KeepIdentity)
         {
@@ -420,7 +426,9 @@ public class BulkInsertBuilder<T>
 
             var idProperty = GetIdProperty();
             var setId = GetSetIdMethod(idProperty);
-            setId(dataToInsert, SequentialGuidGenerator.Next());
+
+            var counter = SequentialGuidGenerator.GetTicks();
+            setId(dataToInsert, SequentialGuidGenerator.Next(ref counter));
 
             insertStatementBuilder.AppendLine($"INSERT INTO {_table.SchemaQualifiedTableName} ({_table.CreateDbColumnNames(columnsToInsert, includeDiscriminator: true)})");
             insertStatementBuilder.AppendLine($"VALUES ({_table.CreateParameterNames(columnsToInsert, includeDiscriminator: true)})");

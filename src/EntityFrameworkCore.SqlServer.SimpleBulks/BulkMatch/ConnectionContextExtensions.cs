@@ -7,33 +7,33 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkMatch;
 
 public static class ConnectionContextExtensions
 {
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, SqlTableInfor<T> table = null, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, BulkMatchOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkMatchBuilder<T>()
-            .WithReturnedColumns(temp.PropertyNames)
-            .WithTable(temp)
+            .WithReturnedColumns(table.PropertyNames)
+            .WithTable(table)
             .WithMatchedColumns(matchedColumnsSelector)
             .WithBulkOptions(options)
              .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, SqlTableInfor<T> table = null, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, Expression<Func<T, object>> matchedColumnsSelector, Expression<Func<T, object>> returnedColumnsSelector, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
                 .WithReturnedColumns(returnedColumnsSelector)
-        .WithTable(table ?? TableMapper.Resolve<T>())
+        .WithTable(TableMapper.Resolve<T>(options))
            .WithMatchedColumns(matchedColumnsSelector)
                       .WithBulkOptions(options)
                       .Execute(machedValues);
     }
 
-    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, IReadOnlyCollection<string> matchedColumns, IReadOnlyCollection<string> returnedColumns, SqlTableInfor<T> table = null, BulkMatchOptions options = null)
+    public static List<T> BulkMatch<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> machedValues, IReadOnlyCollection<string> matchedColumns, IReadOnlyCollection<string> returnedColumns, BulkMatchOptions options = null)
     {
         return connectionContext.CreateBulkMatchBuilder<T>()
    .WithReturnedColumns(returnedColumns)
-    .WithTable(table ?? TableMapper.Resolve<T>())
+    .WithTable(TableMapper.Resolve<T>(options))
  .WithMatchedColumns(matchedColumns)
      .WithBulkOptions(options)
  .Execute(machedValues);

@@ -13,15 +13,11 @@ public class BulkInsertTests : BaseTest
     }
 
     [Theory]
-    [InlineData(1, true, true)]
-    [InlineData(1, true, false)]
-    [InlineData(1, false, true)]
-    [InlineData(1, false, false)]
-    [InlineData(100, true, true)]
-    [InlineData(100, true, false)]
-    [InlineData(100, false, true)]
-    [InlineData(100, false, false)]
-    public void BulkInsert_Without_Transaction(int length, bool useLinq, bool omitTableName)
+    [InlineData(1, true)]
+    [InlineData(1, false)]
+    [InlineData(100, true)]
+    [InlineData(100, false)]
+    public void BulkInsert_Without_Transaction(int length, bool useLinq)
     {
         var connectionContext = new ConnectionContext(_connection, null);
 
@@ -76,123 +72,57 @@ public class BulkInsertTests : BaseTest
 
         if (useLinq)
         {
-            if (omitTableName)
-            {
-                connectionContext.BulkInsert(rows,
-                    row => new
-                    {
-                        row.Column1,
-                        row.Column2,
-                        row.Column3,
-                        row.Season,
-                        row.SeasonAsString,
-                        row.NullableBool,
-                        row.NullableDateTime,
-                        row.NullableDateTimeOffset,
-                        row.NullableDecimal,
-                        row.NullableDouble,
-                        row.NullableGuid,
-                        row.NullableShort,
-                        row.NullableInt,
-                        row.NullableLong,
-                        row.NullableFloat,
-                        row.NullableString,
-                        row.ComplexShippingAddress.Street,
-                        row.ComplexShippingAddress.Location.Lat,
-                        row.ComplexShippingAddress.Location.Lng,
-                        a = row.OwnedShippingAddress.Street,
-                        b = row.OwnedShippingAddress.Location.Lat,
-                        c = row.OwnedShippingAddress.Location.Lng
-                    },
-                    options: options);
+            connectionContext.BulkInsert(rows,
+                row => new
+                {
+                    row.Column1,
+                    row.Column2,
+                    row.Column3,
+                    row.Season,
+                    row.SeasonAsString,
+                    row.NullableBool,
+                    row.NullableDateTime,
+                    row.NullableDateTimeOffset,
+                    row.NullableDecimal,
+                    row.NullableDouble,
+                    row.NullableGuid,
+                    row.NullableShort,
+                    row.NullableInt,
+                    row.NullableLong,
+                    row.NullableFloat,
+                    row.NullableString,
+                    row.ComplexShippingAddress.Street,
+                    row.ComplexShippingAddress.Location.Lat,
+                    row.ComplexShippingAddress.Location.Lng,
+                    a = row.OwnedShippingAddress.Street,
+                    b = row.OwnedShippingAddress.Location.Lat,
+                    c = row.OwnedShippingAddress.Location.Lng
+                },
+                options: options);
 
-                connectionContext.BulkInsert(compositeKeyRows,
-                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    options: options);
-            }
-            else
-            {
-                connectionContext.BulkInsert(rows,
-                    row => new
-                    {
-                        row.Column1,
-                        row.Column2,
-                        row.Column3,
-                        row.Season,
-                        row.SeasonAsString,
-                        row.NullableBool,
-                        row.NullableDateTime,
-                        row.NullableDateTimeOffset,
-                        row.NullableDecimal,
-                        row.NullableDouble,
-                        row.NullableGuid,
-                        row.NullableShort,
-                        row.NullableInt,
-                        row.NullableLong,
-                        row.NullableFloat,
-                        row.NullableString,
-                        row.ComplexShippingAddress.Street,
-                        row.ComplexShippingAddress.Location.Lat,
-                        row.ComplexShippingAddress.Location.Lng,
-                        a = row.OwnedShippingAddress.Street,
-                        b = row.OwnedShippingAddress.Location.Lat,
-                        c = row.OwnedShippingAddress.Location.Lng
-                    },
-                    _singleKeyRowTableInfor,
-                    options: options);
-
-                connectionContext.BulkInsert(compositeKeyRows,
-                    row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
-                    _compositeKeyRowTableInfor,
-                    options);
-            }
-
+            connectionContext.BulkInsert(compositeKeyRows,
+                row => new { row.Id1, row.Id2, row.Column1, row.Column2, row.Column3 },
+                options: options);
         }
         else
         {
-            if (omitTableName)
-            {
-                connectionContext.BulkInsert(rows,
-                    [
-                        "Column1",
-                        "Column2",
-                        "Column3",
-                        "ComplexShippingAddress.Street",
-                        "ComplexShippingAddress.Location.Lat",
-                        "ComplexShippingAddress.Location.Lng",
-                        "OwnedShippingAddress.Street",
-                        "OwnedShippingAddress.Location.Lat",
-                        "OwnedShippingAddress.Location.Lng"
-                    ],
-                    options: options);
+            connectionContext.BulkInsert(rows,
+                [
+                    "Column1",
+                    "Column2",
+                    "Column3",
+                    "ComplexShippingAddress.Street",
+                    "ComplexShippingAddress.Location.Lat",
+                    "ComplexShippingAddress.Location.Lng",
+                    "OwnedShippingAddress.Street",
+                    "OwnedShippingAddress.Location.Lat",
+                    "OwnedShippingAddress.Location.Lng"
+                ],
+                options: options);
 
-                connectionContext.BulkInsert(compositeKeyRows,
-                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    options: options);
-            }
-            else
-            {
-                connectionContext.BulkInsert(rows,
-                    [
-                        "Column1",
-                        "Column2",
-                        "Column3",
-                        "ComplexShippingAddress.Street",
-                        "ComplexShippingAddress.Location.Lat",
-                        "ComplexShippingAddress.Location.Lng",
-                        "OwnedShippingAddress.Street",
-                        "OwnedShippingAddress.Location.Lat",
-                        "OwnedShippingAddress.Location.Lng"
-                    ],
-                    _singleKeyRowTableInfor,
-                    options: options);
-
-                connectionContext.BulkInsert(compositeKeyRows,
-                    ["Id1", "Id2", "Column1", "Column2", "Column3"],
-                    _compositeKeyRowTableInfor,
-                    options: options);
-            }
-
+            connectionContext.BulkInsert(compositeKeyRows,
+                ["Id1", "Id2", "Column1", "Column2", "Column3"],
+                options: options);
         }
 
 

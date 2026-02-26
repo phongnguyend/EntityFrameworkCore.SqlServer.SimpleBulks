@@ -1,5 +1,6 @@
 ﻿using ConnectionExtensionsExamples.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using System;
 
 namespace ConnectionExtensionsExamples;
@@ -17,6 +18,10 @@ public class DemoDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(_connectionString);
+
+#if NET9_0_OR_GREATER
+        optionsBuilder.ConfigureWarnings(x => x.Log([RelationalEventId.PendingModelChangesWarning]));
+#endif
 
         base.OnConfiguring(optionsBuilder);
     }

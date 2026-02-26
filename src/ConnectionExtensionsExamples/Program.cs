@@ -91,7 +91,16 @@ var updateResult = await connection.BulkUpdateAsync(configurationEntries,
     x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt, x.SeasonAsString },
     options: new BulkUpdateOptions
     {
-        LogTo = Console.WriteLine
+        LogTo = Console.WriteLine,
+        ConfigureSetStatement = ctx =>
+        {
+            if (ctx.PropertyName == "SeasonAsInt")
+            {
+                return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+            }
+
+            return null;
+        }
     });
 
 Console.WriteLine($"Updated: {updateResult.AffectedRows} row(s)");
@@ -107,11 +116,20 @@ configurationEntries.Add(new ConfigurationEntry
 
 var mergeResult = await connection.BulkMergeAsync(configurationEntries,
     x => x.Id,
-    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description },
+    x => new { x.Key, x.UpdatedDateTime, x.IsSensitive, x.Description, x.SeasonAsInt },
     x => new { x.Key, x.Value, x.IsSensitive, x.CreatedDateTime, x.SeasonAsInt, x.SeasonAsString },
     options: new BulkMergeOptions
     {
-        LogTo = Console.WriteLine
+        LogTo = Console.WriteLine,
+        ConfigureSetStatement = ctx =>
+        {
+            if (ctx.PropertyName == "SeasonAsInt")
+            {
+                return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+            }
+
+            return null;
+        }
     });
 
 Console.WriteLine($"Updated: {mergeResult.UpdatedRows} row(s)");
@@ -143,7 +161,16 @@ await connection.DirectUpdateAsync(configurationEntry,
     x => new { x.Key, x.Value, x.UpdatedDateTime, x.SeasonAsInt, x.SeasonAsString },
     options: new BulkUpdateOptions
     {
-        LogTo = Console.WriteLine
+        LogTo = Console.WriteLine,
+        ConfigureSetStatement = ctx =>
+        {
+            if (ctx.PropertyName == "SeasonAsInt")
+            {
+                return $"{ctx.Left} = {ctx.GetTargetTableColumn("SeasonAsInt")} + {ctx.Right} + {ctx.GetSourceTableColumn("SeasonAsInt")}";
+            }
+
+            return null;
+        }
     });
 
 await connection.DirectDeleteAsync(configurationEntry,

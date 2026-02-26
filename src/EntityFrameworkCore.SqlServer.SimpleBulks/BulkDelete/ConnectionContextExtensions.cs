@@ -7,35 +7,35 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkDelete;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, SqlTableInfor<T> table = null, BulkDeleteOptions options = null)
+    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, BulkDeleteOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkDeleteBuilder<T>()
-            .WithId(temp.PrimaryKeys)
-            .ToTable(temp)
+            .WithId(table.PrimaryKeys)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
 
-    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, SqlTableInfor<T> table = null, BulkDeleteOptions options = null)
+    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, BulkDeleteOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkDeleteBuilder<T>()
             .WithId(keySelector)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
 
-    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, SqlTableInfor<T> table = null, BulkDeleteOptions options = null)
+    public static BulkDeleteResult BulkDelete<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, BulkDeleteOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkDeleteBuilder<T>()
             .WithId(keys)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }

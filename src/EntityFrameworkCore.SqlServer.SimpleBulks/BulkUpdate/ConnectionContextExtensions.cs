@@ -7,50 +7,50 @@ namespace EntityFrameworkCore.SqlServer.SimpleBulks.BulkUpdate;
 
 public static class ConnectionContextExtensions
 {
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkUpdateBuilder<T>()
-            .WithId(temp.PrimaryKeys)
+            .WithId(table.PrimaryKeys)
             .WithColumns(columnNamesSelector)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkUpdateBuilder<T>()
-            .WithId(temp.PrimaryKeys)
+            .WithId(table.PrimaryKeys)
             .WithColumns(columnNames)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, Expression<Func<T, object>> columnNamesSelector, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, Expression<Func<T, object>> keySelector, Expression<Func<T, object>> columnNamesSelector, BulkUpdateOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkUpdateBuilder<T>()
             .WithId(keySelector)
             .WithColumns(columnNamesSelector)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
 
-    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, IReadOnlyCollection<string> columnNames, SqlTableInfor<T> table = null, BulkUpdateOptions options = null)
+    public static BulkUpdateResult BulkUpdate<T>(this ConnectionContext connectionContext, IReadOnlyCollection<T> data, IReadOnlyCollection<string> keys, IReadOnlyCollection<string> columnNames, BulkUpdateOptions options = null)
     {
-        var temp = table ?? TableMapper.Resolve<T>();
+        var table = TableMapper.Resolve<T>(options);
 
         return connectionContext.CreateBulkUpdateBuilder<T>()
             .WithId(keys)
             .WithColumns(columnNames)
-            .ToTable(temp)
+            .ToTable(table)
             .WithBulkOptions(options)
             .Execute(data);
     }
