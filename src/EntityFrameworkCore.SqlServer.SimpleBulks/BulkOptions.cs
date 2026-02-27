@@ -18,7 +18,7 @@ public class BulkOptions
     }
 }
 
-public record struct SetStatementContext
+public record struct SetClauseContext
 {
     public TableInfor TableInfor { get; set; }
 
@@ -32,15 +32,20 @@ public record struct SetStatementContext
 
     public string SourceTableAlias { get; set; }
 
+    private string Quote(string name)
+    {
+        return $"{Constants.BeginQuote}{name}{Constants.EndQuote}";
+    }
+
     public string GetTargetTableColumn(string propertyName)
     {
         var columnName = TableInfor.GetDbColumnName(propertyName);
 
-        return string.IsNullOrEmpty(TargetTableAlias) ? $"{Constants.BeginQuote}{columnName}{Constants.EndQuote}" : $"{TargetTableAlias}.{Constants.BeginQuote}{columnName}{Constants.EndQuote}";
+        return string.IsNullOrEmpty(TargetTableAlias) ? Quote(columnName) : $"{TargetTableAlias}.{Quote(columnName)}";
     }
 
     public string GetSourceTableColumn(string propertyName)
     {
-        return string.IsNullOrEmpty(SourceTableAlias) ? TableInfor.CreateParameterName(propertyName) : $"{SourceTableAlias}.{Constants.BeginQuote}{propertyName}{Constants.EndQuote}";
+        return string.IsNullOrEmpty(SourceTableAlias) ? TableInfor.CreateParameterName(propertyName) : $"{SourceTableAlias}.{Quote(propertyName)}";
     }
 }

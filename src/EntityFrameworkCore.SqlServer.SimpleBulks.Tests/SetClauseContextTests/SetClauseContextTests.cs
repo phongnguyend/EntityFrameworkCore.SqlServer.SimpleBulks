@@ -3,7 +3,7 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.SetStatementContextTests;
 
-public class SetStatementContextTests
+public class SetClauseContextTests
 {
     [Fact]
     public void GetTargetTableColumn_ReturnsCorrectColumnInformation()
@@ -14,7 +14,7 @@ public class SetStatementContextTests
         // Act
         var table = dbContext.GetTableInfor<ConfigurationEntry>();
 
-        var ctx = new SetStatementContext
+        var ctx = new SetClauseContext
         {
             TableInfor = table,
         };
@@ -35,7 +35,7 @@ public class SetStatementContextTests
         // Act
         var table = dbContext.GetTableInfor<ConfigurationEntry>();
 
-        var ctx = new SetStatementContext
+        var ctx = new SetClauseContext
         {
             TableInfor = table,
             TargetTableAlias = "t",
@@ -57,7 +57,7 @@ public class SetStatementContextTests
         // Act
         var table = dbContext.GetTableInfor<ConfigurationEntry>();
 
-        var ctx = new SetStatementContext
+        var ctx = new SetClauseContext
         {
             TableInfor = table,
         };
@@ -78,7 +78,7 @@ public class SetStatementContextTests
         // Act
         var table = dbContext.GetTableInfor<ConfigurationEntry>();
 
-        var ctx = new SetStatementContext
+        var ctx = new SetClauseContext
         {
             TableInfor = table,
             SourceTableAlias = "s",

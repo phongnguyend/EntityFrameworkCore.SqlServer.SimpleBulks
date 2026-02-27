@@ -8,5 +8,5 @@ public class BulkUpdateOptions : BulkOptions
 
     public string Collation { get; set; } = Constants.DefaultCollation;
 
-    public Func<SetStatementContext, string> ConfigureSetStatement { get; set; }
+    public Func<SetClauseContext, string> ConfigureSetClause { get; set; }
 }

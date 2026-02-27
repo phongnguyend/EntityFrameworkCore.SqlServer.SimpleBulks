@@ -111,6 +111,41 @@ public class BulkMergeBuilder<T>
         }));
     }
 
+    private string CreateWhenNotMatchedBySourceClause()
+    {
+        if (_options.ConfigureWhenNotMatchedBySource == null)
+        {
+            return null;
+        }
+
+        var context = new MergeContext
+        {
+            TableInfor = _table,
+            TargetTableAlias = "t",
+            SourceTableAlias = "s"
+        };
+
+        var action = _options.ConfigureWhenNotMatchedBySource(context);
+
+        if (string.IsNullOrEmpty(action.ThenAction))
+        {
+            return null;
+        }
+
+        var clause = new StringBuilder();
+        clause.Append("WHEN NOT MATCHED BY SOURCE");
+
+        if (!string.IsNullOrEmpty(action.AndCondition))
+        {
+            clause.Append($" AND {action.AndCondition}");
+        }
+
+        clause.AppendLine();
+        clause.AppendLine($"    THEN {action.ThenAction}");
+
+        return clause.ToString();
+    }
+
     public BulkMergeResult Execute(IReadOnlyCollection<T> data)
     {
         if (data.Count == 1)
@@ -118,7 +153,9 @@ public class BulkMergeBuilder<T>
             return SingleMerge(data.First());
         }
 
-        if (!_updateColumnNames.Any() && !_insertColumnNames.Any())
+        var whenNotMatchedBySourceClause = CreateWhenNotMatchedBySourceClause();
+
+        if (!_updateColumnNames.Any() && !_insertColumnNames.Any() && string.IsNullOrEmpty(whenNotMatchedBySourceClause))
         {
             return new BulkMergeResult();
         }
@@ -157,6 +194,11 @@ public class BulkMergeBuilder<T>
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
             mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
             mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
+        }
+
+        if (!string.IsNullOrEmpty(whenNotMatchedBySourceClause))
+        {
+            mergeStatementBuilder.Append(whenNotMatchedBySourceClause);
         }
 
         if (returnDbGeneratedId)
@@ -246,7 +288,9 @@ public class BulkMergeBuilder<T>
 
     public BulkMergeResult SingleMerge(T data)
     {
-        if (!_updateColumnNames.Any() && !_insertColumnNames.Any())
+        var whenNotMatchedBySourceClause = CreateWhenNotMatchedBySourceClause();
+
+        if (!_updateColumnNames.Any() && !_insertColumnNames.Any() && string.IsNullOrEmpty(whenNotMatchedBySourceClause))
         {
             return new BulkMergeResult();
         }
@@ -283,6 +327,11 @@ public class BulkMergeBuilder<T>
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
             mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
             mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
+        }
+
+        if (!string.IsNullOrEmpty(whenNotMatchedBySourceClause))
+        {
+            mergeStatementBuilder.Append(whenNotMatchedBySourceClause);
         }
 
         if (returnDbGeneratedId)
@@ -346,7 +395,7 @@ public class BulkMergeBuilder<T>
 
     private string CreateSetStatement(string prop, string leftTable, string rightTable)
     {
-        return _table.CreateSetStatement(prop, leftTable, rightTable, _options.ConfigureSetStatement);
+        return _table.CreateSetClause(prop, leftTable, rightTable, _options.ConfigureSetClause);
     }
 
     private void Log(string message)
@@ -374,7 +423,9 @@ public class BulkMergeBuilder<T>
             return await SingleMergeAsync(data.First(), cancellationToken);
         }
 
-        if (!_updateColumnNames.Any() && !_insertColumnNames.Any())
+        var whenNotMatchedBySourceClause = CreateWhenNotMatchedBySourceClause();
+
+        if (!_updateColumnNames.Any() && !_insertColumnNames.Any() && string.IsNullOrEmpty(whenNotMatchedBySourceClause))
         {
             return new BulkMergeResult();
         }
@@ -413,6 +464,11 @@ public class BulkMergeBuilder<T>
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
             mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
             mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
+        }
+
+        if (!string.IsNullOrEmpty(whenNotMatchedBySourceClause))
+        {
+            mergeStatementBuilder.Append(whenNotMatchedBySourceClause);
         }
 
         if (returnDbGeneratedId)
@@ -502,7 +558,9 @@ public class BulkMergeBuilder<T>
 
     public async Task<BulkMergeResult> SingleMergeAsync(T data, CancellationToken cancellationToken = default)
     {
-        if (!_updateColumnNames.Any() && !_insertColumnNames.Any())
+        var whenNotMatchedBySourceClause = CreateWhenNotMatchedBySourceClause();
+
+        if (!_updateColumnNames.Any() && !_insertColumnNames.Any() && string.IsNullOrEmpty(whenNotMatchedBySourceClause))
         {
             return new BulkMergeResult();
         }
@@ -539,6 +597,11 @@ public class BulkMergeBuilder<T>
             mergeStatementBuilder.AppendLine($"WHEN NOT MATCHED BY TARGET");
             mergeStatementBuilder.AppendLine($"    THEN INSERT ({_table.CreateDbColumnNames(_insertColumnNames, includeDiscriminator: true)})");
             mergeStatementBuilder.AppendLine($"         VALUES ({_table.CreateColumnNames(_insertColumnNames, "s", includeDiscriminator: true)})");
+        }
+
+        if (!string.IsNullOrEmpty(whenNotMatchedBySourceClause))
+        {
+            mergeStatementBuilder.Append(whenNotMatchedBySourceClause);
         }
 
         if (returnDbGeneratedId)
