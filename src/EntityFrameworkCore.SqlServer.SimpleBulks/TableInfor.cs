@@ -52,14 +52,14 @@ public abstract class TableInfor
         return $"@{propertyName}";
     }
 
-    public string CreateSetStatement(string prop, string leftTable, string rightTable, Func<SetStatementContext, string> configureSetStatement)
+    public string CreateSetClause(string prop, string leftTable, string rightTable, Func<SetClauseContext, string> configureSetStatement)
     {
         string left = $"{leftTable}.[{GetDbColumnName(prop)}]";
         string right = $"{rightTable}.[{prop}]";
 
         if (configureSetStatement != null)
         {
-            var rs = configureSetStatement(new SetStatementContext
+            var rs = configureSetStatement(new SetClauseContext
             {
                 TableInfor = this,
                 PropertyName = prop,
@@ -78,14 +78,14 @@ public abstract class TableInfor
         return $"{left} = {right}";
     }
 
-    public string CreateSetStatement(string prop, Func<SetStatementContext, string> configureSetStatement)
+    public string CreateSetClause(string prop, Func<SetClauseContext, string> configureSetStatement)
     {
         string left = $"[{GetDbColumnName(prop)}]";
         string right = CreateParameterName(prop);
 
         if (configureSetStatement != null)
         {
-            var rs = configureSetStatement(new SetStatementContext
+            var rs = configureSetStatement(new SetClauseContext
             {
                 TableInfor = this,
                 PropertyName = prop,

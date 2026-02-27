@@ -62,12 +62,12 @@ public class BulkUpdateBuilder<T>
 
     private string CreateSetStatement(string prop, string leftTable, string rightTable)
     {
-        return _table.CreateSetStatement(prop, leftTable, rightTable, _options.ConfigureSetStatement);
+        return _table.CreateSetClause(prop, leftTable, rightTable, _options.ConfigureSetClause);
     }
 
     private string CreateSetStatement(string prop)
     {
-        return _table.CreateSetStatement(prop, _options.ConfigureSetStatement);
+        return _table.CreateSetClause(prop, _options.ConfigureSetClause);
     }
 
     private string CreateWhereStatement(string prop)

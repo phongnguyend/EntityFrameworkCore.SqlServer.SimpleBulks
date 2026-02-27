@@ -3,45 +3,45 @@ using EntityFrameworkCore.SqlServer.SimpleBulks.Tests.Database;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks.Tests.TableInforTests;
 
-public class CreateSetStatementWithParameterStyleTests
+public class CreateSetClauseWithParameterStyleTests
 {
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_ReturnsCorrectStatement()
+    public void CreateSetClause_WithParameterStyle_ReturnsCorrectStatement()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Act
-        var result = tableInfor.CreateSetStatement("Value", null);
+        var result = tableInfor.CreateSetClause("Value", null);
 
         // Assert
         Assert.Equal("[Value] = @Value", result);
     }
 
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_AndColumnMapping_ReturnsCorrectStatement()
+    public void CreateSetClause_WithParameterStyle_AndColumnMapping_ReturnsCorrectStatement()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Act - Key is mapped to Key1 column
-        var result = tableInfor.CreateSetStatement("Key", null);
+        var result = tableInfor.CreateSetClause("Key", null);
 
         // Assert
         Assert.Equal("[Key1] = @Key", result);
     }
 
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_AndCustomConfigureSetStatement_ReturnsCustomStatement()
+    public void CreateSetClause_WithParameterStyle_AndCustomConfigureSetStatement_ReturnsCustomStatement()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Act
-        var result = tableInfor.CreateSetStatement("Value", ctx =>
+        var result = tableInfor.CreateSetClause("Value", ctx =>
         {
             return $"{ctx.Left} = COALESCE({ctx.Right}, 'default')";
         });
@@ -51,29 +51,29 @@ public class CreateSetStatementWithParameterStyleTests
     }
 
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_AndCustomConfigureSetStatementReturnsNull_ReturnsDefaultStatement()
+    public void CreateSetClause_WithParameterStyle_AndCustomConfigureSetStatementReturnsNull_ReturnsDefaultStatement()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
 
         // Act
-        var result = tableInfor.CreateSetStatement("Value", ctx => null);
+        var result = tableInfor.CreateSetClause("Value", ctx => null);
 
         // Assert
         Assert.Equal("[Value] = @Value", result);
     }
 
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_ConfigureSetStatementReceivesCorrectContext()
+    public void CreateSetClause_WithParameterStyle_ConfigureSetStatementReceivesCorrectContext()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<ConfigurationEntry>();
-        SetStatementContext? capturedContext = null;
+        SetClauseContext? capturedContext = null;
 
         // Act
-        tableInfor.CreateSetStatement("Description", ctx =>
+        tableInfor.CreateSetClause("Description", ctx =>
         {
             capturedContext = ctx;
             return null;
@@ -90,14 +90,14 @@ public class CreateSetStatementWithParameterStyleTests
     }
 
     [Fact]
-    public void CreateSetStatement_WithParameterStyle_PropertyWithDot_ReturnsCorrectParameterName()
+    public void CreateSetClause_WithParameterStyle_PropertyWithDot_ReturnsCorrectParameterName()
     {
         // Arrange
         var dbContext = new TestDbContext("", "");
         var tableInfor = dbContext.GetTableInfor<OwnedTypeOrder>();
 
         // Act
-        var result = tableInfor.CreateSetStatement("ShippingAddress.Street", null);
+        var result = tableInfor.CreateSetClause("ShippingAddress.Street", null);
 
         // Assert
         Assert.Equal("[ShippingAddress_Street] = @ShippingAddress_Street", result);
