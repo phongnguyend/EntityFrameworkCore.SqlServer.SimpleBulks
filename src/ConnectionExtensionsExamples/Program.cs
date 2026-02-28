@@ -26,11 +26,11 @@ TableMapper.Configure<ConfigurationEntry>(config =>
     .ConfigureProperty(x => x.RowVersion, readOnly: true)
     .ConfigureProperty(x => x.SeasonAsString, columnType: "nvarchar(max)")
     .ConfigurePropertyConversion(x => x.SeasonAsString, y => y.ToString(), z => (Season)Enum.Parse(typeof(Season), z))
-    .ParameterConverter((data, propertyName) =>
+    .ParameterConverter((data, propertyName, parameterName) =>
     {
         if (propertyName == "CreatedDateTime")
         {
-            return new SqlParameter(propertyName, data.CreatedDateTime);
+            return new SqlParameter(parameterName, data.CreatedDateTime);
         }
 
         return null;
@@ -135,7 +135,8 @@ var mergeResult = await connection.BulkMergeAsync(configurationEntries,
             return new WhenNotMatchedBySourceAction
             {
                 AndCondition = $"{ctx.GetTargetTableColumnWithAlias("Key")} LIKE 'Key%'",
-                ThenAction = $"UPDATE SET {ctx.GetTargetTableColumnWithoutAlias("Key")} = 'xxx'"
+                ThenAction = $"UPDATE SET {ctx.GetTargetTableColumnWithoutAlias("Key")} = @Key",
+                Parameters = new { Key = "XXX" }
             };
         }
     });

@@ -63,10 +63,10 @@ public class SetClauseContextTests
         };
 
         // Assert
-        Assert.Equal("@Id", ctx.GetSourceTableColumn("Id"));
-        Assert.Equal("@Key", ctx.GetSourceTableColumn("Key"));
-        Assert.Equal("@Value", ctx.GetSourceTableColumn("Value"));
-        Assert.Equal("@Description", ctx.GetSourceTableColumn("Description"));
+        Assert.Equal("@__Id", ctx.GetSourceTableColumn("Id"));
+        Assert.Equal("@__Key", ctx.GetSourceTableColumn("Key"));
+        Assert.Equal("@__Value", ctx.GetSourceTableColumn("Value"));
+        Assert.Equal("@__Description", ctx.GetSourceTableColumn("Description"));
     }
 
     [Fact]
