@@ -1,2 +1,6 @@
 release vx.x.x-preview.x
 releases/vx.x.x-preview.x
+
+release v8.22.0
+git tag releases/v8.22.0
+git push origin --tags

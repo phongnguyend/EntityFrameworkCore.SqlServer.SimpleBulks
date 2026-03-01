@@ -27,7 +27,7 @@ public class SqlTableInforBuilder<T>
 
     private OutputId _outputId;
 
-    private Func<T, string, SqlParameter> _parameterConverter;
+    private Func<T, string, string, SqlParameter> _parameterConverter;
 
     private Discriminator _discriminator;
 
@@ -78,7 +78,7 @@ public class SqlTableInforBuilder<T>
         return OutputId(propertyName, outputIdMode);
     }
 
-    public SqlTableInforBuilder<T> ParameterConverter(Func<T, string, SqlParameter> converter)
+    public SqlTableInforBuilder<T> ParameterConverter(Func<T, string, string, SqlParameter> converter)
     {
         _parameterConverter = converter;
         return this;

@@ -55,4 +55,6 @@ public record struct WhenNotMatchedBySourceAction
     public string AndCondition { get; set; }
 
     public string ThenAction { get; set; }
+
+    public object Parameters { get; set; }
 }
