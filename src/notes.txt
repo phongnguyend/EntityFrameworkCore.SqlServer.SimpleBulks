@@ -1,6 +1,7 @@
 release vx.x.x-preview.x
 releases/vx.x.x-preview.x
 
-release v8.22.0
-git tag releases/v8.22.0
+git commit -m "release v8.23.0"
+git push
+git tag releases/v8.23.0
 git push origin --tags
