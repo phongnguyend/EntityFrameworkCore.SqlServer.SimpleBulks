@@ -31,12 +31,17 @@ public class BulkMergeBuilder<T>
 
         _outputIdColumn = table?.OutputId?.Name;
 
+        _mergeKeys = _table?.FlattenProperties(_mergeKeys) ?? _mergeKeys;
+        _updateColumnNames = _table?.FlattenProperties(_updateColumnNames) ?? _updateColumnNames;
+        _insertColumnNames = _table?.FlattenProperties(_insertColumnNames) ?? _insertColumnNames;
+
         return this;
     }
 
     public BulkMergeBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _mergeKeys = idColumns;
+        _mergeKeys = _table?.FlattenProperties(_mergeKeys) ?? _mergeKeys;
         return this;
     }
 
@@ -44,30 +49,35 @@ public class BulkMergeBuilder<T>
     {
         var idColumn = idSelector.Body.GetMemberName();
         _mergeKeys = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
+        _mergeKeys = _table?.FlattenProperties(_mergeKeys) ?? _mergeKeys;
         return this;
     }
 
     public BulkMergeBuilder<T> WithUpdateColumns(IReadOnlyCollection<string> updateColumnNames)
     {
         _updateColumnNames = updateColumnNames;
+        _updateColumnNames = _table?.FlattenProperties(_updateColumnNames) ?? _updateColumnNames;
         return this;
     }
 
     public BulkMergeBuilder<T> WithUpdateColumns(Expression<Func<T, object>> updateColumnNamesSelector)
     {
         _updateColumnNames = updateColumnNamesSelector.Body.GetMemberNames().ToArray();
+        _updateColumnNames = _table?.FlattenProperties(_updateColumnNames) ?? _updateColumnNames;
         return this;
     }
 
     public BulkMergeBuilder<T> WithInsertColumns(IReadOnlyCollection<string> insertColumnNames)
     {
         _insertColumnNames = insertColumnNames;
+        _insertColumnNames = _table?.FlattenProperties(_insertColumnNames) ?? _insertColumnNames;
         return this;
     }
 
     public BulkMergeBuilder<T> WithInsertColumns(Expression<Func<T, object>> insertColumnNamesSelector)
     {
         _insertColumnNames = insertColumnNamesSelector.Body.GetMemberNames().ToArray();
+        _insertColumnNames = _table?.FlattenProperties(_insertColumnNames) ?? _insertColumnNames;
         return this;
     }
 

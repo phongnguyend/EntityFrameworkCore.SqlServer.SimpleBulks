@@ -30,18 +30,21 @@ public class BulkInsertBuilder<T>
         _table = table;
         _outputIdColumn = table?.OutputId?.Name;
         _outputIdMode = table?.OutputId?.Mode ?? OutputIdMode.ServerGenerated;
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 
     public BulkInsertBuilder<T> WithColumns(IReadOnlyCollection<string> columnNames)
     {
         _columnNames = columnNames;
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 
     public BulkInsertBuilder<T> WithColumns(Expression<Func<T, object>> columnNamesSelector)
     {
         _columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 

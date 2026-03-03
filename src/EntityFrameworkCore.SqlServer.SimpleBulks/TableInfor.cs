@@ -101,6 +101,43 @@ public abstract class TableInfor
 
         return $"{left} = {right}";
     }
+
+    public IReadOnlyCollection<string> FlattenProperties(IReadOnlyCollection<string> propertyNames)
+    {
+        if (propertyNames.Count == 0)
+        {
+            return propertyNames;
+        }
+
+        if (InsertablePropertyNames == null || InsertablePropertyNames.Count == 0)
+        {
+            return propertyNames;
+        }
+
+        var flattenedProperties = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var prop in propertyNames)
+        {
+            var prefix = prop + ".";
+            var foundNested = false;
+
+            foreach (var insertableProp in InsertablePropertyNames)
+            {
+                if (insertableProp.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    flattenedProperties.Add(insertableProp);
+                    foundNested = true;
+                }
+            }
+
+            if (!foundNested)
+            {
+                flattenedProperties.Add(prop);
+            }
+        }
+
+        return flattenedProperties;
+    }
 }
 
 public abstract class TableInfor<T> : TableInfor

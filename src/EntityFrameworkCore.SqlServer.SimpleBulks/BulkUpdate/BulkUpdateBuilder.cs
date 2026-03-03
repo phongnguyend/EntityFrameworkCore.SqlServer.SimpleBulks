@@ -26,12 +26,15 @@ public class BulkUpdateBuilder<T>
     public BulkUpdateBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
+        _updateKeys = _table?.FlattenProperties(_updateKeys) ?? _updateKeys;
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 
     public BulkUpdateBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _updateKeys = idColumns;
+        _updateKeys = _table?.FlattenProperties(_updateKeys) ?? _updateKeys;
         return this;
     }
 
@@ -39,18 +42,21 @@ public class BulkUpdateBuilder<T>
     {
         var idColumn = idSelector.Body.GetMemberName();
         _updateKeys = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
+        _updateKeys = _table?.FlattenProperties(_updateKeys) ?? _updateKeys;
         return this;
     }
 
     public BulkUpdateBuilder<T> WithColumns(IReadOnlyCollection<string> columnNames)
     {
         _columnNames = columnNames;
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 
     public BulkUpdateBuilder<T> WithColumns(Expression<Func<T, object>> columnNamesSelector)
     {
         _columnNames = columnNamesSelector.Body.GetMemberNames().ToArray();
+        _columnNames = _table?.FlattenProperties(_columnNames) ?? _columnNames;
         return this;
     }
 

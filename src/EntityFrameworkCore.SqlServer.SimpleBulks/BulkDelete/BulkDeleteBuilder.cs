@@ -24,12 +24,14 @@ public class BulkDeleteBuilder<T>
     public BulkDeleteBuilder<T> ToTable(TableInfor<T> table)
     {
         _table = table;
+        _deleteKeys = _table?.FlattenProperties(_deleteKeys) ?? _deleteKeys;
         return this;
     }
 
     public BulkDeleteBuilder<T> WithId(IReadOnlyCollection<string> idColumns)
     {
         _deleteKeys = idColumns;
+        _deleteKeys = _table?.FlattenProperties(_deleteKeys) ?? _deleteKeys;
         return this;
     }
 
@@ -37,6 +39,7 @@ public class BulkDeleteBuilder<T>
     {
         var idColumn = idSelector.Body.GetMemberName();
         _deleteKeys = string.IsNullOrEmpty(idColumn) ? idSelector.Body.GetMemberNames() : new List<string> { idColumn };
+        _deleteKeys = _table?.FlattenProperties(_deleteKeys) ?? _deleteKeys;
         return this;
     }
 

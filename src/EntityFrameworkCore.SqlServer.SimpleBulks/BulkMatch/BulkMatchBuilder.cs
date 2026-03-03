@@ -26,12 +26,15 @@ public class BulkMatchBuilder<T>
     public BulkMatchBuilder<T> WithTable(TableInfor<T> table)
     {
         _table = table;
+        _matchKeys = _table?.FlattenProperties(_matchKeys) ?? _matchKeys;
+        _returnedColumns = _table?.FlattenProperties(_returnedColumns) ?? _returnedColumns;
         return this;
     }
 
     public BulkMatchBuilder<T> WithMatchedColumns(IReadOnlyCollection<string> matchedColumns)
     {
         _matchKeys = matchedColumns;
+        _matchKeys = _table?.FlattenProperties(_matchKeys) ?? _matchKeys;
         return this;
     }
 
@@ -39,18 +42,21 @@ public class BulkMatchBuilder<T>
     {
         var matchedColumn = matchedColumnsSelector.Body.GetMemberName();
         _matchKeys = string.IsNullOrEmpty(matchedColumn) ? matchedColumnsSelector.Body.GetMemberNames() : new List<string> { matchedColumn };
+        _matchKeys = _table?.FlattenProperties(_matchKeys) ?? _matchKeys;
         return this;
     }
 
     public BulkMatchBuilder<T> WithReturnedColumns(IReadOnlyCollection<string> returnedColumns)
     {
         _returnedColumns = returnedColumns;
+        _returnedColumns = _table?.FlattenProperties(_returnedColumns) ?? _returnedColumns;
         return this;
     }
 
     public BulkMatchBuilder<T> WithReturnedColumns(Expression<Func<T, object>> returnedColumnsSelector)
     {
         _returnedColumns = returnedColumnsSelector.Body.GetMemberNames().ToArray();
+        _returnedColumns = _table?.FlattenProperties(_returnedColumns) ?? _returnedColumns;
         return this;
     }
 
