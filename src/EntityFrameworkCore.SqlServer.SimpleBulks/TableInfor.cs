@@ -104,7 +104,7 @@ public abstract class TableInfor
 
     public IReadOnlyCollection<string> FlattenProperties(IReadOnlyCollection<string> propertyNames)
     {
-        if (propertyNames.Count == 0)
+        if (propertyNames == null || propertyNames.Count == 0)
         {
             return propertyNames;
         }
