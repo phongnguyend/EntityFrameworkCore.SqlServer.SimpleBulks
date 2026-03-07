@@ -41,7 +41,11 @@ public class ToDataTableTests
 
         var valueConverters = _dbContext.GetValueConverters(typeof(SingleKeyRow<int>));
 
-        var dataTable = rows.ToDataTable(properties, valueConverters);
+        var dataTable = rows.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = properties,
+            ValueConverters = valueConverters
+        });
 
         for (int i = 0; i < rows.Count; i++)
         {
@@ -92,7 +96,11 @@ public class ToDataTableTests
 
         var valueConverters = _dbContext.GetValueConverters(typeof(CompositeKeyRow<int, int>));
 
-        var dataTable = rows.ToDataTable(properties, valueConverters);
+        var dataTable = rows.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = properties,
+            ValueConverters = valueConverters
+        });
 
         for (int i = 0; i < rows.Count; i++)
         {
@@ -142,7 +150,11 @@ public class ToDataTableTests
         var columnNames = _dbContext.GetColumnNames(typeof(ConfigurationEntry));
         var columnTypes = _dbContext.GetColumnTypes(typeof(ConfigurationEntry));
 
-        var dataTable = rows.ToDataTable(properties, valueConverters);
+        var dataTable = rows.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = properties,
+            ValueConverters = valueConverters
+        });
 
         for (int i = 0; i < rows.Count; i++)
         {
@@ -210,7 +222,10 @@ public class ToDataTableTests
             "ShippingAddress.Location.Lng"
         };
 
-        var dataTable = orders.ToDataTable(properties);
+        var dataTable = orders.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = properties
+        });
 
         for (int i = 0; i < orders.Count; i++)
         {
@@ -277,7 +292,10 @@ public class ToDataTableTests
             "ShippingAddress.Location.Lng"
         };
 
-        var dataTable = orders.ToDataTable(properties);
+        var dataTable = orders.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = properties
+        });
 
         for (int i = 0; i < orders.Count; i++)
         {
