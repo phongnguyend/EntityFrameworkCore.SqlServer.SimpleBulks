@@ -97,7 +97,13 @@ public class BulkMatchBuilder<T>
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var dataTable = machedValues.ToDataTable(_matchKeys, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
+        var dataTable = machedValues.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = _matchKeys,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = false,
+            Discriminator = _table.Discriminator
+        });
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);
@@ -156,7 +162,13 @@ public class BulkMatchBuilder<T>
     {
         var temptableName = $"[#{Guid.NewGuid()}]";
 
-        var dataTable = await machedValues.ToDataTableAsync(_matchKeys, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
+        var dataTable = await machedValues.ToDataTableAsync(new DataTableOptions
+        {
+            PropertyNames = _matchKeys,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = false,
+            Discriminator = _table.Discriminator
+        }, cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);

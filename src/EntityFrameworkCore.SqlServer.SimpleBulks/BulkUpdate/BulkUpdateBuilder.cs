@@ -140,7 +140,13 @@ public class BulkUpdateBuilder<T>
         var propertyNamesIncludeId = _columnNames.ToList();
         propertyNamesIncludeId.AddRange(_updateKeys);
 
-        var dataTable = data.ToDataTable(propertyNamesIncludeId, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator);
+        var dataTable = data.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = propertyNamesIncludeId,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = false,
+            Discriminator = _table.Discriminator
+        });
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);
@@ -220,7 +226,13 @@ public class BulkUpdateBuilder<T>
         var propertyNamesIncludeId = _columnNames.ToList();
         propertyNamesIncludeId.AddRange(_updateKeys);
 
-        var dataTable = await data.ToDataTableAsync(propertyNamesIncludeId, valueConverters: _table.ValueConverters, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(new DataTableOptions
+        {
+            PropertyNames = propertyNamesIncludeId,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = false,
+            Discriminator = _table.Discriminator
+        }, cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var joinCondition = CreateJoinCondition(dataTable);

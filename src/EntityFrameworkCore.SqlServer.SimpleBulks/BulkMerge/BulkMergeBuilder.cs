@@ -179,7 +179,13 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = data.ToDataTable(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, discriminator: _table.Discriminator);
+        var dataTable = data.ToDataTable(new DataTableOptions
+        {
+            PropertyNames = propertyNames,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = returnDbGeneratedId,
+            Discriminator = _table.Discriminator
+        });
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
@@ -463,7 +469,13 @@ public class BulkMergeBuilder<T>
         propertyNames.AddRange(_insertColumnNames);
         propertyNames = propertyNames.Distinct().ToList();
 
-        var dataTable = await data.ToDataTableAsync(propertyNames, valueConverters: _table.ValueConverters, addIndexNumberColumn: returnDbGeneratedId, discriminator: _table.Discriminator, cancellationToken: cancellationToken);
+        var dataTable = await data.ToDataTableAsync(new DataTableOptions
+        {
+            PropertyNames = propertyNames,
+            ValueConverters = _table.ValueConverters,
+            AddIndexNumberColumn = returnDbGeneratedId,
+            Discriminator = _table.Discriminator
+        }, cancellationToken);
         var sqlCreateTemptable = dataTable.GenerateTableDefinition(temptableName, null, _table.ColumnTypeMappings);
 
         var mergeStatementBuilder = new StringBuilder();
