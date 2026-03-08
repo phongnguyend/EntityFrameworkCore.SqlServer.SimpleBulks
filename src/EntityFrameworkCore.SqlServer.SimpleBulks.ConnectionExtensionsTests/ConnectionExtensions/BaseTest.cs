@@ -65,6 +65,8 @@ public abstract class BaseTest : IDisposable
             .TableName("ConfigurationEntry")
             .PrimaryKeys(x => x.Id)
             .OutputId(x => x.Id, OutputIdMode.ServerGenerated)
+            .ConfigureProperty(x => x.Id, columnName: "Id1")
+            .ConfigureProperty(x => x.Key, columnName: "Key1")
             .ConfigureProperty(x => x.RowVersion, readOnly: true);
 
             if (_enableDiscriminator)
