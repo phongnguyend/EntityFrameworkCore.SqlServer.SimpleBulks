@@ -33,6 +33,8 @@ public static class DbContextExtensions
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyList<string>> _allPropertyNamesWithoutRowVersionsCache = [];
     private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, ValueConverter>> _valueConvertersCache = [];
     private static readonly ConcurrentDictionary<CacheKey, Discriminator> _discriminatorCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, IReadOnlyList<JsonProperty>>> _jsonPropertiesCache = [];
+    private static readonly ConcurrentDictionary<CacheKey, IReadOnlyDictionary<string, IReadOnlyDictionary<string, JsonProperty>>> _flattenedJsonPropertiesCache = [];
 
     public static TableInfor<T> GetTableInfor<T>(this DbContext dbContext)
     {
@@ -59,7 +61,9 @@ public static class DbContextExtensions
                     Name = outputIdColumn.PropertyName,
                     Mode = outputIdColumn.PropertyType == typeof(Guid) && string.IsNullOrEmpty(outputIdColumn.DefaultValueSql) ? OutputIdMode.ClientGenerated : OutputIdMode.ServerGenerated
                 },
-                Discriminator = GetDiscriminator(entityType)
+                Discriminator = GetDiscriminator(entityType),
+                JsonProperties = dbContext.GetJsonProperties(key.EntityType),
+                FlattenedJsonProperties = dbContext.GetFlattenedJsonProperties(key.EntityType)
             };
             return tableInfo;
         });
@@ -130,7 +134,15 @@ public static class DbContextExtensions
 
             foreach (var complexProperty in complexProperties)
             {
-                AddComplexProperty(data, complexProperty, tableId, complexProperty.Name + ".");
+                if (complexProperty.ComplexType.IsMappedToJson())
+                {
+                    // For JSON-mapped complex types, add the complex property itself as a single JSON column
+                    AddJsonComplexProperty(data, complexProperty, tableId);
+                }
+                else
+                {
+                    AddComplexProperty(data, complexProperty, tableId, complexProperty.Name + ".");
+                }
             }
 
             var ownedProperties = entityType.GetNavigations().Where(n => n.TargetEntityType.IsOwned());
@@ -142,7 +154,15 @@ public static class DbContextExtensions
                     continue;
                 }
 
-                AddOwnedProperty(data, ownedProperty.TargetEntityType, tableId, ownedProperty.Name + ".");
+                if (ownedProperty.TargetEntityType.IsMappedToJson())
+                {
+                    // For owned entities mapped to JSON, add the owned navigation itself as a single JSON column
+                    AddJsonOwnedProperty(data, ownedProperty);
+                }
+                else
+                {
+                    AddOwnedProperty(data, ownedProperty.TargetEntityType, tableId, ownedProperty.Name + ".");
+                }
             }
 
             return data;
@@ -172,6 +192,151 @@ public static class DbContextExtensions
         return data;
     }
 
+    private static void AddJsonComplexProperty(List<ColumnInfor> columnInfors, IComplexProperty complexProperty, StoreObjectIdentifier storeObjectIdentifier)
+    {
+        var containerColumnName = complexProperty.ComplexType.GetContainerColumnName();
+        var containerColumnType = complexProperty.ComplexType.GetContainerColumnType() ?? "nvarchar(max)";
+
+        // Build JsonProperties using EF Core's GetJsonValueReaderWriter for each property
+        var jsonProperties = BuildJsonProperties(complexProperty.ComplexType, clrPrefix: complexProperty.Name + ".");
+
+        columnInfors.Add(new ColumnInfor
+        {
+            PropertyName = complexProperty.Name,
+            PropertyType = complexProperty.ClrType,
+            ColumnName = containerColumnName,
+            ColumnType = containerColumnType,
+            ValueGenerated = ValueGenerated.Never,
+            DefaultValueSql = null,
+            IsPrimaryKey = false,
+            IsRowVersion = false,
+            ValueConverter = null,
+            IsJson = true,
+            JsonProperties = jsonProperties,
+            FlattenedJsonProperties = JsonProperty.FlattenJsonProperties(jsonProperties)
+        });
+    }
+
+    private static List<JsonProperty> BuildJsonProperties(IComplexType complexType, string clrPrefix = "", string jsonPrefix = "")
+    {
+        var jsonProperties = new List<JsonProperty>();
+
+        // Add writers for scalar properties
+        foreach (var property in complexType.GetProperties())
+        {
+            var jsonPropertyName = property.GetJsonPropertyName() ?? property.Name;
+            var readerWriter = property.GetJsonValueReaderWriter() ?? property.GetTypeMapping().JsonValueReaderWriter;
+
+            jsonProperties.Add(new JsonProperty
+            {
+                JsonPropertyName = jsonPropertyName,
+                ClrPropertyName = property.Name,
+                FullJsonPropertyName = $"{jsonPrefix}{jsonPropertyName}",
+                FullClrPropertyName = $"{clrPrefix}{property.Name}",
+                PropertyType = property.ClrType,
+                ReaderWriter = readerWriter,
+                NestedProperties = null
+            });
+        }
+
+        // Add writers for nested complex properties
+        foreach (var nestedComplexProperty in complexType.GetComplexProperties())
+        {
+            var jsonPropertyName = nestedComplexProperty.GetJsonPropertyName() ?? nestedComplexProperty.Name;
+            var fullJsonPath = $"{jsonPrefix}{jsonPropertyName}";
+            var fullClrPropertyName = $"{clrPrefix}{nestedComplexProperty.Name}";
+            var nestedJsonProperties = BuildJsonProperties(nestedComplexProperty.ComplexType, fullClrPropertyName + ".", fullJsonPath + ".");
+
+            jsonProperties.Add(new JsonProperty
+            {
+                JsonPropertyName = jsonPropertyName,
+                ClrPropertyName = nestedComplexProperty.Name,
+                FullJsonPropertyName = fullJsonPath,
+                FullClrPropertyName = fullClrPropertyName,
+                PropertyType = nestedComplexProperty.ClrType,
+                ReaderWriter = null,
+                NestedProperties = nestedJsonProperties
+            });
+        }
+
+        return jsonProperties;
+    }
+
+    private static void AddJsonOwnedProperty(List<ColumnInfor> columnInfors, INavigation ownedNavigation)
+    {
+        var containerColumnName = ownedNavigation.TargetEntityType.GetContainerColumnName();
+        var containerColumnType = ownedNavigation.TargetEntityType.GetContainerColumnType() ?? "nvarchar(max)";
+
+        var jsonProperties = BuildJsonProperties(ownedNavigation.TargetEntityType, clrPrefix: ownedNavigation.Name + ".");
+
+        columnInfors.Add(new ColumnInfor
+        {
+            PropertyName = ownedNavigation.Name,
+            PropertyType = ownedNavigation.TargetEntityType.ClrType,
+            ColumnName = containerColumnName,
+            ColumnType = containerColumnType,
+            ValueGenerated = ValueGenerated.Never,
+            DefaultValueSql = null,
+            IsPrimaryKey = false,
+            IsRowVersion = false,
+            ValueConverter = null,
+            IsJson = true,
+            JsonProperties = jsonProperties,
+            FlattenedJsonProperties = JsonProperty.FlattenJsonProperties(jsonProperties)
+        });
+    }
+
+    private static List<JsonProperty> BuildJsonProperties(IEntityType entityType, string clrPrefix = "", string jsonPrefix = "")
+    {
+        var jsonProperties = new List<JsonProperty>();
+
+        // Add writers for scalar properties on the owned entity type
+        foreach (var property in entityType.GetProperties())
+        {
+            var jsonPropertyName = property.GetJsonPropertyName() ?? property.Name;
+            var readerWriter = property.GetJsonValueReaderWriter() ?? property.GetTypeMapping().JsonValueReaderWriter;
+
+            jsonProperties.Add(new JsonProperty
+            {
+                JsonPropertyName = jsonPropertyName,
+                ClrPropertyName = property.Name,
+                FullJsonPropertyName = $"{jsonPrefix}{jsonPropertyName}",
+                FullClrPropertyName = $"{clrPrefix}{property.Name}",
+                PropertyType = property.ClrType,
+                IsShadowProperty = property.IsShadowProperty(),
+                IsForeignKey = property.IsForeignKey(),
+                ReaderWriter = readerWriter,
+                NestedProperties = null
+            });
+        }
+
+        var ownedProperties = entityType.GetNavigations().Where(n => n.TargetEntityType.IsOwned());
+
+        // Add writers for complex properties on the owned entity type
+        foreach (var nestedOwnedProperty in ownedProperties)
+        {
+            // For complex properties mapped to JSON inside the owned entity, add a single JSON writer
+            var jsonPropertyName = nestedOwnedProperty.TargetEntityType.GetJsonPropertyName() ?? nestedOwnedProperty.Name;
+            var fullJsonPath = $"{jsonPrefix}{jsonPropertyName}";
+            var fullClrPropertyName = $"{clrPrefix}{nestedOwnedProperty.Name}";
+
+            var nestedJsonProperties = BuildJsonProperties(nestedOwnedProperty.TargetEntityType, fullClrPropertyName + ".", fullJsonPath + ".");
+
+            jsonProperties.Add(new JsonProperty
+            {
+                JsonPropertyName = jsonPropertyName,
+                ClrPropertyName = nestedOwnedProperty.Name,
+                FullJsonPropertyName = fullJsonPath,
+                FullClrPropertyName = fullClrPropertyName,
+                PropertyType = nestedOwnedProperty.ClrType,
+                ReaderWriter = null,
+                NestedProperties = nestedJsonProperties
+            });
+        }
+
+        return jsonProperties;
+    }
+
     private static void AddComplexProperty(List<ColumnInfor> columnInfors, IComplexProperty complexProperty, StoreObjectIdentifier storeObjectIdentifier, string prefix = "")
     {
         var entityProperties = complexProperty.ComplexType.GetProperties();
@@ -182,7 +347,15 @@ public static class DbContextExtensions
 
         foreach (var nestedComplexProperty in nestedComplexProperties)
         {
-            AddComplexProperty(columnInfors, nestedComplexProperty, storeObjectIdentifier, prefix + nestedComplexProperty.Name + ".");
+            if (complexProperty.ComplexType.IsMappedToJson())
+            {
+                // For JSON-mapped complex types, add the complex property itself as a single JSON column
+                AddJsonComplexProperty(columnInfors, nestedComplexProperty, storeObjectIdentifier);
+            }
+            else
+            {
+                AddComplexProperty(columnInfors, nestedComplexProperty, storeObjectIdentifier, prefix + nestedComplexProperty.Name + ".");
+            }
         }
     }
 
@@ -216,6 +389,7 @@ public static class DbContextExtensions
 
         return new ValueConverter
         {
+            PropertyName = property.Name,
             ProviderClrType = converter.ProviderClrType,
             ConvertToProvider = converter.ConvertToProvider,
             ConvertFromProvider = converter.ConvertFromProvider
@@ -314,7 +488,47 @@ public static class DbContextExtensions
         return _valueConvertersCache.GetOrAdd(cacheKey, (key) =>
         {
             var properties = dbContext.GetProperties(key.EntityType);
-            return properties.Where(x => x.ValueConverter != null).ToFrozenDictionary(x => x.PropertyName, x => x.ValueConverter);
+
+            var jsonValueConverters = properties.Where(x => x.IsJson).Select(x => new
+            {
+                x.PropertyName,
+                ValueConverter = new JsonValueConverter
+                {
+                    PropertyName = x.PropertyName,
+                    ProviderClrType = typeof(string),
+                    JsonProperties = x.JsonProperties,
+                    FlattenedJsonProperties = x.FlattenedJsonProperties
+                }
+            });
+
+            var valueConverters = properties.Where(x => x.ValueConverter != null).ToDictionary(x => x.PropertyName, x => x.ValueConverter);
+
+            foreach (var jsonConverter in jsonValueConverters)
+            {
+                valueConverters[jsonConverter.PropertyName] = jsonConverter.ValueConverter;
+            }
+
+            return valueConverters.ToFrozenDictionary();
+        });
+    }
+
+    public static IReadOnlyDictionary<string, IReadOnlyList<JsonProperty>> GetJsonProperties(this DbContext dbContext, Type type)
+    {
+        var cacheKey = new CacheKey(dbContext.GetType(), type);
+        return _jsonPropertiesCache.GetOrAdd(cacheKey, (key) =>
+        {
+            var properties = dbContext.GetProperties(key.EntityType);
+            return properties.Where(x => x.IsJson).ToFrozenDictionary(x => x.PropertyName, x => x.JsonProperties);
+        });
+    }
+
+    public static IReadOnlyDictionary<string, IReadOnlyDictionary<string, JsonProperty>> GetFlattenedJsonProperties(this DbContext dbContext, Type type)
+    {
+        var cacheKey = new CacheKey(dbContext.GetType(), type);
+        return _flattenedJsonPropertiesCache.GetOrAdd(cacheKey, (key) =>
+        {
+            var properties = dbContext.GetProperties(key.EntityType);
+            return properties.Where(x => x.IsJson).ToFrozenDictionary(x => x.PropertyName, x => x.FlattenedJsonProperties);
         });
     }
 

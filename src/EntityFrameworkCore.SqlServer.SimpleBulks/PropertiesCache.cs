@@ -287,6 +287,16 @@ public class PropertiesCache<T>
 
         if (valueConverters != null && valueConverters.TryGetValue(propName, out var converter))
         {
+            if (converter is JsonValueConverter jsonValueConverter)
+            {
+                if (value == null)
+                {
+                    return null;
+                }
+
+                return JsonPropertyWriter.Write(item, jsonValueConverter.FlattenedJsonProperties);
+            }
+
             return converter.ConvertToProvider(value);
         }
 

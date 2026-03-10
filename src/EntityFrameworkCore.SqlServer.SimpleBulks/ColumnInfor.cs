@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using System;
+using System.Collections.Generic;
 
 namespace EntityFrameworkCore.SqlServer.SimpleBulks;
 
@@ -22,4 +23,10 @@ public class ColumnInfor
     public bool IsRowVersion { get; init; }
 
     public ValueConverter? ValueConverter { get; set; }
+
+    public bool IsJson { get; set; }
+
+    public IReadOnlyList<JsonProperty>? JsonProperties { get; init; }
+
+    public IReadOnlyDictionary<string, JsonProperty> FlattenedJsonProperties { get; init; }
 }

@@ -42,6 +42,24 @@ public class BulkDeleteAsyncTests : BaseTest
                         Lat = 40.7128 + i,
                         Lng = -74.0060 - i
                     }
+                },
+                JsonComplexShippingAddress = new JsonComplexTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new ComplexTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
+                },
+                JsonOwnedShippingAddress = new JsonOwnedTypeAddress
+                {
+                    Street = "Street " + i,
+                    Location = new OwnedTypeLocation
+                    {
+                        Lat = 40.7128 + i,
+                        Lng = -74.0060 - i
+                    }
                 }
             });
 
