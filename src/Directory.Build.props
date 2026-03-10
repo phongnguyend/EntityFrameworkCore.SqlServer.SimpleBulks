@@ -3,6 +3,7 @@
     <CurrentTargetFramework>net10.0</CurrentTargetFramework>
     <CurrentNet8Version>8.23.0</CurrentNet8Version>
     <CurrentNet9Version>9.0.0-preview.1</CurrentNet9Version>
-    <CurrentNet10Version>10.0.0-preview.1</CurrentNet10Version>
+    <CurrentNet10Version>10.0.0</CurrentNet10Version>
+    <CurrentNet11Version>11.0.0-preview.1</CurrentNet11Version>
   </PropertyGroup>
 </Project>
