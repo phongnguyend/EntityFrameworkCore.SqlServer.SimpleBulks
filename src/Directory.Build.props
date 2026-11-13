@@ -2,6 +2,6 @@
   <PropertyGroup>
     <CurrentTargetFramework>net11.0</CurrentTargetFramework>
     <CurrentNet10Version>10.0.0</CurrentNet10Version>
-    <CurrentNet11Version>11.0.0-preview.1</CurrentNet11Version>
+    <CurrentNet11Version>11.0.0</CurrentNet11Version>
   </PropertyGroup>
 </Project>
