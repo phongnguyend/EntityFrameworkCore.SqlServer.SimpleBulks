@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>$(CurrentTargetFramework)</TargetFramework>
-    <Version Condition="'$(CurrentTargetFramework)' == 'net8.0'">$(CurrentNet8Version)</Version>
-    <Version Condition="'$(CurrentTargetFramework)' == 'net9.0'">$(CurrentNet9Version)</Version>
     <Version Condition="'$(CurrentTargetFramework)' == 'net10.0'">$(CurrentNet10Version)</Version>
+    <Version Condition="'$(CurrentTargetFramework)' == 'net11.0'">$(CurrentNet11Version)</Version>
     <PackageProjectUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</PackageProjectUrl>
     <RepositoryUrl>https://github.com/phongnguyend/EntityFrameworkCore.SqlServer.SimpleBulks</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -12,16 +11,12 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="11.0.0" />
   </ItemGroup>
 
   <ItemGroup>
