@@ -22,9 +22,9 @@ jobs:
     - uses: actions/checkout@v2
   
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 10.0.100
+        global-json-file: src/global.json
 
     - name: Tests
       run: dotnet test EntityFrameworkCore.SqlServer.SimpleBulks.Tests/EntityFrameworkCore.SqlServer.SimpleBulks.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
