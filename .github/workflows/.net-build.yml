@@ -43,3 +43,13 @@ jobs:
       with:
         name: EntityFrameworkCore.SqlServer.SimpleBulks
         path: src/EntityFrameworkCore.SqlServer.SimpleBulks/bin/Release/*.nupkg
+
+    - name: Publish EntityFrameworkCore.SqlServer.SimpleBulks to NuGet
+      if: startsWith(github.ref, 'refs/tags/releases/v')
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      run: |
+        dotnet nuget push "EntityFrameworkCore.SqlServer.SimpleBulks/bin/Release/*.nupkg" \
+          --api-key "$NUGET_API_KEY" \
+          --source https://api.nuget.org/v3/index.json \
+          --skip-duplicate

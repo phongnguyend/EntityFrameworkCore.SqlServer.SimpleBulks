@@ -1,0 +1,66 @@
+name: Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      filter:
+        description: 'Benchmark filter (e.g. *BulkInsertSingleTableBenchmarks* or * for all)'
+        required: true
+        default: '*'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: 'Y'
+          MSSQL_SA_PASSWORD: 'sqladmin123!@#'
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'sqladmin123!@#' -C -b -Q 'SELECT 1'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 20
+          --health-start-period 30s
+    env:
+      PROJECT: src/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks/EntityFrameworkCore.SqlServer.SimpleBulks.Benchmarks.csproj
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: src/global.json
+
+      - name: Restore
+        run: dotnet restore "$PROJECT"
+
+      - name: Build
+        run: dotnet build "$PROJECT" --configuration Release --no-restore
+
+      - name: Run selected benchmarks
+        env:
+          BENCHMARK_FILTER: ${{ inputs.filter }}
+        run: >-
+          dotnet run --project "$PROJECT" --configuration Release --no-build --
+          --filter "$BENCHMARK_FILTER" --exporters json
+          --artifacts "${{ github.workspace }}/BenchmarkDotNet.Artifacts"
+
+      - name: Upload benchmark reports and logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmarks-net11-${{ github.run_id }}-${{ github.run_attempt }}
+          path: BenchmarkDotNet.Artifacts/
+          if-no-files-found: warn
+          retention-days: 30
